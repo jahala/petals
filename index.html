@@ -152,7 +152,8 @@
 
   /* ── hero ─────────────────────────────────────────────────── */
   .hero {
-    padding: var(--space-3xl) 0 var(--space-2xl);
+    /* extra bottom room: the specimen card hangs below the terminal's corner */
+    padding: var(--space-3xl) 0 calc(var(--space-2xl) + 56px);
     display: grid; grid-template-columns: 1fr 1.05fr; gap: var(--space-2xl); align-items: center;
   }
   .hero-text { max-width: 560px; }
@@ -352,13 +353,24 @@
   .arch-point.quiet p { color: var(--pp-muted); }
 
   /* ── install CTA ──────────────────────────────────────────── */
-  .install { text-align: center; }
-  .install h2 { margin-bottom: var(--space-lg); }
+  /* the closing band commits to the color — deep foliage, the petal accent
+     glowing against it. The page ends inside the brand, not on beige. */
+  .install {
+    text-align: center;
+    background: var(--pp-primary) !important;
+    color: var(--pp-bg);
+  }
+  .install h2 { margin-bottom: var(--space-lg); color: var(--pp-bg); }
+  .install .kicker { color: var(--pp-petal); }
+  .install p { color: var(--pp-surface); }
+  .install a { color: var(--pp-bg); text-decoration-color: rgba(211, 149, 134, 0.6); }
+  .install a:hover { text-decoration-color: var(--pp-petal); }
   .install .install-term {
     display: inline-block; text-align: left;
     margin: 0 auto var(--space-md); min-width: 420px; max-width: 100%;
+    border-color: rgba(248, 245, 236, 0.18);
   }
-  .install .note { font-family: var(--font-code); font-size: var(--text-code); color: var(--pp-muted); }
+  .install .note { font-family: var(--font-code); font-size: var(--text-code); color: var(--pp-surface); opacity: 0.75; }
   .badge {
     display: inline-flex; align-items: center; gap: var(--space-3xs);
     background: var(--pp-surface); border: 1px solid var(--pp-border);
@@ -464,6 +476,32 @@
   .btn { transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease; }
   .btn:active { transform: translateY(1px); }
 
+  /* the brand specimen — the brand-operator's artifact, overlapping the
+     developer's terminal. Color finally lives on the page of a color product. */
+  .hero { position: relative; }
+  .specimen {
+    /* straddles the terminal's lower-left corner from OUTSIDE the terminal
+       (inside it, the term's overflow:hidden clips the card) */
+    position: absolute;
+    left: 41%; bottom: 14px;
+    background: var(--pp-bg-artifact);
+    border: 1px solid var(--pp-border);
+    border-radius: 12px;
+    padding: var(--space-xs) var(--space-sm);
+    box-shadow: 0 2px 6px rgba(32, 36, 27, 0.07), 0 18px 44px rgba(32, 36, 27, 0.12);
+    display: grid; gap: var(--space-3xs);
+    animation: bloom 0.7s var(--ease-petal) 1.9s both;
+    transform-origin: 20% 90%;
+  }
+  .specimen-swatches { display: flex; gap: 6px; }
+  .specimen-swatches .sw { width: 30px; height: 30px; border-radius: 7px; display: block; }
+  .specimen-type { display: flex; gap: var(--space-xs); align-items: baseline; }
+  .spec-serif { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 560; color: var(--pp-text); }
+  .spec-sans { font-family: var(--font-body); font-size: 1rem; color: var(--pp-text-soft); }
+  .specimen-voice { font-size: 0.85rem; color: var(--pp-text-soft); }
+  .specimen-src { font-family: var(--font-code); font-size: 0.78rem; color: var(--pp-accent); }
+  @media (max-width: 880px) { .specimen { position: static; margin-top: var(--space-sm); } }
+
   /* one quiet flourish: a petal-blush glow behind the hero terminal */
   .hero-visual { position: relative; }
   .hero-visual::before {
@@ -535,6 +573,25 @@
 
 <span class="ok bold">Done.</span> <span class="dim">.brand/ ready. Next session reads it.</span></pre>
   </div>
+
+
+    <!-- the brand, alive — what came OUT of that session. The brand-operator's
+         artifact overlapping the developer's terminal: both audiences, one frame. -->
+    <aside class="specimen" aria-label="The extracted brand, as a living specimen">
+      <div class="specimen-swatches">
+        <span class="sw" style="background:#4C5E3C" title="Primary — foliage"></span>
+        <span class="sw" style="background:#B96A4F" title="Accent — petal-deep"></span>
+        <span class="sw" style="background:#D39586" title="Petal — blush"></span>
+        <span class="sw" style="background:#F8F5EC; box-shadow: inset 0 0 0 1px #D6D2C2" title="Background — cream"></span>
+        <span class="sw" style="background:#20241B" title="Ink"></span>
+      </div>
+      <div class="specimen-type">
+        <span class="spec-serif">Fraunces</span>
+        <span class="spec-sans">Source Sans 3</span>
+      </div>
+      <div class="specimen-voice">voice: warm, plainspoken · never “supercharge”</div>
+      <div class="specimen-src">.brand/ — extracted, not guessed</div>
+    </aside>
 </header>
 
 <!-- ══ outcome stats ════════════════════════════════════ -->
