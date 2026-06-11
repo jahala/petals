@@ -2482,7 +2482,8 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
   "kind": "feature",
   "tend_version": "0.4.0",
   "generated_at": "2026-06-04T12:41:55.706Z",
-  "project_name": "Petals"
+  "project_name": "Petals",
+  "dek_sha": "f1da52073fc658ee1acf97e78e867896628ce421"
 }
 </script>
 
@@ -3033,7 +3034,56 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
     ],
     "result": "pass",
     "ran_at": "2026-06-05T16:05:00Z"
-  }
+  },
+  "dek": "When a brand changes, every project keeps its own fossilized copy and three versions of the truth drift apart within months — nobody can Slack every team and hope they update before the next agent session. Distribution makes the brand as easy to get as `git pull`: one command connects a project to a central repo, drift surfaces automatically, and `/petal update` syncs new versions while project overrides survive. One push, every project current, zero manual propagation.",
+  "personas_resolved": [
+    {
+      "id": "brand-operator",
+      "name": "Brand Operator",
+      "jobs": [
+        "When the brand team sends me a 40-page PDF brand guide, a folder of logo SVGs, and a Slack message about the new accent color (#FF4D00, not #E7000B, \"please update everywhere\"), because every AI agent across six projects is still generating the old accent color and nobody else on the team knows how to bridge the gap between a PDF and an agent's context window, we believe I should be able to point petal at that folder and get a complete, correct .brand/ directory in one command — colors extracted to hex, fonts identified, voice rules captured, logos copied — without manually typing 47 hex codes or guessing which font weight is the heading weight. We'll know we got it right when the generated colors.md contains #FF4D00 as the accent (not #E7000B, which was the old accent), the generated typography.md names the correct heading font family and weight, and every asset in assets/ matches its source — verified by diffing the output against known values from the brand guide.",
+        "When I start a new project repo and the team expects their agents to produce on-brand output from day one, because if brand isn't set up before the first agent session, the first PR will hardcode Tailwind's default blue into the hero section and someone (me) will catch it in review, we believe one command should pull the current brand into .brand/ and wire it into the project so every future agent session reads brand context without anyone thinking about it. We'll know we got it right when a developer who has never heard of petal opens a new agent session in this project, types \"build a contact page,\" and the agent produces output with the correct primary color, heading font, and voice tone — without the developer pasting a single hex code into the prompt.",
+        "When the central brand repo gets a new tag (v1.2.0 to v1.3.0 — primary color changed, new logo variant added), because I can't manually Slack every developer on every project and hope they update before their next agent session, we believe every connected project should detect the drift automatically on the next /petal check or agent session, show what changed, and update with one command without losing project-specific overrides. We'll know we got it right when six projects detect the v1.3.0 drift on their next agent session, four update immediately, two with campaign overrides update without losing their seasonal palette, and zero projects are still silently using v1.2.0 two weeks later."
+      ]
+    }
+  ],
+  "judgments": [
+    {
+      "question_id": "what_relieves_why",
+      "target": "slots:what+why",
+      "verdict": "pass",
+      "rationale": "WHY names fossilized copies, three brand versions across the org within months, and new projects copy-pasting a stale colors.ts. WHAT relieves it directly — init --from connects, update syncs, drift detection surfaces the gap automatically, overrides survive. The 'as easy as git pull' framing maps to the brand-operator:2 job's 'detect drift on the next session, update with one command.'",
+      "judged_sha": "19aa81fbe3cd8488719c7f5b165e64a9eed0d4d4"
+    },
+    {
+      "question_id": "persona_load_bearing",
+      "target": "persona:brand-operator",
+      "verdict": "pass",
+      "rationale": "Load-bearing — every check anchors to brand-operator:1 (new project on-brand from day one) or brand-operator:2 (central tag drift propagates). The override-survival design (c003) exists for this persona's seasonal-campaign constraint specifically; swap them for a solo dev with one project and drift-detection plus override-merge lose their reason to exist.",
+      "judged_sha": "19fe301a4c6997cefde846055a03f1a7111c816b"
+    },
+    {
+      "question_id": "one_bet",
+      "target": "feature",
+      "verdict": "pass",
+      "rationale": "One bet — 'get the brand into a project and keep it current.' Fetch (c001/c004-c007), drift-detect (c002/c010), and override-preserving update (c003/c011) are the three moments of one distribution lifecycle, not three features. The seam worth naming: drift detection (check-brand-drift.sh) could stand alone as a read-only capability, but it has no value without a fetch to make current — so it stays inside this bet rather than splitting out.",
+      "judged_sha": "3813cfd26ce589a7d576f758d9a92050dd0cdf21"
+    },
+    {
+      "question_id": "impact_measurable",
+      "target": "slots:impact",
+      "verdict": "push_back",
+      "rationale": "IMPACT's headline is a field outcome — 'six projects connected, four update immediately, two keep overrides, zero still on v1.2.0 two weeks later.' No check measures that propagation across N real projects. c011 proves the fetch+override roundtrip for ONE project and c010 proves drift detection across four states, but the org-scale 'zero stragglers' claim is an aspiration no synthetic test covers. The mechanism is measured; the population outcome is not.",
+      "judged_sha": "0c9046393a1c46e622304b9f2bedad8fe8377be5"
+    },
+    {
+      "question_id": "check_discriminates",
+      "target": "check:c001",
+      "verdict": "n_a",
+      "rationale": "Set-level skip: these audits predate negctrl evidence. The script-backed checks (drift four-state, fetch+override roundtrip) cite executable scripts and would fail on a broken implementation, but the doc-only checks (gitignored-after-fetch, .petalrc structure) cite petals/SKILL.md rather than an executed on-disk assertion. Per-check semantic spot-judgment is deferred to the next audit, which should back the doc-only checks with a negctrl. One representative entry records the skip-reason for the whole check set.",
+      "judged_sha": "bd70a89ab0ff2f23654fb5ffc74f6959fdd0841c"
+    }
+  ]
 }
 </script>
 <!-- OO:DATA:END -->

@@ -2482,7 +2482,8 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
   "kind": "feature",
   "tend_version": "0.4.0",
   "generated_at": "2026-06-04T12:40:59.745Z",
-  "project_name": "Petals"
+  "project_name": "Petals",
+  "dek_sha": "85d278780d619ee822c64f38641a1f8e93abc1d4"
 }
 </script>
 
@@ -2669,7 +2670,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
     "agent-off-brand"
   ],
   "journey_phase": "author",
-  "narrative": "## Maria opens the attachment. Six projects are still using the old blue.\n\nThe brand team's email lands at 9:47am. Attached: a 40-page PDF brand guide (v2.3), a folder of logo SVGs in six color variants, and a forwarded Slack message from the design director: \"Primary is #FF4D00 now, not #E7000B. Please update everywhere.\" Maria is the bridge between a beautiful PDF and an agent's empty context window. Four projects to update. Zero desire to manually type 47 hex codes, guess which weight of Raleway is the heading weight, or Slack every team with instructions they skim once and forget.\n\nShe drops the PDF, the SVGs, and the designer's README into a folder called `brand-assets/`. Then she runs one command:\n\n```\n/petal init brand-assets/\n```\n\nThe agent reads each asset with its best native capability. Vision for the PDF. Direct parsing for the JSON palette the designer included. Natural-language reading for the voice guidelines in the README. Byte-for-byte copy for the SVGs. Two things appear in the project: a `.brand/` directory with five structured files, and a `SKILL.md` that tells every future agent session how to use them.\n\nMaria opens `colors.md`. The primary field reads `#FF4D00`. Not `#E7000B`. She opens `typography.md`. Raleway Bold at 48px for headings, Open Sans Regular at 16px for body — verbatim from the PDF. She diffs the asset folder against the source: byte-identical. She commits. The next agent session in this project picks up the brand automatically. She never pasted a hex code.\n\n## One command produces two things: the files and the contract.\n\nExtraction is not a parser. It is not a scraper. It is a skill — a structured process the agent follows to read brand assets, synthesize the output, and flag ambiguity rather than paper over it.\n\n<svg viewBox=\"0 0 640 200\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect class=\"tc-bg tc-frame\" x=\"10\" y=\"10\" width=\"180\" height=\"140\" rx=\"4\"/>\n  <rect class=\"tc-wh\" x=\"20\" y=\"20\" width=\"40\" height=\"50\" rx=\"2\"/>\n  <rect class=\"tc-bg\" x=\"26\" y=\"28\" width=\"28\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-bg\" x=\"26\" y=\"35\" width=\"22\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-bg\" x=\"26\" y=\"42\" width=\"30\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-ac\" x=\"26\" y=\"52\" width=\"16\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-bg\" x=\"26\" y=\"59\" width=\"24\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-wh\" x=\"70\" y=\"20\" width=\"24\" height=\"24\" rx=\"2\"/>\n  <circle class=\"tc-ac\" cx=\"82\" cy=\"32\" r=\"5\"/>\n  <rect class=\"tc-wh\" x=\"70\" y=\"52\" width=\"24\" height=\"24\" rx=\"2\"/>\n  <circle class=\"tc-ac\" cx=\"82\" cy=\"64\" r=\"5\"/>\n  <rect class=\"tc-wh\" x=\"104\" y=\"36\" width=\"80\" height=\"40\" rx=\"2\"/>\n  <rect class=\"tc-bg\" x=\"112\" y=\"44\" width=\"30\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-bg\" x=\"112\" y=\"52\" width=\"44\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-ac\" x=\"112\" y=\"64\" width=\"24\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-wh\" x=\"70\" y=\"84\" width=\"24\" height=\"24\" rx=\"2\"/>\n  <rect class=\"tc-bg\" x=\"76\" y=\"90\" width=\"12\" height=\"12\" rx=\"1\"/>\n  <rect class=\"tc-wh\" x=\"104\" y=\"84\" width=\"80\" height=\"24\" rx=\"2\"/>\n  <rect class=\"tc-bg\" x=\"112\" y=\"92\" width=\"20\" height=\"8\" rx=\"1\"/>\n  <rect class=\"tc-fg\" x=\"138\" y=\"92\" width=\"20\" height=\"8\" rx=\"1\"/>\n  <rect class=\"tc-bg\" x=\"164\" y=\"92\" width=\"12\" height=\"8\" rx=\"1\"/>\n  <text x=\"100\" y=\"170\" text-anchor=\"middle\" font-size=\"11\" font-family=\"system-ui\" fill=\"#8a8a86\">Source folder: PDFs, SVGs, JSON, fonts, README</text>\n  <polygon class=\"tc-ac\" points=\"200,80 218,85 200,90\"/>\n  <rect class=\"tc-wh tc-frame\" x=\"226\" y=\"10\" width=\"180\" height=\"140\" rx=\"4\"/>\n  <rect class=\"tc-bg\" x=\"236\" y=\"18\" width=\"6\" height=\"6\" rx=\"1\"/>\n  <rect class=\"tc-bg\" x=\"246\" y=\"18\" width=\"6\" height=\"6\" rx=\"1\"/>\n  <circle class=\"tc-ac\" cx=\"258\" cy=\"21\" r=\"3\"/>\n  <rect class=\"tc-wh\" x=\"236\" y=\"32\" width=\"160\" height=\"20\" rx=\"2\"/>\n  <rect class=\"tc-bg\" x=\"244\" y=\"38\" width=\"24\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-bg\" x=\"244\" y=\"46\" width=\"32\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-wh\" x=\"236\" y=\"58\" width=\"160\" height=\"20\" rx=\"2\"/>\n  <rect class=\"tc-bg\" x=\"244\" y=\"64\" width=\"28\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-bg\" x=\"244\" y=\"72\" width=\"20\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-wh\" x=\"236\" y=\"84\" width=\"160\" height=\"20\" rx=\"2\"/>\n  <rect class=\"tc-ac\" x=\"244\" y=\"90\" width=\"36\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-bg\" x=\"244\" y=\"98\" width=\"24\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-wh\" x=\"236\" y=\"110\" width=\"160\" height=\"20\" rx=\"2\"/>\n  <rect class=\"tc-bg\" x=\"244\" y=\"116\" width=\"44\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-bg\" x=\"244\" y=\"124\" width=\"30\" height=\"3\" rx=\"1\"/>\n  <text x=\"316\" y=\"170\" text-anchor=\"middle\" font-size=\"11\" font-family=\"system-ui\" fill=\"#8a8a86\">.brand/ directory: DESIGN.md, colors, typography, voice, assets</text>\n</svg>\n\nThe `.brand/` directory is the intelligence layer. Five files: `DESIGN.md` (the full design system, following the Google Stitch 9-section standard), `colors.md` (every explicit hex value with its semantic role), `typography.md` (font families, weights, sizes, and hierarchy), `voice.md` (tone rules, forbidden terms with before/after examples, copy patterns), and `identity.md` (brand name, tagline, and metadata — or \"not specified\" when the source is silent). An `assets/` subdirectory holds the original files, byte for byte.\n\n`SKILL.md` is the behavioral contract. It auto-triggers when an agent opens a session with creative work on the stack. It instructs the agent to read the relevant `.brand/` files before generating any code or copy, and to apply those rules at generation time — not as a post-hoc lint pass. The agent treats the brand the way it treats a tsconfig: ambient infrastructure, present by default, correct without being asked.\n\n## What extraction refuses to do.\n\nPetals never infers a hex code from a color name. If the source says \"Primary: Teal\" without stating `#2F99A4`, extraction flags it as missing — not guessed, not approximated, not sampled from a swatch image. The same discipline applies to typography: \"Body: Open Sans\" without a weight prompts a flag asking for clarification. Voice guidelines without before/after examples get flagged. Extraction errs on the side of explicit over complete. A `.brand/` with three fully specified files and two flags that say \"ask a human\" is more useful than five files full of guesswork.\n\nWhen the source folder is empty, extraction reports a clear error and produces nothing. When the folder has only images and no text-based brand spec, extraction populates `assets/` with the images and flags that colors, typography, and voice require explicit specification. When the source contains contradictory information — \"Primary: #FF4D00\" on page 3 and \"Primary: #E7000B\" on page 12 — extraction surfaces both values and asks which is current. Every edge case produces a clear signal. No silent approximation.\n\n## The brand that arrives before the first line of code.\n\nThe payoff is what does not happen. Nobody pastes a hex code into a prompt. Nobody types \"Use Raleway for headings, not Inter\" at the start of every session. Nobody catches Tailwind's default blue in PR review and leaves a comment for the fourth time this week. Nobody discovers three months later that the campaign landing page used the 2023 palette because that was the only colors.ts the agent found.\n\nExtraction creates the layer that [Brand Distribution](brand-distribution.tend.html) propagates across projects and [Brand Check](brand-check.tend.html) audits against. Without extraction, there is nothing to distribute and nothing to check. With it, an agent given \"build a contact page\" — zero brand instructions in the prompt — produces output in the correct primary color, the correct heading font, the correct spacing scale, and the correct voice. `/petal check` on that output reports zero errors. The brand was ambient infrastructure: present, correct, and invisible.",
+  "narrative": "## Maria opens the attachment. Six projects are still using the old blue.\n\nThe brand team's email lands at 9:47am. Attached: a 40-page PDF brand guide (v2.3), a folder of logo SVGs in six color variants, and a forwarded Slack message from the design director: \"Primary is #FF4D00 now, not #E7000B. Please update everywhere.\" Maria is the bridge between a beautiful PDF and an agent's empty context window. Four projects to update. Zero desire to manually type 47 hex codes, guess which weight of Raleway is the heading weight, or Slack every team with instructions they skim once and forget.\n\nShe drops the PDF, the SVGs, and the designer's README into a folder called `brand-assets/`. Then she runs one command:\n\n```\n/petal init brand-assets/\n```\n\nThe agent reads each asset with its best native capability. Vision for the PDF. Direct parsing for the JSON palette the designer included. Natural-language reading for the voice guidelines in the README. Byte-for-byte copy for the SVGs. Two things appear in the project: a `.brand/` directory with five structured files, and a `SKILL.md` that tells every future agent session how to use them.\n\nMaria opens `colors.md`. The primary field reads `#FF4D00`. Not `#E7000B`. She opens `typography.md`. Raleway Bold at 48px for headings, Open Sans Regular at 16px for body — verbatim from the PDF. She diffs the asset folder against the source: byte-identical. She commits. The next agent session in this project picks up the brand automatically. She never pasted a hex code.\n\n## One command produces two things: the files and the contract.\n\nExtraction is not a parser. It is not a scraper. It is a skill — a structured process the agent follows to read brand assets, synthesize the output, and flag ambiguity rather than paper over it.\n\nThe pipeline is five stages, not a parse-and-dump: [extraction_pipeline]\n\nThe `.brand/` directory is the intelligence layer. Five files: `DESIGN.md` (the full design system, following the Google Stitch 9-section standard), `colors.md` (every explicit hex value with its semantic role), `typography.md` (font families, weights, sizes, and hierarchy), `voice.md` (tone rules, forbidden terms with before/after examples, copy patterns), and `identity.md` (brand name, tagline, and metadata — or \"not specified\" when the source is silent). An `assets/` subdirectory holds the original files, byte for byte.\n\n`SKILL.md` is the behavioral contract. It auto-triggers when an agent opens a session with creative work on the stack. It instructs the agent to read the relevant `.brand/` files before generating any code or copy, and to apply those rules at generation time — not as a post-hoc lint pass. The agent treats the brand the way it treats a tsconfig: ambient infrastructure, present by default, correct without being asked.\n\n## What extraction refuses to do.\n\nPetals never infers a hex code from a color name. If the source says \"Primary: Teal\" without stating `#2F99A4`, extraction flags it as missing — not guessed, not approximated, not sampled from a swatch image. The same discipline applies to typography: \"Body: Open Sans\" without a weight prompts a flag asking for clarification. Voice guidelines without before/after examples get flagged. Extraction errs on the side of explicit over complete. A `.brand/` with three fully specified files and two flags that say \"ask a human\" is more useful than five files full of guesswork.\n\nWhen the source folder is empty, extraction reports a clear error and produces nothing. When the folder has only images and no text-based brand spec, extraction populates `assets/` with the images and flags that colors, typography, and voice require explicit specification. When the source contains contradictory information — \"Primary: #FF4D00\" on page 3 and \"Primary: #E7000B\" on page 12 — extraction surfaces both values and asks which is current. Every edge case produces a clear signal. No silent approximation.\n\n## The brand that arrives before the first line of code.\n\nThe payoff is what does not happen. Nobody pastes a hex code into a prompt. Nobody types \"Use Raleway for headings, not Inter\" at the start of every session. Nobody catches Tailwind's default blue in PR review and leaves a comment for the fourth time this week. Nobody discovers three months later that the campaign landing page used the 2023 palette because that was the only colors.ts the agent found.\n\nExtraction creates the layer that [Brand Distribution](brand-distribution.tend.html) propagates across projects and [Brand Check](brand-check.tend.html) audits against. Without extraction, there is nothing to distribute and nothing to check. With it, an agent given \"build a contact page\" — zero brand instructions in the prompt — produces output in the correct primary color, the correct heading font, the correct spacing scale, and the correct voice. `/petal check` on that output reports zero errors. The brand was ambient infrastructure: present, correct, and invisible.\n",
   "thumbnail": {
     "kind": "svg",
     "alt": "A document on the left with content lines feeding through an arrow into a structured .brand/ directory on the right with labeled file rows",
@@ -3074,6 +3075,150 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
         "evidence_path": "Derived from c011. Zero references to Playwright/Puppeteer/Selenium in entire petals/. Extraction uses agent-native capabilities only (Read, vision, Bash). Confirms fit claim that extraction adds no infrastructure. No negctrl needed."
       }
     ]
+  },
+  "dek": "A brand operator drops a PDF, a folder of SVGs, and a designer's README into a folder and runs one command. `/petal init` reads each asset with the agent's native capabilities — vision for the PDF, parsing for the palette, plain reading for the voice guide — and produces two things: a structured `.brand/` directory and the `SKILL.md` that makes those files actionable at generation time. It never guesses a hex from a color name; missing values get flagged, not invented. This is the entry point — without it there is nothing to distribute and nothing to check.",
+  "personas_resolved": [
+    {
+      "id": "brand-operator",
+      "name": "Brand Operator",
+      "jobs": [
+        "When the brand team sends me a 40-page PDF brand guide, a folder of logo SVGs, and a Slack message about the new accent color (#FF4D00, not #E7000B, \"please update everywhere\"), because every AI agent across six projects is still generating the old accent color and nobody else on the team knows how to bridge the gap between a PDF and an agent's context window, we believe I should be able to point petal at that folder and get a complete, correct .brand/ directory in one command — colors extracted to hex, fonts identified, voice rules captured, logos copied — without manually typing 47 hex codes or guessing which font weight is the heading weight. We'll know we got it right when the generated colors.md contains #FF4D00 as the accent (not #E7000B, which was the old accent), the generated typography.md names the correct heading font family and weight, and every asset in assets/ matches its source — verified by diffing the output against known values from the brand guide.",
+        "When I start a new project repo and the team expects their agents to produce on-brand output from day one, because if brand isn't set up before the first agent session, the first PR will hardcode Tailwind's default blue into the hero section and someone (me) will catch it in review, we believe one command should pull the current brand into .brand/ and wire it into the project so every future agent session reads brand context without anyone thinking about it. We'll know we got it right when a developer who has never heard of petal opens a new agent session in this project, types \"build a contact page,\" and the agent produces output with the correct primary color, heading font, and voice tone — without the developer pasting a single hex code into the prompt.",
+        "When the central brand repo gets a new tag (v1.2.0 to v1.3.0 — primary color changed, new logo variant added), because I can't manually Slack every developer on every project and hope they update before their next agent session, we believe every connected project should detect the drift automatically on the next /petal check or agent session, show what changed, and update with one command without losing project-specific overrides. We'll know we got it right when six projects detect the v1.3.0 drift on their next agent session, four update immediately, two with campaign overrides update without losing their seasonal palette, and zero projects are still silently using v1.2.0 two weeks later."
+      ]
+    },
+    {
+      "id": "shipping-developer",
+      "name": "Shipping Developer",
+      "jobs": [
+        "When I'm about to review 12 PRs and 8 of them contain agent-generated UI or copy, because I currently spend 40% of my review time catching brand violations — wrong blue, wrong font, 'leverage' when we said 'use', 13px padding when our scale is multiples of 4 — all things the agent could catch before I see them, we believe the agent should run /petal check on its own output before marking work ready for review, fixing or flagging violations without human intervention. We'll know we got it right when over a two-week period, PRs containing agent-generated UI or copy have zero violations that /petal check would have caught — color mismatches, font deviations, spacing outside scale, forbidden terms, and tone violations all trend to zero.",
+        "When I open a new agent session and start building — new page, new component, new campaign — because I don't want to start every session by pasting 'Use Raleway for headings, Open Sans for body, primary is #2F99A4, accent is #FF4D00, voice is direct and warm, never say leverage' — that's 200 tokens I'm burning on setup instead of the task, we believe the agent should discover brand context from .brand/ files without me mentioning it, treating brand values as ambient infrastructure rather than per-task setup. We'll know we got it right when I can start a session with 'build a pricing page' — no brand context in the prompt — and the agent produces output using the correct colors, fonts, spacing scale, and voice, and can tell me where it got each value from .brand/ files."
+      ]
+    },
+    {
+      "id": "ai-agent",
+      "name": "AI Agent",
+      "jobs": [
+        "When I open a new session and receive a creative task — build a landing page, write headlines, create a component — because every session starts from zero brand knowledge and my defaults are Tailwind blue + Inter + neutral tone, we believe .brand/ files should be discoverable and readable without the developer mentioning them or pasting hex codes into the prompt. We'll know we got it right when I produce output using palette colors, correct fonts, and brand voice from a prompt that contains zero brand instructions, and I can cite which .brand/ file each value came from.",
+        "When I've generated UI or copy, because I confidently produce wrong hex values and forbidden terms that look right but aren't, we believe I should self-audit my output by running /petal check and /petal voice before a human reviews my work, catching violations I can fix without human intervention. We'll know we got it right when over a two-week period, my PRs contain zero violations that /petal check would have caught — I caught them first.",
+        "When I load brand context, because my context window is finite and shared between the task, the conversation, and all loaded files, we believe brand files should be progressively disclosed — I discover the skill at ~100 tokens, load SKILL.md at ~2,500 tokens when brand work activates, and load individual reference files on demand (colors.md only when checking colors, voice.md only when reviewing copy). We'll know we got it right when a standard UI task loads less than 3,000 tokens of brand context, leaving the rest of my context window for the actual work."
+      ]
+    }
+  ],
+  "judgments": [
+    {
+      "question_id": "what_relieves_why",
+      "target": "slots:what+why",
+      "verdict": "pass",
+      "rationale": "WHY names a twofold gap — the brand isn't agent-readable AND the agent doesn't know it exists or how to apply it. WHAT closes both halves: it emits the .brand/ files (readable) and the SKILL.md behavioral contract (when/how to apply). The relief maps to the brand-operator:0 job verbatim — point petal at a folder, get a correct .brand/ in one command.",
+      "judged_sha": "57ca88748e1fbd7f0d14fc58e33087e7643df793"
+    },
+    {
+      "question_id": "persona_load_bearing",
+      "target": "persona:brand-operator",
+      "verdict": "pass",
+      "rationale": "Load-bearing. Eleven of thirteen checks anchor to brand-operator:0 — the design is shaped by that persona's constraint: extract only explicit values, flag ambiguity rather than guess (c003, c004), and never infer a hex from a color name. Swap the persona and the no-inference discipline loses its reason to exist.",
+      "judged_sha": "c73991bb8b56824147b0b66f9103d0aba334f0a4"
+    },
+    {
+      "question_id": "persona_load_bearing",
+      "target": "persona:shipping-developer",
+      "verdict": "pass",
+      "rationale": "Load-bearing via c008/c009 — the ambient-context proof (agent given a creative task with zero brand instructions produces on-brand output) is the shipping-developer:1 job. The SKILL.md auto-trigger exists specifically so this persona never pastes a hex code; remove the persona and the auto-trigger has no audience.",
+      "judged_sha": "c73991bb8b56824147b0b66f9103d0aba334f0a4"
+    },
+    {
+      "question_id": "persona_load_bearing",
+      "target": "persona:ai-agent",
+      "verdict": "push_back",
+      "rationale": "ai-agent is in personas[] but no check carries validates_job: ai-agent:* on this feature (all anchor to brand-operator:0 or shipping-developer:1). The agent is the executor, not a constraint the extraction design bends to — its jobs are proven on brand-check (self-audit) and via the ambient loop, not here. The binding reads as decoration on this page; either anchor a check to it or drop the ref.",
+      "judged_sha": "c73991bb8b56824147b0b66f9103d0aba334f0a4"
+    },
+    {
+      "question_id": "one_bet",
+      "target": "feature",
+      "verdict": "pass",
+      "rationale": "Deliberately one bet — 'produce the files AND the contract that makes them actionable.' The checks don't split cleanly: c001-c007/c010-c013 prove the files, c008/c009 prove the contract, but the WHAT binds them ('two things') because files without a behavioral wrapper are inert. The one seam worth naming: c008's zero-errors proof leans on brand-check's audit, so extraction borrows another bet's verification surface to close its own impact claim.",
+      "judged_sha": "a99167a4a66dc591514396a44e3da8b0060b5605"
+    },
+    {
+      "question_id": "impact_measurable",
+      "target": "slots:impact",
+      "verdict": "pass",
+      "rationale": "IMPACT names an observable: an agent given a task with no brand instructions produces palette colors/correct fonts/spacing/voice, and /petal check reports zero errors. c008 measures exactly that quantity (zero errors on generated output) — not a 'faster/better' wish.",
+      "judged_sha": "4afe289b42b7840aa98f65fe4d6a088c9a94ee03"
+    },
+    {
+      "question_id": "check_discriminates",
+      "target": "feature",
+      "verdict": "n_a",
+      "rationale": "negctrl already proves discrimination — the audit carries discriminating negctrls on c001/c002/c003/c006 (baseline exit 0, mutated exit 1), so the semantic check-discriminates question is subsumed by the mechanical proof. One entry documents the skip-reason rather than one per negctrl-proven check.",
+      "judged_sha": "a99167a4a66dc591514396a44e3da8b0060b5605"
+    }
+  ],
+  "media": {
+    "extraction_pipeline": {
+      "kind": "diagram",
+      "alt": "The extraction pipeline: a source folder is read with the agent's native capabilities, synthesized into templates, ambiguity is flagged, and the .brand/ directory plus SKILL.md are emitted.",
+      "caption": "One command, five stages: read each asset natively, synthesize into the standard templates, flag what's ambiguous instead of guessing, and emit the .brand/ files alongside the SKILL.md that makes them actionable.",
+      "spec": {
+        "spec_type": "flow",
+        "nodes": [
+          {
+            "id": "src",
+            "label": "Source folder (PDF, SVG, JSON, README)"
+          },
+          {
+            "id": "read",
+            "label": "Read with native capabilities"
+          },
+          {
+            "id": "synth",
+            "label": "Synthesize into templates"
+          },
+          {
+            "id": "flag",
+            "label": "Flag ambiguity, never guess"
+          },
+          {
+            "id": "brand",
+            "label": ".brand/ directory"
+          },
+          {
+            "id": "skill",
+            "label": "SKILL.md contract"
+          }
+        ],
+        "edges": [
+          {
+            "from": "src",
+            "to": "read",
+            "label": "vision / parse / read"
+          },
+          {
+            "from": "read",
+            "to": "synth"
+          },
+          {
+            "from": "synth",
+            "to": "flag",
+            "label": "missing hex?"
+          },
+          {
+            "from": "flag",
+            "to": "brand",
+            "label": "explicit only"
+          },
+          {
+            "from": "synth",
+            "to": "skill",
+            "label": "behavioral wrapper"
+          }
+        ]
+      },
+      "content": "<svg viewBox=\"0 0 1333 140\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"tend-arrow\" markerWidth=\"7\" markerHeight=\"7\" refX=\"6\" refY=\"3\" orient=\"auto\" markerUnits=\"userSpaceOnUse\"><path d=\"M0,0 L0,6 L6,3 z\" fill=\"var(--text-muted)\"/></marker></defs><polyline points=\"303,70 331,70 359,70\" fill=\"none\" stroke=\"var(--border-strong)\" stroke-width=\"1.5\" marker-end=\"url(#tend-arrow)\"/><text x=\"331\" y=\"66\" font-family=\"'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace\" font-size=\"9\" text-anchor=\"middle\" fill=\"var(--text-muted)\">vision / parse / read</text><polyline points=\"586,70 614,70 642,70\" fill=\"none\" stroke=\"var(--border-strong)\" stroke-width=\"1.5\" marker-end=\"url(#tend-arrow)\"/><polyline points=\"818,50 871,36 899,36\" fill=\"none\" stroke=\"var(--border-strong)\" stroke-width=\"1.5\" marker-end=\"url(#tend-arrow)\"/><text x=\"871\" y=\"32\" font-family=\"'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace\" font-size=\"9\" text-anchor=\"middle\" fill=\"var(--text-muted)\">missing hex?</text><polyline points=\"818,90 871,104 932,104\" fill=\"none\" stroke=\"var(--border-strong)\" stroke-width=\"1.5\" marker-end=\"url(#tend-arrow)\"/><text x=\"871\" y=\"100\" font-family=\"'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace\" font-size=\"9\" text-anchor=\"middle\" fill=\"var(--text-muted)\">behavioral wrapper</text><polyline points=\"1113,36 1141,36 1169,36\" fill=\"none\" stroke=\"var(--border-strong)\" stroke-width=\"1.5\" marker-end=\"url(#tend-arrow)\"/><text x=\"1141\" y=\"32\" font-family=\"'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace\" font-size=\"9\" text-anchor=\"middle\" fill=\"var(--text-muted)\">explicit only</text><rect x=\"16\" y=\"50\" width=\"287\" height=\"40\" rx=\"4\" fill=\"var(--bg-2)\" stroke=\"var(--border-strong)\" stroke-width=\"1.5\"/><text x=\"160\" y=\"74\" font-family=\"'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace\" font-size=\"11\" text-anchor=\"middle\" fill=\"var(--text)\">Source folder (PDF, SVG, JSON, README)</text><rect x=\"359\" y=\"50\" width=\"227\" height=\"40\" rx=\"4\" fill=\"var(--bg-2)\" stroke=\"var(--border-strong)\" stroke-width=\"1.5\"/><text x=\"473\" y=\"74\" font-family=\"'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace\" font-size=\"11\" text-anchor=\"middle\" fill=\"var(--text)\">Read with native capabilities</text><rect x=\"642\" y=\"50\" width=\"201\" height=\"40\" rx=\"4\" fill=\"var(--bg-2)\" stroke=\"var(--border-strong)\" stroke-width=\"1.5\"/><text x=\"743\" y=\"74\" font-family=\"'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace\" font-size=\"11\" text-anchor=\"middle\" fill=\"var(--text)\">Synthesize into templates</text><rect x=\"899\" y=\"16\" width=\"214\" height=\"40\" rx=\"4\" fill=\"var(--bg-2)\" stroke=\"var(--border-strong)\" stroke-width=\"1.5\"/><text x=\"1006\" y=\"40\" font-family=\"'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace\" font-size=\"11\" text-anchor=\"middle\" fill=\"var(--text)\">Flag ambiguity, never guess</text><rect x=\"932\" y=\"84\" width=\"148\" height=\"40\" rx=\"4\" fill=\"var(--accent)\"/><text x=\"1006\" y=\"108\" font-family=\"'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace\" font-size=\"11\" text-anchor=\"middle\" fill=\"var(--surface)\">SKILL.md contract</text><rect x=\"1169\" y=\"16\" width=\"148\" height=\"40\" rx=\"4\" fill=\"var(--accent)\"/><text x=\"1243\" y=\"40\" font-family=\"'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace\" font-size=\"11\" text-anchor=\"middle\" fill=\"var(--surface)\">.brand/ directory</text></svg>",
+      "spec_sha": "352074e77b1352d474b8514dcd4db21b463ebe21"
+    }
   }
 }
 </script>

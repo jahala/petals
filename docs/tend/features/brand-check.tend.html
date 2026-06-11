@@ -2482,7 +2482,8 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
   "kind": "feature",
   "tend_version": "0.4.0",
   "generated_at": "2026-06-04T12:42:25.475Z",
-  "project_name": "Petals"
+  "project_name": "Petals",
+  "dek_sha": "c51fe380099b78c8e2d89afebdcb78b63ac01b11"
 }
 </script>
 
@@ -3028,7 +3029,71 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
         "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
       }
     ]
-  }
+  },
+  "dek": "Even an agent that read the brand misreads a file, copies a component from the wrong project, or has its output hand-edited into a hardcoded hex. `/petal check` audits generated UI and copy against the same `.brand/` rules the agent already knows — colors, type hierarchy, spacing scale, forbidden terms — and reports specific violations before the work reaches review. It is the seatbelt to ambient context's steering wheel: prevention keeps the agent on-brand, detection catches what slips through.",
+  "personas_resolved": [
+    {
+      "id": "shipping-developer",
+      "name": "Shipping Developer",
+      "jobs": [
+        "When I'm about to review 12 PRs and 8 of them contain agent-generated UI or copy, because I currently spend 40% of my review time catching brand violations — wrong blue, wrong font, 'leverage' when we said 'use', 13px padding when our scale is multiples of 4 — all things the agent could catch before I see them, we believe the agent should run /petal check on its own output before marking work ready for review, fixing or flagging violations without human intervention. We'll know we got it right when over a two-week period, PRs containing agent-generated UI or copy have zero violations that /petal check would have caught — color mismatches, font deviations, spacing outside scale, forbidden terms, and tone violations all trend to zero.",
+        "When I open a new agent session and start building — new page, new component, new campaign — because I don't want to start every session by pasting 'Use Raleway for headings, Open Sans for body, primary is #2F99A4, accent is #FF4D00, voice is direct and warm, never say leverage' — that's 200 tokens I'm burning on setup instead of the task, we believe the agent should discover brand context from .brand/ files without me mentioning it, treating brand values as ambient infrastructure rather than per-task setup. We'll know we got it right when I can start a session with 'build a pricing page' — no brand context in the prompt — and the agent produces output using the correct colors, fonts, spacing scale, and voice, and can tell me where it got each value from .brand/ files."
+      ]
+    },
+    {
+      "id": "ai-agent",
+      "name": "AI Agent",
+      "jobs": [
+        "When I open a new session and receive a creative task — build a landing page, write headlines, create a component — because every session starts from zero brand knowledge and my defaults are Tailwind blue + Inter + neutral tone, we believe .brand/ files should be discoverable and readable without the developer mentioning them or pasting hex codes into the prompt. We'll know we got it right when I produce output using palette colors, correct fonts, and brand voice from a prompt that contains zero brand instructions, and I can cite which .brand/ file each value came from.",
+        "When I've generated UI or copy, because I confidently produce wrong hex values and forbidden terms that look right but aren't, we believe I should self-audit my output by running /petal check and /petal voice before a human reviews my work, catching violations I can fix without human intervention. We'll know we got it right when over a two-week period, my PRs contain zero violations that /petal check would have caught — I caught them first.",
+        "When I load brand context, because my context window is finite and shared between the task, the conversation, and all loaded files, we believe brand files should be progressively disclosed — I discover the skill at ~100 tokens, load SKILL.md at ~2,500 tokens when brand work activates, and load individual reference files on demand (colors.md only when checking colors, voice.md only when reviewing copy). We'll know we got it right when a standard UI task loads less than 3,000 tokens of brand context, leaving the rest of my context window for the actual work."
+      ]
+    }
+  ],
+  "judgments": [
+    {
+      "question_id": "what_relieves_why",
+      "target": "slots:what+why",
+      "verdict": "pass",
+      "rationale": "WHY names the leak — even an agent that read the brand misreads a file, or a human edits in a hardcoded color, and a reviewer who should be judging architecture instead catches hex codes. WHAT relieves it: /petal check and /petal voice audit output against the same .brand/ rules before review, reporting specific violations. The relief maps to shipping-developer:0 — the agent self-audits before marking work ready.",
+      "judged_sha": "0859e35b624dc74e61349b4af2cc21ff4bbb1912"
+    },
+    {
+      "question_id": "persona_load_bearing",
+      "target": "persona:shipping-developer",
+      "verdict": "pass",
+      "rationale": "Load-bearing — ten of twelve checks anchor to shipping-developer:0/1. The error-vs-warning split (c001 errors on off-palette hex, c003 warns on off-scale spacing) is shaped by this persona's constraint: block the must-fix, suggest the close-enough, so the developer's review time shifts from 'is this our blue' to 'is this the right abstraction.'",
+      "judged_sha": "518e8c6c9d99d620f6a90093eb120414dc68d0a5"
+    },
+    {
+      "question_id": "persona_load_bearing",
+      "target": "persona:ai-agent",
+      "verdict": "pass",
+      "rationale": "Load-bearing here (unlike on brand-extraction) — c007 and c012 anchor to ai-agent:2, the finite-context-window job. Progressive disclosure (a color check loads colors.md, not the full DESIGN.md) is a design concession made FOR the agent's token budget; remove the persona and the per-dimension file mapping has no rationale. The binding earns its place.",
+      "judged_sha": "518e8c6c9d99d620f6a90093eb120414dc68d0a5"
+    },
+    {
+      "question_id": "one_bet",
+      "target": "feature",
+      "verdict": "pass",
+      "rationale": "One bet — 'audit generated output against .brand/ rules.' /petal voice (c004) is a distinct subcommand but shares the same audit mechanism (read the relevant .brand/ file, scan the target, report violations), so it's a dimension of the bet, not a second feature. No clean split: every check serves the single 'catch what slips through before review' capability.",
+      "judged_sha": "986f0eacb716430686fcfb48b06881e84285c941"
+    },
+    {
+      "question_id": "impact_measurable",
+      "target": "slots:impact",
+      "verdict": "push_back",
+      "rationale": "IMPACT names a field trend — 'over a two-week period, PRs with agent output have zero violations check would catch.' No check measures that production trend. c011 measures the proxy (color and voice audits detect 100% of SEEDED violations in test fixtures), which is detection rate on synthetic input, not the real-PR outcome over two weeks. The mechanism's recall is measured; the field claim is an aspiration.",
+      "judged_sha": "79d4b4d2026a0a7c2c84112954e0224781a89d0a"
+    },
+    {
+      "question_id": "check_discriminates",
+      "target": "check:c001",
+      "verdict": "n_a",
+      "rationale": "Set-level skip: these twelve audits predate negctrl evidence — each verdict cites petals/SKILL.md (the spec doc) rather than an executed /petal check run against a planted-violation fixture, so none yet discriminates a working check from a documented one. Semantic spot-judgment per check is deferred to the next audit, which should add a negctrl that breaks the audit instruction. One representative entry records the skip-reason for the whole check set.",
+      "judged_sha": "a01ce75f5b98e1093c0b48cd65cbcd21db6d21dc"
+    }
+  ]
 }
 </script>
 <!-- OO:DATA:END -->
