@@ -192,7 +192,7 @@ The small accent dot stays clean — no stroke clutter.
 - **Lone shape floating in empty space.** A single rect or one centered
   hub with no context reads as a placeholder, not an illustration.
   Cluster elements; show internal structure.
-- **Shipping without visual verification.** Running `preview-thumbnail.mjs`
+- **Shipping without visual verification.** Running `npx tend-cli preview-thumbnail`
   and reading the PNGs via the Read tool isn't optional — it's the
   only way to catch composition failures pixels reveal that the raw
   SVG markup hides (the 4-identical-thumbnails trap is the canonical
@@ -289,7 +289,7 @@ glyph is purely decorative, it failed.
 
 ## Visual verification (shared with diagrams)
 
-Same loop applies to inline diagrams via `preview-thumbnail.mjs --diagram <media_id> --feature <feature-id>`.
+Same loop applies to inline diagrams via `npx tend-cli preview-thumbnail --diagram <media_id> --feature <feature-id>`.
 
 After authoring or modifying a thumbnail or diagram, visual verification is
 REQUIRED. Introspecting raw SVG markup cannot catch the failure modes
@@ -317,7 +317,7 @@ Walk these before marking a thumbnail done:
 ### Iteration loop
 
 1. Draft SVG markup.
-2. Run `node skills/tend-narrate/scripts/preview-thumbnail.mjs --svg "<svg ...>"` (before writing to polyglot) or `--id <feature-id>` (after writing).
+2. Run `npx tend-cli preview-thumbnail --svg "<svg ...>"` (before writing to polyglot) or `--id <feature-id>` (after writing).
 3. The script prints two PNG paths (light + dark themes).
 4. **Read both PNGs via your Read tool.** Claude views images directly when given a PNG path.
 5. Walk the 5-item checklist above.
@@ -327,7 +327,7 @@ Walk these before marking a thumbnail done:
 
 When authoring thumbnails for a sibling set, use the cards preview:
 
-1. `node skills/tend-narrate/scripts/preview-cards.mjs --parent <parent-id>`
+1. `npx tend-cli preview-cards --parent <parent-id>`
 2. Output is a composite PNG showing all sibling cards side-by-side.
 3. **Read the PNG via your Read tool.**
 4. Scan for thumbnails with similar dominant silhouettes — same basic

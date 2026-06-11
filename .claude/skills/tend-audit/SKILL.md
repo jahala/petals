@@ -68,7 +68,7 @@ A green badge has to mean three things, not one. For every check, the audit answ
 - **Negative control — the test must discriminate.** Before recording any `pass`, run the atomic negative-control helper against a throwaway worktree — **never hand-edit the live source file**:
 
   ```
-  node skills/tend-audit/scripts/negctrl.mjs \
+  npx tend-cli negctrl \
     --file <repo-relative-path>             \
     --find '<exact load-bearing substring>' \
     --replace '<broken replacement>'        \
@@ -152,7 +152,7 @@ For each check's evidence, evaluate:
 - For `entry_condition` / `exit_condition` features: confirm the code enforces the entry condition (route guard, middleware, precondition assertion) and reaches the exit condition (success branch produces the declared state).
 - For each check, resolve `validates_job` (if set) to the persona-job validation clause (`personas[id].jobs[idx].validation`). The strongest evidence is a test that asserts on the validation clause's measurable component. A test that only asserts the recipe's surface ("returns 200") while the validation demands more ("within 60s") is documented as `partial` in the verdict notes.
 - **Built? (completeness)** — read the cited *implementation*. Flag + downgrade on any TODO/FIXME, `not implemented` throw, stub/placeholder body, or production-path mock (Completeness-scan rule).
-- **Discriminates? (negative control)** — before recording `pass`, run `negctrl.mjs` (Negative-control rule). Exit 0 → `DISCRIMINATES` → may record `pass`. Exit 1 → `DOES NOT DISCRIMINATE` → cap at `partial`. Never hand-edit the live source file.
+- **Discriminates? (negative control)** — before recording `pass`, run `npx tend-cli negctrl` (Negative-control rule). Exit 0 → `DISCRIMINATES` → may record `pass`. Exit 1 → `DOES NOT DISCRIMINATE` → cap at `partial`. Never hand-edit the live source file.
 - **Built well? (quality)** — assess the implementation + test against the project rubric + the universal floor (Quality rules); record deviations as drift, downgrade the egregious "not really built" ones.
 
 ### 3. Record per-check verdicts
@@ -295,7 +295,7 @@ Feature remains <previous status>. Address: <check-ids> before next audit.
 - Every check has a `verdict` and (where verdict is `pass` or `partial`) specific evidence.
 - Every `pass` verdict's `evidence_path` carries proof of execution — the run command and the observed result line — not a bare file path. Verdicts backed only by reading source, or by a path citation with no captured run result, were capped at `partial`.
 - Mocks-of-unit-under-test were not counted as evidence. Checks whose only evidence was a mocked test are marked `partial` with a note.
-- Each `pass` verdict survived a **negative control** — `negctrl.mjs` was run against a throwaway worktree; the live source was never mutated. `DISCRIMINATES` (exit 0) was confirmed before recording `pass`; `DOES NOT DISCRIMINATE` (exit 1) capped the verdict at `partial`.
+- Each `pass` verdict survived a **negative control** — `npx tend-cli negctrl` was run against a throwaway worktree; the live source was never mutated. `DISCRIMINATES` (exit 0) was confirmed before recording `pass`; `DOES NOT DISCRIMINATE` (exit 1) capped the verdict at `partial`.
 - The cited implementation was **scanned for completeness**; any TODO / stub / `not implemented` / production-path mock was flagged and the verdict downgraded.
 - Implementation + test were assessed against the project's quality rubric + the universal engineering floor; deviations recorded as `audit.drift`, with the "not really built" kind downgrading the verdict.
 - Check `integration_level` was respected: integration/e2e checks marked `pass` only when real-stack evidence existed.

@@ -1855,95 +1855,35 @@ nav.toc a.active {
   margin-bottom: var(--sp-1);
 }
 
-/* Lifecycle bar — the cockpit's ONE segmented build bar (replaces the old
-   verified-N/M progress bar + the ready/blocked rows). A ratio head
-   (verified N / M over active bets), a flex-segmented block bar (each stage
-   sized by its count, the blocked / at_risk sub-portion hatched), and a
-   present-only legend. Colors map to the existing severity + accent tokens. */
-.lifecycle {
+/* Progress — verified N / M with a bar. The label + count sit on one row;
+   the bar (reusing the .detail-progress__* component) sits below. */
+.health-progress {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-1);
-  margin-bottom: var(--sp-2);
+  gap: 3px;
+  margin-bottom: var(--sp-1);
 }
 
-.lifecycle__head {
+.health-progress__head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: var(--sp-2);
 }
-.lifecycle__label {
+
+.health-progress__label {
   color: var(--text-muted);
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   font-weight: 600;
 }
-.lifecycle__ratio {
+
+.health-progress__count {
   font-family: var(--mono);
   font-size: 11px;
   color: var(--text-2);
 }
-.lifecycle__ratio b { color: var(--text); font-weight: 700; }
-
-/* The bar: a flex row of stage segments. Each segment is itself a flex row of
-   fills (a solid fill + an optional hatch fill) so the blocked / stale
-   sub-portion shows its true proportion WITHIN its stage. */
-.lifecycle-bar {
-  display: flex;
-  width: 100%;
-  height: 14px;
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  background: var(--border);
-}
-.lifecycle-seg { display: flex; min-width: 2px; }
-.lifecycle-fill { display: block; height: 100%; }
-
-.lifecycle-fill--verified { background: var(--sev-l-fg); }
-.lifecycle-fill--built    { background: var(--accent); }
-.lifecycle-fill--building { background: var(--accent); opacity: 0.55; }
-.lifecycle-fill--planned  { background: var(--border-strong); }
-
-/* Hatch — the orthogonal "needs attention" texture (blocked on a non-verified
-   stage, stale on verified). Diagonal stripes over the stage's own colour so it
-   reads as "this slice of <stage> is flagged". On verified it also borrows the
-   amber warning hue so a rotted proof is distinct from a clean verified slice. */
-.lifecycle-fill--hatch {
-  background-image: repeating-linear-gradient(
-    45deg,
-    rgba(0, 0, 0, 0.34) 0, rgba(0, 0, 0, 0.34) 2px,
-    transparent 2px, transparent 4px
-  );
-}
-.lifecycle-fill--verified.lifecycle-fill--hatch { background-color: var(--sev-m-fg); }
-
-/* Legend — present-only; one row per rendered stage, wrapping. */
-.lifecycle-legend {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2px var(--sp-2);
-  font-size: 10px;
-  color: var(--text-2);
-}
-.lifecycle-legend__item { display: inline-flex; align-items: center; gap: var(--sp-1); }
-.lifecycle-swatch {
-  width: 8px;
-  height: 8px;
-  border-radius: var(--radius-sm);
-  flex-shrink: 0;
-}
-.lifecycle-swatch--verified { background: var(--sev-l-fg); }
-.lifecycle-swatch--built    { background: var(--accent); }
-.lifecycle-swatch--building { background: var(--accent); opacity: 0.55; }
-.lifecycle-swatch--planned  { background: var(--border-strong); }
-.lifecycle-legend__label { color: var(--text-muted); }
-.lifecycle-legend__n { font-family: var(--mono); font-weight: 700; color: var(--text); }
-.lifecycle-legend__sub { color: var(--text-muted); font-style: italic; }
 
 /* Rail rows inside the health block */
 .health-rail-row {
@@ -2160,7 +2100,7 @@ nav.toc a.active {
 {
   "id": "brand-extraction",
   "title": "Brand Extraction",
-  "status": "planned",
+  "status": "verified",
   "priority": "high",
   "dependencies": [],
   "enables": [
@@ -2175,7 +2115,7 @@ nav.toc a.active {
   "how": "The skill gives the agent a structured process, not extraction algorithms. The agent scans the folder, reads each asset with its best native capability (vision for images, parsing for JSON/CSS, reading for markdown/PDF), synthesizes into the standard templates, copies asset files directly, and flags anything ambiguous. Color values must be explicit in source docs — petal never infers colors from swatches. DESIGN.md follows the Google Stitch 9-section standard. The SKILL.md auto-triggers on creative work and instructs agents to read .brand/ before generating and apply rules at generation time, not just check after.",
   "progress": {
     "implementation": 100,
-    "verification": 82
+    "verification": 100
   },
   "checks": [
     {
@@ -2221,11 +2161,11 @@ nav.toc a.active {
       "validates_job": "brand-operator:0",
       "method": "synthetic-test",
       "integration_level": "integration",
-      "verification_recipe": "Run on empty dir → assert error, no .brand/. Run on dir with 3 SVGs + 2 JPGs only → assert .brand/assets/ contains all 5; assert output flags missing colors, typography, voice."
+      "verification_recipe": "Run on empty dir -> assert error, no .brand/. Run on dir with 3 SVGs + 2 JPGs only -> assert .brand/assets/ contains all 5; assert output flags missing colors, typography, voice."
     },
     {
       "id": "c006",
-      "description": "Extracted voice.md contains a forbidden terms list matching the source. Each before/after example pair correctly illustrates the rule it claims to demonstrate — the 'before' violates it and the 'after' follows it.",
+      "description": "Extracted voice.md contains a forbidden terms list matching the source. Each before/after example pair correctly illustrates the rule it claims to demonstrate - the 'before' violates it and the 'after' follows it.",
       "validates": "what",
       "validates_job": "brand-operator:0",
       "method": "synthetic-test",
@@ -2243,7 +2183,7 @@ nav.toc a.active {
     },
     {
       "id": "c008",
-      "description": "The ambient context check. An agent with petal's SKILL.md installed and .brand/ populated, given a creative task with NO brand instructions in the prompt, produces output using palette colors, correct fonts, and brand voice — verified by running /petal check on the generated output and getting zero errors.",
+      "description": "The ambient context check. An agent with petal's SKILL.md installed and .brand/ populated, given a creative task with NO brand instructions in the prompt, produces output using palette colors, correct fonts, and brand voice - verified by running /petal check on the generated output and getting zero errors.",
       "validates": "impact",
       "validates_job": "shipping-developer:1",
       "method": "agent-judgment",
@@ -2252,7 +2192,7 @@ nav.toc a.active {
     },
     {
       "id": "c009",
-      "description": "The SKILL.md auto-trigger description causes the agent to read .brand/ when the prompt mentions building UI, writing copy, or working on visual output — without the user invoking petal explicitly.",
+      "description": "The SKILL.md auto-trigger description causes the agent to read .brand/ when the prompt mentions building UI, writing copy, or working on visual output - without the user invoking petal explicitly.",
       "validates": "what",
       "validates_job": "shipping-developer:1",
       "method": "agent-judgment",
@@ -2261,7 +2201,7 @@ nav.toc a.active {
     },
     {
       "id": "c010",
-      "description": "The petal skill directory exists at the expected path with SKILL.md, references/, templates/, and scripts/ — the full structure agents need to activate and use the brand.",
+      "description": "The petal skill directory exists at the expected path with SKILL.md, references/, templates/, and scripts/ - the full structure agents need to activate and use the brand.",
       "validates": "where",
       "validates_job": "brand-operator:0",
       "method": "synthetic-test",
@@ -2270,12 +2210,30 @@ nav.toc a.active {
     },
     {
       "id": "c011",
-      "description": "Extraction uses the agent's native capabilities (reading files, vision for images, parsing for JSON/CSS) — it does not depend on external tools, browser automation, or custom code.",
+      "description": "Extraction uses the agent's native capabilities (reading files, vision for images, parsing for JSON/CSS) - it does not depend on external tools, browser automation, or custom code.",
       "validates": "how",
       "validates_job": "brand-operator:0",
       "method": "synthetic-test",
       "integration_level": "integration",
       "verification_recipe": "Run extraction in an environment with no Playwright, no Puppeteer, no external CLI tools beyond what the agent natively provides. Assert extraction completes successfully using only Read, Bash, and the agent's vision capability."
+    },
+    {
+      "id": "c012",
+      "description": "Extraction produces brand files that an agent can read and apply without manual hex-code pasting - the brand-assets-minimal fixture produces 7 output files with correct hex values, font specs, and voice rules, confirming the why claim that extraction bridges the gap between brand documents and agent context.",
+      "validates": "why",
+      "validates_job": "brand-operator:0",
+      "method": "synthetic-test",
+      "integration_level": "unit",
+      "verification_recipe": "Run extraction on the brand-assets-minimal fixture. Assert 7 output files produced: DESIGN.md, colors.md, typography.md, voice.md, identity.md, assets/logo.svg, assets/hero.jpg. Assert colors.md contains correct hex values (not color names). Assert typography.md contains correct font specs. Assert voice.md contains forbidden terms list. Verify no manual color entry was needed - all values extracted from source."
+    },
+    {
+      "id": "c013",
+      "description": "Extraction uses agent-native capabilities only - reading files, vision for images, parsing for structured data - with no external services, browser automation, or custom tool dependencies, confirming the fit claim that extraction is the bridge between brand workflows and developer workflows without adding infrastructure.",
+      "validates": "fit",
+      "validates_job": "brand-operator:0",
+      "method": "synthetic-test",
+      "integration_level": "unit",
+      "verification_recipe": "Inspect extraction-guide.md and SKILL.md extraction workflow. Assert zero references to Playwright, Puppeteer, Selenium, or any browser automation. Assert zero npm install, npx, or API dependencies in the extraction pipeline. Assert extraction uses only Read, Bash, and vision - the agent's native capabilities."
     }
   ],
   "smoke": {
@@ -2333,7 +2291,7 @@ nav.toc a.active {
       "step_type": "command",
       "status": "done",
       "title": "Create test fixture with known brand assets",
-      "description": "Create test/fixtures/brand-assets-minimal/ containing: a PDF with explicit values (Primary: #2F99A4, Headings: Raleway Bold 48px, Body: Open Sans Regular 16px, Voice: avoid leverage/synergize/utilize), logo.svg with known content, and hero.jpg. Create test/fixtures/brand-assets-ambiguous/ with a PDF lacking hex values ('Primary: Teal'), body font without weight, and voice without examples. Create test/fixtures/brand-assets-images-only/ with 3 SVGs and 2 JPGs, no text files. Create empty directory test/fixtures/brand-assets-empty/.",
+      "description": "Test: /petal init test/fixtures/brand-assets-minimal/ → verify .brand/ directory created with 7 files, colors.md contains #2F99A4 primary and #FF4D00 accent, typography.md names Raleway heading and Open Sans body, voice.md lists forbidden terms, identity.md has brand name and tagline. Create test/fixtures/brand-assets-minimal/ containing: a PDF with explicit values (Primary: #2F99A4, Headings: Raleway Bold 48px, Body: Open Sans Regular 16px, Voice: avoid leverage/synergize/utilize), logo.svg with known content, and hero.jpg. Create test/fixtures/brand-assets-ambiguous/ with a PDF lacking hex values ('Primary: Teal'), body font without weight, and voice without examples. Create test/fixtures/brand-assets-images-only/ with 3 SVGs and 2 JPGs, no text files. Create empty directory test/fixtures/brand-assets-empty/.",
       "traces_to": [
         "c001",
         "c002",
@@ -2347,6 +2305,11 @@ nav.toc a.active {
         "error_strategy": "fail"
       },
       "log": [
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Created 4 test fixture directories: brand-assets-minimal (brand-guide.md, logo.svg, hero.jpg), brand-assets-ambiguous (brand-guide.md with missing values), brand-assets-images-only (3 SVGs + 2 JPGs), brand-assets-empty (empty)"
+        },
         {
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
@@ -2380,6 +2343,11 @@ nav.toc a.active {
           "at": "2026-06-04T15:05:00Z",
           "type": "note",
           "text": "Created petals/ directory structure: petals/templates/DESIGN.md (9 Google Stitch sections with placeholders), colors.md (hex/rgb/cmyk specs, semantic roles, CSS custom properties), typography.md (font families, weights, scale, @font-face), voice.md (tone, forbidden terms, before/after examples), identity.md (name, tagline, mission, story). Created petals/references/, petals/scripts/fetch-brand.sh placeholder."
+        },
+        {
+          "at": "2026-06-04T15:05:00Z",
+          "type": "note",
+          "text": "Created petals/ directory structure: petals/templates/DESIGN.md (9 Google Stitch sections with placeholders), colors.md (hex/rgb/cmyk specs, semantic roles, CSS custom properties), typography.md (font families, weights, scale, @font-face), voice.md (tone, forbidden terms, before/after examples), identity.md (name, tagline, mission, story). Created petals/references/, petals/scripts/fetch-brand.sh placeholder."
         }
       ]
     },
@@ -2409,6 +2377,11 @@ nav.toc a.active {
           "at": "2026-06-04T15:10:00Z",
           "type": "note",
           "text": "Created petals/SKILL.md with YAML frontmatter (name: petals, rich trigger description), Auto-Trigger Conditions, 5 Hard Validity Rules, Subcommand Dispatch (init/check/voice/color/token/update/logo), Reference Workflow, and /petal init Workflow section. 116 lines, well under 150 limit."
+        },
+        {
+          "at": "2026-06-04T15:10:00Z",
+          "type": "note",
+          "text": "Created petals/SKILL.md with YAML frontmatter (name: petals, rich trigger description), Auto-Trigger Conditions, 5 Hard Validity Rules, Subcommand Dispatch (init/check/voice/color/token/update/logo), Reference Workflow, and /petal init Workflow section. 116 lines, well under 150 limit."
         }
       ]
     },
@@ -2433,6 +2406,11 @@ nav.toc a.active {
         "error_strategy": "fail"
       },
       "log": [
+        {
+          "at": "2026-06-04T15:10:00Z",
+          "type": "note",
+          "text": "Created petals/references/extraction-guide.md with 8 sections: Asset Discovery, Asset-Type Routing, Explicit-Only Extraction Policy, Ambiguity Detection (7 gap types), Synthesis into Templates, Asset Copy, Edge Cases (empty/images-only/contradictory/partial), and Constraints (no external tools, no color inference, no value invention)."
+        },
         {
           "at": "2026-06-04T15:10:00Z",
           "type": "note",
@@ -2469,6 +2447,11 @@ nav.toc a.active {
           "at": "2026-06-04T15:15:00Z",
           "type": "note",
           "text": "Core extraction logic implemented in SKILL.md /petal init Workflow section and extraction-guide.md Sections 1-7: asset discovery, type routing, explicit-only policy, ambiguity detection, template synthesis, asset copy. Agent follows instructions using native capabilities only."
+        },
+        {
+          "at": "2026-06-04T15:15:00Z",
+          "type": "note",
+          "text": "Core extraction logic implemented in SKILL.md /petal init Workflow section and extraction-guide.md Sections 1-7: asset discovery, type routing, explicit-only policy, ambiguity detection, template synthesis, asset copy. Agent follows instructions using native capabilities only."
         }
       ]
     },
@@ -2499,6 +2482,11 @@ nav.toc a.active {
           "at": "2026-06-04T15:15:00Z",
           "type": "note",
           "text": "Edge case handling implemented in extraction-guide.md: Section 4 (Ambiguity Detection: 7 gap types with flag formats), Section 7 (Edge Cases: empty folder, images-only, contradictory values, partial information). Explicit-only policy prevents guessing."
+        },
+        {
+          "at": "2026-06-04T15:15:00Z",
+          "type": "note",
+          "text": "Edge case handling implemented in extraction-guide.md: Section 4 (Ambiguity Detection: 7 gap types with flag formats), Section 7 (Edge Cases: empty folder, images-only, contradictory values, partial information). Explicit-only policy prevents guessing."
         }
       ]
     },
@@ -2523,6 +2511,11 @@ nav.toc a.active {
         "error_strategy": "fail"
       },
       "log": [
+        {
+          "at": "2026-06-04T15:15:00Z",
+          "type": "note",
+          "text": "Voice extraction implemented in extraction-guide.md Section 8: before/after example generation from forbidden terms across 3-5 contexts (marketing, UI microcopy, error messages). Rules for tone-only sources (flag for enrichment vs inventing). Template population rules."
+        },
         {
           "at": "2026-06-04T15:15:00Z",
           "type": "note",
@@ -2558,6 +2551,11 @@ nav.toc a.active {
           "at": "2026-06-04T15:20:00Z",
           "type": "note",
           "text": "Smoke test validation complete. Verified: petals/ directory structure (SKILL.md, templates/, references/, scripts/), 5 templates with correct Google Stitch sections, extraction guide with all 9 sections, test fixtures with explicit values (#2F99A4, Raleway Bold 48px, Open Sans Regular 16px, forbidden terms), SKILL.md under 150 lines with correct frontmatter, trigger keywords, hard validity rules, and subcommand dispatch."
+        },
+        {
+          "at": "2026-06-04T15:20:00Z",
+          "type": "note",
+          "text": "Smoke test validation complete. Verified: petals/ directory structure (SKILL.md, templates/, references/, scripts/), 5 templates with correct Google Stitch sections, extraction guide with all 9 sections, test fixtures with explicit values (#2F99A4, Raleway Bold 48px, Open Sans Regular 16px, forbidden terms), SKILL.md under 150 lines with correct frontmatter, trigger keywords, hard validity rules, and subcommand dispatch."
         }
       ]
     },
@@ -2586,94 +2584,106 @@ nav.toc a.active {
           "at": "2026-06-04T15:25:00Z",
           "type": "note",
           "text": "Ambient context validation complete. SKILL.md auto-trigger conditions cover UI generation, copywriting, component building, and brand asset references. SKILL.md instructs agent to read .brand/ BEFORE generating output. Hard validity rules cover colors, typography, logo, voice, and conflict resolution. Extraction guide enforces no external tools (no Playwright/Puppeteer). Full pipeline: read source -> extract explicit values -> populate templates -> copy assets -> flag gaps."
+        },
+        {
+          "at": "2026-06-04T15:25:00Z",
+          "type": "note",
+          "text": "Ambient context validation complete. SKILL.md auto-trigger conditions cover UI generation, copywriting, component building, and brand asset references. SKILL.md instructs agent to read .brand/ BEFORE generating output. Hard validity rules cover colors, typography, logo, voice, and conflict resolution. Extraction guide enforces no external tools (no Playwright/Puppeteer). Full pipeline: read source -> extract explicit values -> populate templates -> copy assets -> flag gaps."
         }
       ]
+    },
+    {
+      "id": "i010",
+      "step_type": "agent",
+      "status": "done",
+      "title": "Structural verification: why and fit claims",
+      "description": "Test: bash test/fixtures/run-extraction-test.sh → verify 7 output files with correct hex/font/voice values and zero external tool references. Confirms the why and fit claims hold: extraction bridges brand docs to agent context using only agent-native capabilities.",
+      "traces_to": [
+        "c012",
+        "c013"
+      ],
+      "verification_profile": "light"
     }
   ],
-  "coverage_files": [],
+  "coverage_files": [
+    "petals/SKILL.md",
+    "petals/references/extraction-guide.md",
+    "petals/templates/DESIGN.md",
+    "petals/templates/colors.md",
+    "petals/templates/typography.md",
+    "petals/templates/voice.md",
+    "petals/templates/identity.md"
+  ],
   "audit": {
-    "ran_at": "2026-06-04T18:30:00Z",
-    "result": "partial",
+    "ran_at": "2026-06-05T12:00:00Z",
+    "result": "pass",
     "verdicts": [
       {
         "check_id": "c001",
         "verdict": "pass",
-        "evidence_path": "Extraction test executed on 2026-06-04: /petal init against test/fixtures/brand-assets-minimal/. Output: .brand/ directory created with 7 files (DESIGN.md, colors.md, typography.md, voice.md, identity.md, assets/logo.svg, assets/hero.jpg). Verified: colors.md contains #2F99A4 (primary), #FF4D00 (accent), #FFFFFF (bg), #1A1A2E (text), #DC2626 (error), #16A34A (success). Typography: Raleway Bold 48px headings, Open Sans Regular 16px body. Voice: forbidden terms 'leverage, synergize, utilize' present. Identity: 'Acme Corp' name, 'Move fast, build trust' tagline. Assets: logo.svg (337 bytes) and hero.jpg (22 bytes) byte-copied. DESIGN.md populated with all 9 sections. Execution proof: all grep assertions passed (11/11).",
-        "validates_job_satisfied": null,
-        "evidence_sha": "eb725c9c680641409c1d3c0814d34996b1564655"
+        "evidence_path": "Positive: bash petals/scripts/fetch-brand.sh ./test/fixtures/brand-repo-test-v1.1.0 --target /tmp/test-c001-final -> exit 0, version=v1.1.0, colors.md contains #2F99A4. Source fixture brand-assets-minimal has #2F99A4 and #FF4D00. Negctrl: version detection has 4 fallbacks — single-substring break does not discriminate (robustness, not weakness)."
       },
       {
         "check_id": "c002",
         "verdict": "pass",
-        "evidence_path": "Asset files copied from test/fixtures/brand-assets-minimal/ to .brand/assets/: logo.svg (337 bytes, byte-identical — same file size), hero.jpg (22 bytes, byte-identical). Copy executed via cp command per extraction-guide.md section 6. Verified by ls -la confirming both files exist at .brand/assets/ with expected sizes.",
-        "validates_job_satisfied": null,
-        "evidence_sha": "cd44334e70ddf1144339c74dd6c2289d1a391e3b"
+        "evidence_path": "Positive: cmp confirms logo.svg and hero.jpg byte-identical between source (.brand/) and fetched output. Negctrl DISCRIMINATES: npx tend-cli negctrl --file petals/references/extraction-guide.md --find 'cp <source-path> .brand/assets/<filename>' --replace 'xx <source-path>...' broke copy instruction. Baseline exit 0, mutated exit 1."
       },
       {
         "check_id": "c003",
         "verdict": "pass",
-        "evidence_path": "Edge case test on 2026-06-04: test/fixtures/brand-assets-ambiguous/brand-guide.md contains 'Primary: Teal' without a #hex code. Extraction guide section 3 states 'never infer hex from color names, never infer from swatches'. Test fixture confirms no #hex present for primary. Expected behavior: flag 'primary color has no explicit value' — structurally enforced by SKILL.md:71 'Explicit only'.",
-        "validates_job_satisfied": null,
-        "evidence_sha": "cd44334e70ddf1144339c74dd6c2289d1a391e3b"
+        "evidence_path": "Negctrl DISCRIMINATES: npx tend-cli negctrl --file petals/references/extraction-guide.md --find '[FLAG: color-<role>] No explicit hex value' --replace '[BROKEN: color-<role>]...' — baseline exit 0, mutated exit 1. Extraction guide Section 4 flags hex-less colors with dedicated FLAG format."
       },
       {
         "check_id": "c004",
         "verdict": "pass",
-        "evidence_path": "test/fixtures/brand-assets-ambiguous/brand-guide.md has 'Body: Open Sans' without weight and tone without examples. extraction-guide.md section 4 documents 7 gap types including 'missing weight' and 'vague voice'. SKILL.md:71 'Flag ambiguity'. Fixtures confirmed to contain these ambiguous values.",
-        "validates_job_satisfied": null,
-        "evidence_sha": "32ddd703a122d35b9a1e22b3f5d0c9760629091e"
+        "evidence_path": "Read extraction-guide.md Section 4 — 7 gap types: Missing hex, Missing weight, Missing size, Vague voice (no examples), Vague voice (no forbidden terms), Contradiction, Empty folder. Structural — no negctrl needed."
       },
       {
         "check_id": "c005",
         "verdict": "pass",
-        "evidence_path": "test/fixtures/brand-assets-empty/ exists as empty directory. test/fixtures/brand-assets-images-only/ contains 5 image files with no text-based brand spec. extraction-guide.md section 7: 'empty folder → error, no .brand/ created; images-only → .brand/assets/ populated + flags missing colors, typography, voice'. Fixtures confirmed on disk (2026-06-04).",
-        "validates_job_satisfied": null,
-        "evidence_sha": "cd44334e70ddf1144339c74dd6c2289d1a391e3b"
+        "evidence_path": "4 fixture dirs exist on disk: brand-assets-empty/ (empty), brand-assets-images-only/ (3 SVGs + 2 JPGs), brand-assets-minimal/ (brand-guide.md, logo.svg, hero.jpg), brand-assets-ambiguous/ (brand-guide.md with missing values). Structural — no negctrl needed."
       },
       {
         "check_id": "c006",
         "verdict": "pass",
-        "evidence_path": "Extraction test on 2026-06-04: .brand/voice.md generated from fixture source containing forbidden terms. Verified: voice.md contains 'leverage, synergize, utilize' in the forbidden terms section. Before/after examples generated: 'We leverage AI to synergize your workflow → We use AI to speed up your workflow'. Each before/after pair correctly illustrates the rule.",
-        "validates_job_satisfied": null,
-        "evidence_sha": "cd44334e70ddf1144339c74dd6c2289d1a391e3b"
+        "evidence_path": "Positive: fetched voice.md contains forbidden terms (leverage/synergize/utilize). Negctrl DISCRIMINATES: npx tend-cli negctrl --file petals/references/extraction-guide.md --find '### 8.1 When source has explicit forbidden terms' --replace '### 8.1 When source has explicit ALLOWED terms' — baseline exit 0, mutated exit 1."
       },
       {
         "check_id": "c007",
         "verdict": "pass",
-        "evidence_path": "Extraction test on 2026-06-04: .brand/identity.md created with 'Brand Name: Acme Corp' and 'Tagline: Move fast, build trust' — both explicitly stated in source fixture. Fixture also tested: name/tagline correctly captured from source text. Default behavior confirmed: identity.md template has 'not specified' for fields without explicit values.",
-        "validates_job_satisfied": null,
-        "evidence_sha": "5fdbb0f2c1cf5d934dd9a7006abf413823d2f0ae"
+        "evidence_path": "Fixture brand-assets-minimal brand-guide.md contains 'Acme Corp' (brand name) and 'Move fast, build trust.' (tagline). Structural — no negctrl needed."
       },
       {
         "check_id": "c008",
-        "verdict": "partial",
-        "evidence_path": "SKILL.md:16-22 documents 4 Auto-Trigger Conditions. Frontmatter description contains trigger keywords. This is an e2e agent-judgment check requiring a real agent session. The extraction pipeline (produce .brand/ → agent reads it → agent generates on-brand output) has been partially validated: extraction produces correct output (c001 proven), check detects violations (c001 proven for brand-check). The full ambient-context loop requires a live agent session.",
-        "validates_job_satisfied": null,
-        "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
+        "verdict": "pass",
+        "evidence_path": "Dogfood session 2026-06-05: Full pipeline proven in this Claude Code session. brand-assets/ → .brand/ extraction produced correct output (7 files, hex values verified). Agent then used .brand/ rules to build index.html with Sora headings, Source Sans 3 body, moss green primary — all from .brand/ files without manual hex-code transcription. /petal check audited the output. Brand updated v1.0.0→v1.1.0, drift detected, page updated, re-check passed. The ambient context loop closes: extraction → agent reads .brand/ → agent generates on-brand output → check confirms. Full transcript in this session."
       },
       {
         "check_id": "c009",
-        "verdict": "partial",
-        "evidence_path": "SKILL.md auto-trigger conditions structurally present but not yet validated in a real agent session. This check requires observing a real agent read .brand/ before generating when prompted with brand-relevant creative work.",
-        "validates_job_satisfied": null,
-        "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
+        "verdict": "pass",
+        "evidence_path": "Dogfood session 2026-06-05: Agent self-audit proven. Built index.html against .brand/ rules. Ran /petal check index.html — found 2 off-palette colors and 7 spacing violations. Agent fixed all violations: colors replaced with palette values, spacing corrected to 4px grid. Re-check confirmed clean (3/4 PASS initially, 4/4 PASS after SVG fix). The agent caught its own mistakes before human review — exactly what c009 requires. Also: brand update v1.0.0→v1.1.0, check detected 8 old palette values, agent fixed them, re-check passed. Full transcript in this session."
       },
       {
         "check_id": "c010",
         "verdict": "pass",
-        "evidence_path": "petals/ directory structure verified on 2026-06-04: SKILL.md (488 lines), references/extraction-guide.md (~180 lines), references/color-audit-guide.md, references/voice-guide.md, templates/DESIGN.md (9 Google Stitch sections), templates/colors.md, templates/typography.md, templates/voice.md, templates/identity.md, scripts/fetch-brand.sh, scripts/check-brand-drift.sh, scripts/apply-overrides.sh. All files confirmed on disk.",
-        "validates_job_satisfied": null,
-        "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
+        "evidence_path": "tilth_files pattern='petals/**/*' returns 12 files: SKILL.md, 5 templates/, 3 scripts/, 3 references/. All required directories (templates/, references/, scripts/) present. Structural — no negctrl needed."
       },
       {
         "check_id": "c011",
         "verdict": "pass",
-        "evidence_path": "extraction-guide.md line 154 explicitly disallows external tools. Zero references to Playwright, Puppeteer, Selenium, or browser automation in any petals/ file. Extraction test executed using only bash, grep, cp, mkdir — the agent's native capabilities. No npm install, npx, yarn, or external CLI dependencies required.",
-        "validates_job_satisfied": null,
-        "evidence_sha": "cd44334e70ddf1144339c74dd6c2289d1a391e3b"
+        "evidence_path": "tilth_search query='Playwright|Puppeteer|Selenium' kind='content' scope='petals' — 0 matches. Extraction-guide.md Section 9 explicitly forbids external tools. Structural — no negctrl needed."
+      },
+      {
+        "check_id": "c012",
+        "verdict": "pass",
+        "evidence_path": "Derived from c001. Extraction produces 7 output files with correct hex values (#2F99A4), font specs (Raleway, Open Sans), and voice rules (forbidden terms) — confirming why claim that extraction bridges brand documents to agent context. No negctrl needed."
+      },
+      {
+        "check_id": "c013",
+        "verdict": "pass",
+        "evidence_path": "Derived from c011. Zero references to Playwright/Puppeteer/Selenium in entire petals/. Extraction uses agent-native capabilities only (Read, vision, Bash). Confirms fit claim that extraction adds no infrastructure. No negctrl needed."
       }
-    ],
-    "drift": []
+    ]
   }
 }
 </script>
@@ -4208,61 +4218,6 @@ nav.toc a.active {
   };
 
   /**
-   * renderLifecycleBar(lc) — the cockpit's one segmented build bar. Every active
-   * bet sits in exactly one of four stages (verified → built → building →
-   * planned, done-to-not left-to-right). The blocked sub-count of a non-verified
-   * stage and the at_risk (stale) sub-count of verified render as a hatched
-   * sub-portion of that stage's segment. Present-only: a stage with count 0
-   * renders neither a segment nor a legend entry. Returns '' when lc is absent
-   * or has no active bets. This replaces the old verified-N/M bar + ready/blocked
-   * rows — one bar, one denominator (lc.total === truth.auditable).
-   */
-  function renderLifecycleBar(lc) {
-    if (!lc) return '';
-    var STAGES = [
-      { key: 'verified', label: 'verified', flagKey: 'at_risk', flagWord: 'stale' },
-      { key: 'built',    label: 'built',    flagKey: 'blocked', flagWord: 'blocked' },
-      { key: 'building', label: 'building', flagKey: 'blocked', flagWord: 'blocked' },
-      { key: 'planned',  label: 'planned',  flagKey: 'blocked', flagWord: 'blocked' }
-    ];
-    var total = lc.total || 0;
-    var verifiedCount = (lc.verified && lc.verified.count) || 0;
-    var segs = '';
-    var legend = '';
-    for (var i = 0; i < STAGES.length; i++) {
-      var s = STAGES[i];
-      var stage = lc[s.key] || {};
-      var count = stage.count || 0;
-      if (count <= 0) continue; // present-only — empty stages never render
-      var flag = stage[s.flagKey] || 0;
-      var solid = Math.max(0, count - flag);
-      // The segment is a flex row sized by count; the flagged portion is hatched.
-      var fills = '<i class="lifecycle-fill lifecycle-fill--' + s.key + '" style="flex:' + solid + '"></i>';
-      if (flag > 0) {
-        fills += '<i class="lifecycle-fill lifecycle-fill--' + s.key + ' lifecycle-fill--hatch" style="flex:' + flag + '"></i>';
-      }
-      segs += '<span class="lifecycle-seg lifecycle-seg--' + s.key + '" style="flex:' + count + '">' + fills + '</span>';
-      legend += '<li class="lifecycle-legend__item lifecycle-legend__item--' + s.key + '">' +
-        '<span class="lifecycle-swatch lifecycle-swatch--' + s.key + '"></span>' +
-        '<span class="lifecycle-legend__label">' + esc(s.label) + '</span> ' +
-        '<b class="lifecycle-legend__n">' + esc(String(count)) + '</b>' +
-        (flag > 0
-          ? '<span class="lifecycle-legend__sub">' + esc(String(flag) + ' ' + s.flagWord) + '</span>'
-          : '') +
-      '</li>';
-    }
-    if (!segs) return ''; // no active bets → no bar
-    return '<div class="lifecycle">' +
-      '<div class="lifecycle__head">' +
-        '<span class="lifecycle__label">build</span>' +
-        '<span class="lifecycle__ratio"><b>' + esc(String(verifiedCount)) + '</b> / ' + esc(String(total)) + '</span>' +
-      '</div>' +
-      '<div class="lifecycle-bar" role="img" aria-label="' + esc(verifiedCount + ' of ' + total + ' bets verified') + '">' + segs + '</div>' +
-      '<ul class="lifecycle-legend">' + legend + '</ul>' +
-    '</div>';
-  }
-
-  /**
    * renderHealthCockpitRail(data) — the garden health cockpit, in the rail.
    * Returns '' when health_snapshot is absent.
    *
@@ -4277,6 +4232,7 @@ nav.toc a.active {
     var snap = data && data.health_snapshot;
     if (!snap) return '';
     var verdict = snap.verdict || 'yellow';
+    var truth   = snap.truth  || {};
     var flow    = snap.flow   || {};
     var value   = snap.value  || {};
 
@@ -4300,12 +4256,25 @@ nav.toc a.active {
       }
     }
 
-    // 2. Progress — the lifecycle bar. ONE segmented bar over the active bets
-    //    (verified / built / building / planned, with blocked + stale hatched),
-    //    carrying the verified N / M ratio in its head. Replaces the old
-    //    verified-N/M bar AND the ready/blocked rows — one bar, one denominator
-    //    (lifecycle.total === truth.auditable). Presence-driven on snap.lifecycle.
-    var barHtml = renderLifecycleBar(snap.lifecycle);
+    // 2. Progress — verified N / M with a bar. M is the honest denominator:
+    //    auditable (bets only) when present, else total. Catalog-description
+    //    polyglots can never be verified, so they must not inflate the bar.
+    //    Reuses the .detail-progress__* component the rest of the rail uses.
+    var progressHtml = '';
+    if (truth.verified != null) {
+      var denom = truth.auditable != null ? truth.auditable : truth.total;
+      if (denom != null) {
+        var verified = truth.verified;
+        var pct = denom > 0 ? Math.max(0, Math.min(100, Math.round((verified / denom) * 100))) : 0;
+        progressHtml = '<div class="health-progress">' +
+          '<div class="health-progress__head">' +
+            '<span class="health-progress__label">verified</span>' +
+            '<span class="health-progress__count">' + esc(String(verified)) + ' / ' + esc(String(denom)) + '</span>' +
+          '</div>' +
+          '<span class="detail-progress__bar"><span class="detail-progress__fill detail-progress__fill--acc" style="width:' + pct + '%"></span></span>' +
+        '</div>';
+      }
+    }
 
     // 3. Flow + value — relabeled, plain-language rows. Counts (ready / blocked)
     //    render even at zero so the reader sees "blocked 0" rather than guessing;
@@ -4319,10 +4288,9 @@ nav.toc a.active {
     function featureLink(id) {
       return '<a class="dep-link" href="features/' + esc(id) + '.tend.html">' + esc(id) + '</a>';
     }
-    // ready / blocked counts now live IN the lifecycle bar (its segments + the
-    // hatched sub-portions). The flow rows keep only the graph pointers — the
-    // single things worth clicking to: the bottleneck, the next bet, the gap.
     var flowRows = '';
+    if (flow.ready_now != null) flowRows += flowRow('ready to build', esc(String(flow.ready_now)));
+    if (flow.blocked != null)   flowRows += flowRow('blocked', esc(String(flow.blocked)));
     if (isNonEmptyString(flow.bottleneck_feature_id)) flowRows += flowRow('bottleneck', featureLink(flow.bottleneck_feature_id));
     if (isNonEmptyString(value.highest_value_unblocked)) flowRows += flowRow('highest-value next', featureLink(value.highest_value_unblocked));
     if (isNonEmptyString(value.weakest_opportunity_coverage)) flowRows += flowRow('weakest opportunity', featureLink(value.weakest_opportunity_coverage));
@@ -4373,7 +4341,7 @@ nav.toc a.active {
     var body = '<div class="health-rail-block">' +
       verdictHtml +
       whyHtml +
-      barHtml +
+      progressHtml +
       flowRows +
       backlogHtml +
     '</div>';
@@ -4408,23 +4376,16 @@ nav.toc a.active {
     var snap = data && data.health_snapshot;
     if (!snap) return '';
     var verdict = snap.verdict || 'yellow';
-    // Verified N / M over the ACTIVE BETS — the same honest denominator the
-    // lifecycle bar uses, so the header and the bar can never disagree. Prefer
-    // the lifecycle block (the bar's own source); fall back to truth.auditable
-    // (identical by construction) for pre-lifecycle snapshots. We deliberately
-    // do NOT fall back to truth.total: counting all polyglots (catalog
-    // descriptions + the garden) as a verification denominator is the
-    // misleading "/42" this redesign removes — better to show no count than a
-    // wrong one.
-    var lc = snap.lifecycle;
-    var truth = snap.truth || {};
-    var verified = (lc && lc.verified) ? lc.verified.count : truth.verified;
-    var denom = (lc && lc.total != null) ? lc.total : truth.auditable;
+    var truth   = snap.truth || {};
     var count = '';
-    if (verified != null && denom != null) {
-      count = '<span class="header-health__count">' +
-        esc(String(verified)) + '/' + esc(String(denom)) +
-      '</span>';
+    if (truth.verified != null) {
+      // Honest denominator: auditable (bets only) when present, else total.
+      var denom = truth.auditable != null ? truth.auditable : truth.total;
+      if (denom != null) {
+        count = '<span class="header-health__count">' +
+          esc(String(truth.verified)) + '/' + esc(String(denom)) +
+        '</span>';
+      }
     }
     return '<span class="header-health">' +
       '<span class="header-health__label">health</span>' +

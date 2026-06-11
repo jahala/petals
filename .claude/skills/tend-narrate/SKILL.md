@@ -345,10 +345,10 @@ SVG's viewBox width so a 560×240 viewBox produces a 2240px-wide PNG.
 
 1. Draft SVG markup (inline in your context, not yet written to the polyglot).
 2. Run draft check via `--svg`:
-   `node skills/tend-narrate/scripts/preview-thumbnail.mjs --svg "<draft-svg>"`
+   `npx tend-cli preview-thumbnail --svg "<draft-svg>"`
 3. After writing via `tend_update_feature`, confirm the disk write then run:
-   `node skills/tend-narrate/scripts/preview-thumbnail.mjs --diagram <media_id> --feature <feature-id>`
-4. The script prints two PNG paths (light + dark).
+   `npx tend-cli preview-thumbnail --diagram <media_id> --feature <feature-id>`
+4. The command prints two PNG paths (light + dark).
 5. **Read both PNGs via your Read tool.**
 6. Apply the 5-item visual checklist in
    [`references/thumbnail-authoring.md`](references/thumbnail-authoring.md)
@@ -374,11 +374,11 @@ didn't persist — diagnose + retry. Do NOT proceed to visual verify
 until the field exists on disk.
 
 1. During DRAFT iteration (before writing to the polyglot):
-   `node skills/tend-narrate/scripts/preview-thumbnail.mjs --svg "<draft-svg>"`
+   `npx tend-cli preview-thumbnail --svg "<draft-svg>"`
 2. After writing the thumbnail via `mcp__tend__tend_update_feature` AND
    confirming the disk write (step 0 above):
-   `node skills/tend-narrate/scripts/preview-thumbnail.mjs --id <feature-id>`
-3. The script prints two PNG paths (light + dark themes).
+   `npx tend-cli preview-thumbnail --id <feature-id>`
+3. The command prints two PNG paths (light + dark themes).
 4. **Read both PNGs via your Read tool.** Claude views images directly
    when given a PNG path.
 5. Apply the 5-item visual checklist in
@@ -393,7 +393,7 @@ card grid (garden's features, a feature's subpages, a persona's bound
 features, an opportunity's solving features), the shuffle test is
 REQUIRED before the set is considered done:
 
-1. `node skills/tend-narrate/scripts/preview-cards.mjs --parent <parent-id>`
+1. `npx tend-cli preview-cards --parent <parent-id>`
 2. Output is a composite PNG showing all sibling cards side-by-side.
 3. **Read the PNG via your Read tool.**
 4. Apply the shuffle test described in
@@ -507,5 +507,5 @@ After narrating a feature, consider:
   your narrative, ask "does this name appear in `project_index`? If yes,
   is it a link?"
 - **Thumbnails shipped without visual verification.** Running
-  `preview-thumbnail.mjs` and reading the PNGs via the Read tool isn't
+  `npx tend-cli preview-thumbnail` and reading the PNGs via the Read tool isn't
   optional. See `references/thumbnail-authoring.md`.

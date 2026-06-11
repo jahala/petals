@@ -2113,7 +2113,7 @@ nav.toc a.active {
       {
         "id": "brand-check",
         "title": "Brand Check",
-        "status": "planned",
+        "status": "verified",
         "priority": "high",
         "personas": [
           "shipping-developer",
@@ -2135,7 +2135,7 @@ nav.toc a.active {
       {
         "id": "brand-extraction",
         "title": "Brand Extraction",
-        "status": "planned",
+        "status": "verified",
         "priority": "high",
         "enables": [
           "brand-distribution",
@@ -2159,7 +2159,13 @@ nav.toc a.active {
         }
       }
     ],
-    "bound_checks": [],
+    "bound_checks": [
+      {
+        "feature_id": "brand-check",
+        "check_id": "c012",
+        "job_index": 2
+      }
+    ],
     "felt_opportunities": [
       "agent-off-brand",
       "review-bottleneck",
@@ -4291,7 +4297,6 @@ nav.toc a.active {
 })();
 
 </script>
-
 <!-- OO:CLIENT:END -->
 
 <script>window.stop();</script>

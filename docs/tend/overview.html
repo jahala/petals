@@ -1855,95 +1855,35 @@ nav.toc a.active {
   margin-bottom: var(--sp-1);
 }
 
-/* Lifecycle bar — the cockpit's ONE segmented build bar (replaces the old
-   verified-N/M progress bar + the ready/blocked rows). A ratio head
-   (verified N / M over active bets), a flex-segmented block bar (each stage
-   sized by its count, the blocked / at_risk sub-portion hatched), and a
-   present-only legend. Colors map to the existing severity + accent tokens. */
-.lifecycle {
+/* Progress — verified N / M with a bar. The label + count sit on one row;
+   the bar (reusing the .detail-progress__* component) sits below. */
+.health-progress {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-1);
-  margin-bottom: var(--sp-2);
+  gap: 3px;
+  margin-bottom: var(--sp-1);
 }
 
-.lifecycle__head {
+.health-progress__head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: var(--sp-2);
 }
-.lifecycle__label {
+
+.health-progress__label {
   color: var(--text-muted);
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   font-weight: 600;
 }
-.lifecycle__ratio {
+
+.health-progress__count {
   font-family: var(--mono);
   font-size: 11px;
   color: var(--text-2);
 }
-.lifecycle__ratio b { color: var(--text); font-weight: 700; }
-
-/* The bar: a flex row of stage segments. Each segment is itself a flex row of
-   fills (a solid fill + an optional hatch fill) so the blocked / stale
-   sub-portion shows its true proportion WITHIN its stage. */
-.lifecycle-bar {
-  display: flex;
-  width: 100%;
-  height: 14px;
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  background: var(--border);
-}
-.lifecycle-seg { display: flex; min-width: 2px; }
-.lifecycle-fill { display: block; height: 100%; }
-
-.lifecycle-fill--verified { background: var(--sev-l-fg); }
-.lifecycle-fill--built    { background: var(--accent); }
-.lifecycle-fill--building { background: var(--accent); opacity: 0.55; }
-.lifecycle-fill--planned  { background: var(--border-strong); }
-
-/* Hatch — the orthogonal "needs attention" texture (blocked on a non-verified
-   stage, stale on verified). Diagonal stripes over the stage's own colour so it
-   reads as "this slice of <stage> is flagged". On verified it also borrows the
-   amber warning hue so a rotted proof is distinct from a clean verified slice. */
-.lifecycle-fill--hatch {
-  background-image: repeating-linear-gradient(
-    45deg,
-    rgba(0, 0, 0, 0.34) 0, rgba(0, 0, 0, 0.34) 2px,
-    transparent 2px, transparent 4px
-  );
-}
-.lifecycle-fill--verified.lifecycle-fill--hatch { background-color: var(--sev-m-fg); }
-
-/* Legend — present-only; one row per rendered stage, wrapping. */
-.lifecycle-legend {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2px var(--sp-2);
-  font-size: 10px;
-  color: var(--text-2);
-}
-.lifecycle-legend__item { display: inline-flex; align-items: center; gap: var(--sp-1); }
-.lifecycle-swatch {
-  width: 8px;
-  height: 8px;
-  border-radius: var(--radius-sm);
-  flex-shrink: 0;
-}
-.lifecycle-swatch--verified { background: var(--sev-l-fg); }
-.lifecycle-swatch--built    { background: var(--accent); }
-.lifecycle-swatch--building { background: var(--accent); opacity: 0.55; }
-.lifecycle-swatch--planned  { background: var(--border-strong); }
-.lifecycle-legend__label { color: var(--text-muted); }
-.lifecycle-legend__n { font-family: var(--mono); font-weight: 700; color: var(--text); }
-.lifecycle-legend__sub { color: var(--text-muted); font-style: italic; }
 
 /* Rail rows inside the health block */
 .health-rail-row {
@@ -2309,7 +2249,7 @@ nav.toc a.active {
     {
       "id": "brand-extraction",
       "title": "Brand Extraction",
-      "status": "planned",
+      "status": "verified",
       "priority": "high",
       "enables": [
         "brand-distribution",
@@ -2335,7 +2275,7 @@ nav.toc a.active {
     {
       "id": "brand-distribution",
       "title": "Brand Distribution",
-      "status": "planned",
+      "status": "verified",
       "priority": "high",
       "enables": [
         "brand-check"
@@ -2358,7 +2298,7 @@ nav.toc a.active {
     {
       "id": "brand-check",
       "title": "Brand Check",
-      "status": "planned",
+      "status": "verified",
       "priority": "high",
       "personas": [
         "shipping-developer",
@@ -2459,55 +2399,31 @@ nav.toc a.active {
     }
   ],
   "health_snapshot": {
-    "verdict": "yellow",
+    "verdict": "green",
     "reason_codes": [
-      "false_done",
       "unblocked"
     ],
     "truth": {
-      "verified": 0,
+      "verified": 3,
       "total": 11,
       "stale": 0,
       "mock_only": 0,
-      "false_done": 3,
+      "false_done": 0,
       "auditable": 3,
       "audited": 3
     },
     "flow": {
-      "ready_now": 11,
+      "ready_now": 8,
       "blocked": 0
     },
     "value": {
-      "highest_value_unblocked": "brand-check",
       "weakest_opportunity_coverage": "distribution-drift"
     },
     "coherence": {
-      "total": 13,
-      "groups": [
-        {
-          "kind": "every_slot_has_check",
-          "label": "slot checks",
-          "count": 7,
-          "route": "/tend brainstorm",
-          "section": "spine"
-        },
-        {
-          "kind": "thin_steps",
-          "label": "step depth",
-          "count": 3,
-          "route": "/tend plan",
-          "section": "content"
-        },
-        {
-          "kind": "coverage_for_planned",
-          "label": "verification readiness",
-          "count": 3,
-          "route": "/tend plan",
-          "section": "spine"
-        }
-      ]
+      "total": 0,
+      "groups": []
     },
-    "computed_at": "2026-06-04T20:39:47.948Z"
+    "computed_at": "2026-06-05T19:38:01.718Z"
   },
   "what": "Petals is the brand layer for AI coding agents. It's a skill that takes whatever a company already has — a 40-page brand PDF, a folder of logo SVGs, a color palette in JSON, a style guide in someone's head — and turns it into a clean, structured .brand/ directory that every agent in every project can read. Agents write UI and copy. Petals makes sure they write it on-brand. No new tools to learn. No servers to deploy. No databases to maintain. Just files.",
   "why": "Here's what happens today. An agent opens a session. Someone types \"build a pricing page.\" The agent picks Tailwind's default blue — it has no reason not to. Uses Inter because that's what shipped with the template. Writes headline copy that sounds like every other SaaS landing page on the internet. Someone catches it in PR review. Someone else pastes the hex codes into the prompt next time. Everyone burns time and tokens on setup that should be invisible. And when the brand changes — new logo, palette refresh, voice shift — someone has to Slack every team and hope the old brand dies quietly. It never does. The brand team spent months on that identity. The PDF is beautiful. It means nothing to an agent.",
@@ -2524,7 +2440,10 @@ nav.toc a.active {
     "kind": "svg",
     "alt": "A central .brand/ core with five petals radiating outward — colors, typography, voice, logo, tokens — each a distinct brand dimension",
     "content": "<svg viewBox=\"0 0 120 80\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect class=\"tc-wh tc-frame\" x=\"44\" y=\"28\" width=\"32\" height=\"24\" rx=\"4\"/>\n  <rect class=\"tc-bg\" x=\"48\" y=\"34\" width=\"24\" height=\"4\" rx=\"1\"/>\n  <rect class=\"tc-bg\" x=\"51\" y=\"41\" width=\"18\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-ac\" x=\"6\" y=\"6\" width=\"20\" height=\"14\" rx=\"2\"/>\n  <rect class=\"tc-bg\" x=\"10\" y=\"10\" width=\"5\" height=\"5\" rx=\"1\"/>\n  <rect class=\"tc-fg\" x=\"18\" y=\"10\" width=\"5\" height=\"5\" rx=\"1\"/>\n  <rect class=\"tc-wh tc-frame\" x=\"96\" y=\"8\" width=\"18\" height=\"12\" rx=\"2\"/>\n  <line class=\"tc-ln\" x1=\"100\" y1=\"12\" x2=\"110\" y2=\"12\"/>\n  <line class=\"tc-ln\" x1=\"100\" y1=\"16\" x2=\"107\" y2=\"16\"/>\n  <rect class=\"tc-wh tc-frame\" x=\"4\" y=\"58\" width=\"18\" height=\"14\" rx=\"2\"/>\n  <circle class=\"tc-ac\" cx=\"10\" cy=\"65\" r=\"3\"/>\n  <path class=\"tc-ln\" d=\"M15 63 L17 68 L22 61\" stroke-width=\"1.2\" fill=\"none\"/>\n  <rect class=\"tc-wh tc-frame\" x=\"98\" y=\"58\" width=\"18\" height=\"14\" rx=\"2\"/>\n  <rect class=\"tc-ac\" cx=\"104\" cy=\"63\" width=\"5\" height=\"5\" rx=\"2\"/>\n  <rect class=\"tc-bg\" x=\"110\" y=\"63\" width=\"5\" height=\"5\" rx=\"2\"/>\n  <line class=\"tc-la\" x1=\"60\" y1=\"34\" x2=\"16\" y2=\"20\"/>\n  <line class=\"tc-la\" x1=\"60\" y1=\"34\" x2=\"105\" y2=\"20\"/>\n  <line class=\"tc-la\" x1=\"56\" y1=\"42\" x2=\"22\" y2=\"65\"/>\n  <line class=\"tc-la\" x1=\"64\" y1=\"42\" x2=\"98\" y2=\"65\"/>\n</svg>"
-  }
+  },
+  "source_dirs": [
+    "petals"
+  ]
 }
 </script>
 <!-- OO:DATA:END -->
@@ -4058,61 +3977,6 @@ nav.toc a.active {
   };
 
   /**
-   * renderLifecycleBar(lc) — the cockpit's one segmented build bar. Every active
-   * bet sits in exactly one of four stages (verified → built → building →
-   * planned, done-to-not left-to-right). The blocked sub-count of a non-verified
-   * stage and the at_risk (stale) sub-count of verified render as a hatched
-   * sub-portion of that stage's segment. Present-only: a stage with count 0
-   * renders neither a segment nor a legend entry. Returns '' when lc is absent
-   * or has no active bets. This replaces the old verified-N/M bar + ready/blocked
-   * rows — one bar, one denominator (lc.total === truth.auditable).
-   */
-  function renderLifecycleBar(lc) {
-    if (!lc) return '';
-    var STAGES = [
-      { key: 'verified', label: 'verified', flagKey: 'at_risk', flagWord: 'stale' },
-      { key: 'built',    label: 'built',    flagKey: 'blocked', flagWord: 'blocked' },
-      { key: 'building', label: 'building', flagKey: 'blocked', flagWord: 'blocked' },
-      { key: 'planned',  label: 'planned',  flagKey: 'blocked', flagWord: 'blocked' }
-    ];
-    var total = lc.total || 0;
-    var verifiedCount = (lc.verified && lc.verified.count) || 0;
-    var segs = '';
-    var legend = '';
-    for (var i = 0; i < STAGES.length; i++) {
-      var s = STAGES[i];
-      var stage = lc[s.key] || {};
-      var count = stage.count || 0;
-      if (count <= 0) continue; // present-only — empty stages never render
-      var flag = stage[s.flagKey] || 0;
-      var solid = Math.max(0, count - flag);
-      // The segment is a flex row sized by count; the flagged portion is hatched.
-      var fills = '<i class="lifecycle-fill lifecycle-fill--' + s.key + '" style="flex:' + solid + '"></i>';
-      if (flag > 0) {
-        fills += '<i class="lifecycle-fill lifecycle-fill--' + s.key + ' lifecycle-fill--hatch" style="flex:' + flag + '"></i>';
-      }
-      segs += '<span class="lifecycle-seg lifecycle-seg--' + s.key + '" style="flex:' + count + '">' + fills + '</span>';
-      legend += '<li class="lifecycle-legend__item lifecycle-legend__item--' + s.key + '">' +
-        '<span class="lifecycle-swatch lifecycle-swatch--' + s.key + '"></span>' +
-        '<span class="lifecycle-legend__label">' + esc(s.label) + '</span> ' +
-        '<b class="lifecycle-legend__n">' + esc(String(count)) + '</b>' +
-        (flag > 0
-          ? '<span class="lifecycle-legend__sub">' + esc(String(flag) + ' ' + s.flagWord) + '</span>'
-          : '') +
-      '</li>';
-    }
-    if (!segs) return ''; // no active bets → no bar
-    return '<div class="lifecycle">' +
-      '<div class="lifecycle__head">' +
-        '<span class="lifecycle__label">build</span>' +
-        '<span class="lifecycle__ratio"><b>' + esc(String(verifiedCount)) + '</b> / ' + esc(String(total)) + '</span>' +
-      '</div>' +
-      '<div class="lifecycle-bar" role="img" aria-label="' + esc(verifiedCount + ' of ' + total + ' bets verified') + '">' + segs + '</div>' +
-      '<ul class="lifecycle-legend">' + legend + '</ul>' +
-    '</div>';
-  }
-
-  /**
    * renderHealthCockpitRail(data) — the garden health cockpit, in the rail.
    * Returns '' when health_snapshot is absent.
    *
@@ -4127,6 +3991,7 @@ nav.toc a.active {
     var snap = data && data.health_snapshot;
     if (!snap) return '';
     var verdict = snap.verdict || 'yellow';
+    var truth   = snap.truth  || {};
     var flow    = snap.flow   || {};
     var value   = snap.value  || {};
 
@@ -4150,12 +4015,25 @@ nav.toc a.active {
       }
     }
 
-    // 2. Progress — the lifecycle bar. ONE segmented bar over the active bets
-    //    (verified / built / building / planned, with blocked + stale hatched),
-    //    carrying the verified N / M ratio in its head. Replaces the old
-    //    verified-N/M bar AND the ready/blocked rows — one bar, one denominator
-    //    (lifecycle.total === truth.auditable). Presence-driven on snap.lifecycle.
-    var barHtml = renderLifecycleBar(snap.lifecycle);
+    // 2. Progress — verified N / M with a bar. M is the honest denominator:
+    //    auditable (bets only) when present, else total. Catalog-description
+    //    polyglots can never be verified, so they must not inflate the bar.
+    //    Reuses the .detail-progress__* component the rest of the rail uses.
+    var progressHtml = '';
+    if (truth.verified != null) {
+      var denom = truth.auditable != null ? truth.auditable : truth.total;
+      if (denom != null) {
+        var verified = truth.verified;
+        var pct = denom > 0 ? Math.max(0, Math.min(100, Math.round((verified / denom) * 100))) : 0;
+        progressHtml = '<div class="health-progress">' +
+          '<div class="health-progress__head">' +
+            '<span class="health-progress__label">verified</span>' +
+            '<span class="health-progress__count">' + esc(String(verified)) + ' / ' + esc(String(denom)) + '</span>' +
+          '</div>' +
+          '<span class="detail-progress__bar"><span class="detail-progress__fill detail-progress__fill--acc" style="width:' + pct + '%"></span></span>' +
+        '</div>';
+      }
+    }
 
     // 3. Flow + value — relabeled, plain-language rows. Counts (ready / blocked)
     //    render even at zero so the reader sees "blocked 0" rather than guessing;
@@ -4169,10 +4047,9 @@ nav.toc a.active {
     function featureLink(id) {
       return '<a class="dep-link" href="features/' + esc(id) + '.tend.html">' + esc(id) + '</a>';
     }
-    // ready / blocked counts now live IN the lifecycle bar (its segments + the
-    // hatched sub-portions). The flow rows keep only the graph pointers — the
-    // single things worth clicking to: the bottleneck, the next bet, the gap.
     var flowRows = '';
+    if (flow.ready_now != null) flowRows += flowRow('ready to build', esc(String(flow.ready_now)));
+    if (flow.blocked != null)   flowRows += flowRow('blocked', esc(String(flow.blocked)));
     if (isNonEmptyString(flow.bottleneck_feature_id)) flowRows += flowRow('bottleneck', featureLink(flow.bottleneck_feature_id));
     if (isNonEmptyString(value.highest_value_unblocked)) flowRows += flowRow('highest-value next', featureLink(value.highest_value_unblocked));
     if (isNonEmptyString(value.weakest_opportunity_coverage)) flowRows += flowRow('weakest opportunity', featureLink(value.weakest_opportunity_coverage));
@@ -4223,7 +4100,7 @@ nav.toc a.active {
     var body = '<div class="health-rail-block">' +
       verdictHtml +
       whyHtml +
-      barHtml +
+      progressHtml +
       flowRows +
       backlogHtml +
     '</div>';
@@ -4258,23 +4135,16 @@ nav.toc a.active {
     var snap = data && data.health_snapshot;
     if (!snap) return '';
     var verdict = snap.verdict || 'yellow';
-    // Verified N / M over the ACTIVE BETS — the same honest denominator the
-    // lifecycle bar uses, so the header and the bar can never disagree. Prefer
-    // the lifecycle block (the bar's own source); fall back to truth.auditable
-    // (identical by construction) for pre-lifecycle snapshots. We deliberately
-    // do NOT fall back to truth.total: counting all polyglots (catalog
-    // descriptions + the garden) as a verification denominator is the
-    // misleading "/42" this redesign removes — better to show no count than a
-    // wrong one.
-    var lc = snap.lifecycle;
-    var truth = snap.truth || {};
-    var verified = (lc && lc.verified) ? lc.verified.count : truth.verified;
-    var denom = (lc && lc.total != null) ? lc.total : truth.auditable;
+    var truth   = snap.truth || {};
     var count = '';
-    if (verified != null && denom != null) {
-      count = '<span class="header-health__count">' +
-        esc(String(verified)) + '/' + esc(String(denom)) +
-      '</span>';
+    if (truth.verified != null) {
+      // Honest denominator: auditable (bets only) when present, else total.
+      var denom = truth.auditable != null ? truth.auditable : truth.total;
+      if (denom != null) {
+        count = '<span class="header-health__count">' +
+          esc(String(truth.verified)) + '/' + esc(String(denom)) +
+        '</span>';
+      }
     }
     return '<span class="header-health">' +
       '<span class="header-health__label">health</span>' +

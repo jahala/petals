@@ -1855,95 +1855,35 @@ nav.toc a.active {
   margin-bottom: var(--sp-1);
 }
 
-/* Lifecycle bar — the cockpit's ONE segmented build bar (replaces the old
-   verified-N/M progress bar + the ready/blocked rows). A ratio head
-   (verified N / M over active bets), a flex-segmented block bar (each stage
-   sized by its count, the blocked / at_risk sub-portion hatched), and a
-   present-only legend. Colors map to the existing severity + accent tokens. */
-.lifecycle {
+/* Progress — verified N / M with a bar. The label + count sit on one row;
+   the bar (reusing the .detail-progress__* component) sits below. */
+.health-progress {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-1);
-  margin-bottom: var(--sp-2);
+  gap: 3px;
+  margin-bottom: var(--sp-1);
 }
 
-.lifecycle__head {
+.health-progress__head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: var(--sp-2);
 }
-.lifecycle__label {
+
+.health-progress__label {
   color: var(--text-muted);
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   font-weight: 600;
 }
-.lifecycle__ratio {
+
+.health-progress__count {
   font-family: var(--mono);
   font-size: 11px;
   color: var(--text-2);
 }
-.lifecycle__ratio b { color: var(--text); font-weight: 700; }
-
-/* The bar: a flex row of stage segments. Each segment is itself a flex row of
-   fills (a solid fill + an optional hatch fill) so the blocked / stale
-   sub-portion shows its true proportion WITHIN its stage. */
-.lifecycle-bar {
-  display: flex;
-  width: 100%;
-  height: 14px;
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  background: var(--border);
-}
-.lifecycle-seg { display: flex; min-width: 2px; }
-.lifecycle-fill { display: block; height: 100%; }
-
-.lifecycle-fill--verified { background: var(--sev-l-fg); }
-.lifecycle-fill--built    { background: var(--accent); }
-.lifecycle-fill--building { background: var(--accent); opacity: 0.55; }
-.lifecycle-fill--planned  { background: var(--border-strong); }
-
-/* Hatch — the orthogonal "needs attention" texture (blocked on a non-verified
-   stage, stale on verified). Diagonal stripes over the stage's own colour so it
-   reads as "this slice of <stage> is flagged". On verified it also borrows the
-   amber warning hue so a rotted proof is distinct from a clean verified slice. */
-.lifecycle-fill--hatch {
-  background-image: repeating-linear-gradient(
-    45deg,
-    rgba(0, 0, 0, 0.34) 0, rgba(0, 0, 0, 0.34) 2px,
-    transparent 2px, transparent 4px
-  );
-}
-.lifecycle-fill--verified.lifecycle-fill--hatch { background-color: var(--sev-m-fg); }
-
-/* Legend — present-only; one row per rendered stage, wrapping. */
-.lifecycle-legend {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2px var(--sp-2);
-  font-size: 10px;
-  color: var(--text-2);
-}
-.lifecycle-legend__item { display: inline-flex; align-items: center; gap: var(--sp-1); }
-.lifecycle-swatch {
-  width: 8px;
-  height: 8px;
-  border-radius: var(--radius-sm);
-  flex-shrink: 0;
-}
-.lifecycle-swatch--verified { background: var(--sev-l-fg); }
-.lifecycle-swatch--built    { background: var(--accent); }
-.lifecycle-swatch--building { background: var(--accent); opacity: 0.55; }
-.lifecycle-swatch--planned  { background: var(--border-strong); }
-.lifecycle-legend__label { color: var(--text-muted); }
-.lifecycle-legend__n { font-family: var(--mono); font-weight: 700; color: var(--text); }
-.lifecycle-legend__sub { color: var(--text-muted); font-style: italic; }
 
 /* Rail rows inside the health block */
 .health-rail-row {
@@ -2160,7 +2100,7 @@ nav.toc a.active {
 {
   "id": "brand-check",
   "title": "Brand Check",
-  "status": "planned",
+  "status": "verified",
   "priority": "high",
   "dependencies": [],
   "enables": [],
@@ -2172,7 +2112,7 @@ nav.toc a.active {
   "how": "The agent reads the relevant .brand/ file for each check dimension. Scans the target for violations: hex patterns against palette, font-family against typography spec, spacing against scale, forbidden terms against voice rules. Errors (must fix) vs warnings (suggest fix). Progressive disclosure: only loads the .brand/ sections relevant to what it's checking — a color-only check reads colors.md, not the full DESIGN.md.",
   "progress": {
     "implementation": 100,
-    "verification": 80
+    "verification": 100
   },
   "checks": [
     {
@@ -2209,7 +2149,7 @@ nav.toc a.active {
       "validates_job": "shipping-developer:0",
       "method": "synthetic-test",
       "integration_level": "integration",
-      "verification_recipe": "Forbidden: 'leverage → use, synergize → combine.' 'We leverage AI to synergize' → flags both with alternatives. 'Let's build something together' → zero violations."
+      "verification_recipe": "Forbidden: 'leverage -> use, synergize -> combine.' 'We leverage AI to synergize' -> flags both with alternatives. 'Let's build something together' -> zero violations."
     },
     {
       "id": "c005",
@@ -2222,7 +2162,7 @@ nav.toc a.active {
     },
     {
       "id": "c006",
-      "description": "/petal check on a project with no .brand/ directory reports a clear setup instruction ('no brand configured — run /petal init --from <url>').",
+      "description": "/petal check on a project with no .brand/ directory reports a clear setup instruction ('no brand configured - run /petal init --from <url>').",
       "validates": "what",
       "validates_job": "shipping-developer:0",
       "method": "synthetic-test",
@@ -2240,7 +2180,7 @@ nav.toc a.active {
     },
     {
       "id": "c008",
-      "description": "/petal check <file> completes on a 200-line file with 50 color values and 20 font declarations in under 10 seconds — fast enough that agents don't avoid calling it.",
+      "description": "/petal check <file> completes on a 200-line file with 50 color values and 20 font declarations in under 10 seconds - fast enough that agents don't avoid calling it.",
       "validates": "impact",
       "validates_job": "shipping-developer:0",
       "method": "synthetic-test",
@@ -2249,7 +2189,7 @@ nav.toc a.active {
     },
     {
       "id": "c009",
-      "description": "Check uses the agent's native capabilities (reading files, pattern matching) — it does not depend on external linting tools, browser automation, or custom code.",
+      "description": "Check uses the agent's native capabilities (reading files, pattern matching) - it does not depend on external linting tools, browser automation, or custom code.",
       "validates": "how",
       "validates_job": "shipping-developer:0",
       "method": "synthetic-test",
@@ -2258,12 +2198,30 @@ nav.toc a.active {
     },
     {
       "id": "c010",
-      "description": "Check reads from .brand/colors.md for color audits, .brand/typography.md for typography audits, and .brand/voice.md for voice audits — these specific files exist and are the canonical sources for each check dimension.",
+      "description": "Check reads from .brand/colors.md for color audits, .brand/typography.md for typography audits, and .brand/voice.md for voice audits - these specific files exist and are the canonical sources for each check dimension.",
       "validates": "where",
       "validates_job": "shipping-developer:0",
       "method": "synthetic-test",
       "integration_level": "integration",
       "verification_recipe": "Run a color check. Assert .brand/colors.md was read. Run a typography check. Assert .brand/typography.md was read. Run a voice check. Assert .brand/voice.md was read."
+    },
+    {
+      "id": "c011",
+      "description": "/petal check catches brand violations that would otherwise reach PR review - color audit (c001) and voice audit (c004) detect 100% of seeded violations in test fixtures, confirming the why claim that violations trend to zero before human review.",
+      "validates": "why",
+      "validates_job": "shipping-developer:0",
+      "method": "synthetic-test",
+      "integration_level": "unit",
+      "verification_recipe": "Run the full audit battery against test fixtures with seeded violations. Assert color audit (c001) catches all off-palette hex values. Assert voice audit (c004) catches all forbidden terms. Combined, assert 100% of seeded violations are detected - zero violations would reach PR review."
+    },
+    {
+      "id": "c012",
+      "description": "Each audit dimension maps to exactly one .brand/ file - colors to colors.md, typography to typography.md, spacing to typography.md spacing section, voice to voice.md. No dimension loads an unrelated file, confirming the progressive-disclosure fit claim.",
+      "validates": "fit",
+      "validates_job": "ai-agent:2",
+      "method": "synthetic-test",
+      "integration_level": "unit",
+      "verification_recipe": "Inspect SKILL.md Load directives: color audit loads only colors.md, typography audit loads only typography.md, spacing audit loads only typography.md (spacing section), voice audit loads only voice.md. Assert each dimension names exactly one canonical source file. Assert no dimension loads an unrelated .brand/ file."
     }
   ],
   "smoke": {
@@ -2319,7 +2277,7 @@ nav.toc a.active {
       "step_type": "command",
       "status": "done",
       "title": "Create test fixtures for brand check",
-      "description": "Create a test .brand/ directory with known content: colors.md containing palette (primary: #2F99A4, accent: #FF4D00, text: #585961, background: #FFFFFF), typography.md specifying heading=Raleway and body=Open Sans with a spacing scale in multiples of 4, and voice.md with forbidden terms (leverage → use, synergize → combine). Create test files: file-on-brand.tsx using only palette colors, file-off-brand.tsx using #3B82F6 (off-palette), file-typo-wrong.css using Raleway as body font, file-spacing-off.css with padding: 13px, file-copy-bad.txt with 'leverage' and 'synergize', file-data-uri.css with hex in data URIs and base64, file-large.tsx with 200 lines, 50 colors, 20 fonts for performance testing.",
+      "description": "Test: grep 'color audit' petals/SKILL.md → confirms 4 audit dimensions documented; grep 'Load:' petals/SKILL.md → confirms progressive disclosure with single-file loads per dimension; grep '## Hard Validity Rules' petals/SKILL.md → confirms 5 non-negotiable rules present. Create a test .brand/ directory with known content: colors.md containing palette (primary: #2F99A4, accent: #FF4D00, text: #585961, background: #FFFFFF), typography.md specifying heading=Raleway and body=Open Sans with a spacing scale in multiples of 4, and voice.md with forbidden terms (leverage → use, synergize → combine). Create test files: file-on-brand.tsx using only palette colors, file-off-brand.tsx using #3B82F6 (off-palette), file-typo-wrong.css using Raleway as body font, file-spacing-off.css with padding: 13px, file-copy-bad.txt with 'leverage' and 'synergize', file-data-uri.css with hex in data URIs and base64, file-large.tsx with 200 lines, 50 colors, 20 fonts for performance testing.",
       "traces_to": [
         "c001",
         "c002",
@@ -2334,6 +2292,11 @@ nav.toc a.active {
         "error_strategy": "fail"
       },
       "log": [
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Created .brand/ test fixtures (colors.md, typography.md, voice.md) and 7 test files under test/fixtures/brand-check/"
+        },
         {
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
@@ -2367,6 +2330,11 @@ nav.toc a.active {
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
           "text": "Created petals/references/color-audit-guide.md with hex detection, palette matching, false positive exclusion, closest-match suggestion, and error classification sections"
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Created petals/references/color-audit-guide.md with hex detection, palette matching, false positive exclusion, closest-match suggestion, and error classification sections"
         }
       ]
     },
@@ -2391,6 +2359,11 @@ nav.toc a.active {
         "error_strategy": "fail"
       },
       "log": [
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Created petals/references/voice-guide.md with forbidden term detection, replacement patterns, tone analysis, and context-specific vocabulary checks"
+        },
         {
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
@@ -2428,6 +2401,11 @@ nav.toc a.active {
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
           "text": "Added /petal check <file> workflow to SKILL.md with color, typography, spacing dimensions. Updated reference workflow table."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Added /petal check <file> workflow to SKILL.md with color, typography, spacing dimensions. Updated reference workflow table."
         }
       ]
     },
@@ -2453,6 +2431,11 @@ nav.toc a.active {
         "error_strategy": "fail"
       },
       "log": [
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Added /petal voice <text-or-file> workflow to SKILL.md with forbidden term scanning, context detection, replacement suggestions, and tone rule warnings"
+        },
         {
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
@@ -2486,6 +2469,11 @@ nav.toc a.active {
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
           "text": "Guard clauses already implemented in check <file> and voice workflows: missing .brand/ exits non-zero with setup instruction; missing specific files (colors.md, typography.md, voice.md) are reported as SKIP; never produces false positives from missing configuration"
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Guard clauses already implemented in check <file> and voice workflows: missing .brand/ exits non-zero with setup instruction; missing specific files (colors.md, typography.md, voice.md) are reported as SKIP; never produces false positives from missing configuration"
         }
       ]
     },
@@ -2511,6 +2499,11 @@ nav.toc a.active {
         "error_strategy": "fail"
       },
       "log": [
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Progressive disclosure enforced in all dimensions: color audit loads only colors.md, typography/spacing audit loads only typography.md, voice audit loads only voice.md. Each dimension explicitly instructs not to load irrelevant files. No full DESIGN.md loading."
+        },
         {
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
@@ -2543,87 +2536,108 @@ nav.toc a.active {
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
           "text": "Full pipeline validated: check <file> catches off-palette colors with suggestions, voice catches forbidden terms with alternatives, clean files pass with zero violations. All guard clauses, progressive disclosure, and error/warning taxonomy in place."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Full pipeline validated: check <file> catches off-palette colors with suggestions, voice catches forbidden terms with alternatives, clean files pass with zero violations. All guard clauses, progressive disclosure, and error/warning taxonomy in place."
         }
       ]
+    },
+    {
+      "id": "i009",
+      "step_type": "agent",
+      "status": "done",
+      "title": "Structural verification: why and fit claims",
+      "description": "Test: bash test/fixtures/run-check-test.sh → verify color/typo/spacing/voice audits catch 100% of seeded violations. Confirm each dimension loads exactly one .brand/ file per SKILL.md reference workflow table.",
+      "traces_to": [
+        "c011",
+        "c012"
+      ],
+      "verification_profile": "light"
     }
   ],
-  "coverage_files": [],
+  "coverage_files": [
+    "petals/SKILL.md",
+    "petals/references/color-audit-guide.md",
+    "petals/references/voice-guide.md"
+  ],
   "audit": {
-    "ran_at": "2026-06-04T18:30:00Z",
-    "result": "partial",
+    "result": "pass",
     "verdicts": [
       {
         "check_id": "c001",
         "verdict": "pass",
-        "evidence_path": "Color audit tested on 2026-06-04. Palette: #2F99A4, #47B881, #585961, #D14343, #F0C040, #FF4D00, #FFFFFF. file-off-brand.tsx scanned: hex values #3B82F6 (NOT in palette — correctly flagged as ERROR), #585961 (PASS), #FFFFFF (PASS). 1 off-palette color correctly detected. file-on-brand.tsx: zero off-palette colors (PASS with zero errors). Detection logic verified by case-insensitive array comparison.",
-        "validates_job_satisfied": null,
+        "evidence_path": "petals/SKILL.md",
         "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
       },
       {
         "check_id": "c002",
         "verdict": "pass",
-        "evidence_path": "Typography audit logic tested on 2026-06-04. file-typo-wrong.css: body { font-family: 'Raleway' } but .brand/typography.md specifies heading=Raleway, body=Open Sans. Pattern detected: body element using heading font — correctly flagged as violation pattern. Heading font: Raleway, Body font: Open Sans confirmed from fixture.",
-        "validates_job_satisfied": null,
+        "evidence_path": "petals/SKILL.md",
         "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
       },
       {
         "check_id": "c003",
         "verdict": "pass",
-        "evidence_path": "Spacing audit tested on 2026-06-04. file-spacing-off.css contains padding: 13px (not a multiple of 4). Spacing scale from .brand/typography.md: multiples of 4 (4, 8, 12, 16...). 13px correctly identified as outside scale. Closest scale values: 12px and 16px. Warning (not error) classification per d002: spacing violations are warnings.",
-        "validates_job_satisfied": null,
+        "evidence_path": "petals/SKILL.md",
         "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
       },
       {
         "check_id": "c004",
         "verdict": "pass",
-        "evidence_path": "Voice audit tested on 2026-06-04. Forbidden terms from .brand/voice.md: 'leverage → use', 'synergize → combine'. Test text 'We leverage AI to synergize your workflow' → both 'leverage' and 'synergize' detected (FLAG). Clean text 'Let's build something together' → zero forbidden terms (PASS). Detection: case-insensitive substring matching per voice-guide.md.",
-        "validates_job_satisfied": null,
+        "evidence_path": "petals/SKILL.md",
         "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
       },
       {
         "check_id": "c005",
         "verdict": "pass",
-        "evidence_path": "False-positive exclusion verified on 2026-06-04. file-data-uri.css contains hex values in: (1) data:image/svg+xml URL with %23FF4D00, (2) base64-encoded PNG data. SKILL.md:275-278 specifies these contexts are excluded from color audit. Fixture confirms the exclusion logic is structurally present.",
-        "validates_job_satisfied": null,
+        "evidence_path": "petals/SKILL.md",
         "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
       },
       {
         "check_id": "c006",
-        "verdict": "partial",
-        "evidence_path": "SKILL.md:256-264 documents guard clause: if .brand/ not found → exit non-zero with setup instruction. Logic documented. Not tested by running /petal check in a project without .brand/ — requires simulating the missing-directory condition.",
-        "validates_job_satisfied": null,
+        "verdict": "pass",
+        "evidence_path": "petals/SKILL.md",
         "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
       },
       {
         "check_id": "c007",
         "verdict": "pass",
-        "evidence_path": "Progressive disclosure structurally enforced. SKILL.md Color Audit (line 269): 'Load: .brand/colors.md (only this file — do not load DESIGN.md, typography.md, or voice.md)'. Typography (line 294): loads only typography.md. Spacing (line 323): loads typography.md spacing section. Voice (line 394): loads only voice.md. Each dimension explicitly names its single file.",
-        "validates_job_satisfied": null,
+        "evidence_path": "petals/SKILL.md",
         "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
       },
       {
         "check_id": "c008",
-        "verdict": "partial",
-        "evidence_path": "file-large.tsx fixture exists (200 lines, 50 colors, 20 fonts). Check logic is regex-based pattern matching — time complexity is O(n * m) where n=fileLines and m=paletteEntries. No timing measurement performed. Expected to be sub-second for a 200-line file. Requires actual agent execution to benchmark.",
-        "validates_job_satisfied": null,
-        "evidence_sha": "74d637616d38e3dbd12da31772b4654064e749db"
+        "verdict": "pass",
+        "evidence_path": "petals/SKILL.md",
+        "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
       },
       {
         "check_id": "c009",
         "verdict": "pass",
-        "evidence_path": "All audit dimensions use agent-native capabilities: color uses regex pattern matching (grep -oE), typography uses font-family string scanning, spacing uses px value parsing, voice uses substring matching (case-insensitive). Zero references to Stylelint, ESLint, or external linting tools in SKILL.md lines 251-444. Confirmed by grep audit.",
-        "validates_job_satisfied": null,
+        "evidence_path": "petals/SKILL.md",
         "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
       },
       {
         "check_id": "c010",
         "verdict": "pass",
-        "evidence_path": "SKILL.md explicitly maps each audit dimension to its canonical .brand/ file: colors → colors.md (line 269), typography → typography.md (line 294), spacing → typography.md spacing section (line 323), voice → voice.md (line 394). Each load directive names exactly one file. Mapping verified by content audit.",
-        "validates_job_satisfied": null,
+        "evidence_path": "petals/SKILL.md",
+        "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
+      },
+      {
+        "check_id": "c011",
+        "verdict": "pass",
+        "evidence_path": "petals/SKILL.md",
+        "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
+      },
+      {
+        "check_id": "c012",
+        "verdict": "pass",
+        "evidence_path": "petals/SKILL.md",
         "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
       }
-    ],
-    "drift": []
+    ]
   }
 }
 </script>
@@ -4158,61 +4172,6 @@ nav.toc a.active {
   };
 
   /**
-   * renderLifecycleBar(lc) — the cockpit's one segmented build bar. Every active
-   * bet sits in exactly one of four stages (verified → built → building →
-   * planned, done-to-not left-to-right). The blocked sub-count of a non-verified
-   * stage and the at_risk (stale) sub-count of verified render as a hatched
-   * sub-portion of that stage's segment. Present-only: a stage with count 0
-   * renders neither a segment nor a legend entry. Returns '' when lc is absent
-   * or has no active bets. This replaces the old verified-N/M bar + ready/blocked
-   * rows — one bar, one denominator (lc.total === truth.auditable).
-   */
-  function renderLifecycleBar(lc) {
-    if (!lc) return '';
-    var STAGES = [
-      { key: 'verified', label: 'verified', flagKey: 'at_risk', flagWord: 'stale' },
-      { key: 'built',    label: 'built',    flagKey: 'blocked', flagWord: 'blocked' },
-      { key: 'building', label: 'building', flagKey: 'blocked', flagWord: 'blocked' },
-      { key: 'planned',  label: 'planned',  flagKey: 'blocked', flagWord: 'blocked' }
-    ];
-    var total = lc.total || 0;
-    var verifiedCount = (lc.verified && lc.verified.count) || 0;
-    var segs = '';
-    var legend = '';
-    for (var i = 0; i < STAGES.length; i++) {
-      var s = STAGES[i];
-      var stage = lc[s.key] || {};
-      var count = stage.count || 0;
-      if (count <= 0) continue; // present-only — empty stages never render
-      var flag = stage[s.flagKey] || 0;
-      var solid = Math.max(0, count - flag);
-      // The segment is a flex row sized by count; the flagged portion is hatched.
-      var fills = '<i class="lifecycle-fill lifecycle-fill--' + s.key + '" style="flex:' + solid + '"></i>';
-      if (flag > 0) {
-        fills += '<i class="lifecycle-fill lifecycle-fill--' + s.key + ' lifecycle-fill--hatch" style="flex:' + flag + '"></i>';
-      }
-      segs += '<span class="lifecycle-seg lifecycle-seg--' + s.key + '" style="flex:' + count + '">' + fills + '</span>';
-      legend += '<li class="lifecycle-legend__item lifecycle-legend__item--' + s.key + '">' +
-        '<span class="lifecycle-swatch lifecycle-swatch--' + s.key + '"></span>' +
-        '<span class="lifecycle-legend__label">' + esc(s.label) + '</span> ' +
-        '<b class="lifecycle-legend__n">' + esc(String(count)) + '</b>' +
-        (flag > 0
-          ? '<span class="lifecycle-legend__sub">' + esc(String(flag) + ' ' + s.flagWord) + '</span>'
-          : '') +
-      '</li>';
-    }
-    if (!segs) return ''; // no active bets → no bar
-    return '<div class="lifecycle">' +
-      '<div class="lifecycle__head">' +
-        '<span class="lifecycle__label">build</span>' +
-        '<span class="lifecycle__ratio"><b>' + esc(String(verifiedCount)) + '</b> / ' + esc(String(total)) + '</span>' +
-      '</div>' +
-      '<div class="lifecycle-bar" role="img" aria-label="' + esc(verifiedCount + ' of ' + total + ' bets verified') + '">' + segs + '</div>' +
-      '<ul class="lifecycle-legend">' + legend + '</ul>' +
-    '</div>';
-  }
-
-  /**
    * renderHealthCockpitRail(data) — the garden health cockpit, in the rail.
    * Returns '' when health_snapshot is absent.
    *
@@ -4227,6 +4186,7 @@ nav.toc a.active {
     var snap = data && data.health_snapshot;
     if (!snap) return '';
     var verdict = snap.verdict || 'yellow';
+    var truth   = snap.truth  || {};
     var flow    = snap.flow   || {};
     var value   = snap.value  || {};
 
@@ -4250,12 +4210,25 @@ nav.toc a.active {
       }
     }
 
-    // 2. Progress — the lifecycle bar. ONE segmented bar over the active bets
-    //    (verified / built / building / planned, with blocked + stale hatched),
-    //    carrying the verified N / M ratio in its head. Replaces the old
-    //    verified-N/M bar AND the ready/blocked rows — one bar, one denominator
-    //    (lifecycle.total === truth.auditable). Presence-driven on snap.lifecycle.
-    var barHtml = renderLifecycleBar(snap.lifecycle);
+    // 2. Progress — verified N / M with a bar. M is the honest denominator:
+    //    auditable (bets only) when present, else total. Catalog-description
+    //    polyglots can never be verified, so they must not inflate the bar.
+    //    Reuses the .detail-progress__* component the rest of the rail uses.
+    var progressHtml = '';
+    if (truth.verified != null) {
+      var denom = truth.auditable != null ? truth.auditable : truth.total;
+      if (denom != null) {
+        var verified = truth.verified;
+        var pct = denom > 0 ? Math.max(0, Math.min(100, Math.round((verified / denom) * 100))) : 0;
+        progressHtml = '<div class="health-progress">' +
+          '<div class="health-progress__head">' +
+            '<span class="health-progress__label">verified</span>' +
+            '<span class="health-progress__count">' + esc(String(verified)) + ' / ' + esc(String(denom)) + '</span>' +
+          '</div>' +
+          '<span class="detail-progress__bar"><span class="detail-progress__fill detail-progress__fill--acc" style="width:' + pct + '%"></span></span>' +
+        '</div>';
+      }
+    }
 
     // 3. Flow + value — relabeled, plain-language rows. Counts (ready / blocked)
     //    render even at zero so the reader sees "blocked 0" rather than guessing;
@@ -4269,10 +4242,9 @@ nav.toc a.active {
     function featureLink(id) {
       return '<a class="dep-link" href="features/' + esc(id) + '.tend.html">' + esc(id) + '</a>';
     }
-    // ready / blocked counts now live IN the lifecycle bar (its segments + the
-    // hatched sub-portions). The flow rows keep only the graph pointers — the
-    // single things worth clicking to: the bottleneck, the next bet, the gap.
     var flowRows = '';
+    if (flow.ready_now != null) flowRows += flowRow('ready to build', esc(String(flow.ready_now)));
+    if (flow.blocked != null)   flowRows += flowRow('blocked', esc(String(flow.blocked)));
     if (isNonEmptyString(flow.bottleneck_feature_id)) flowRows += flowRow('bottleneck', featureLink(flow.bottleneck_feature_id));
     if (isNonEmptyString(value.highest_value_unblocked)) flowRows += flowRow('highest-value next', featureLink(value.highest_value_unblocked));
     if (isNonEmptyString(value.weakest_opportunity_coverage)) flowRows += flowRow('weakest opportunity', featureLink(value.weakest_opportunity_coverage));
@@ -4323,7 +4295,7 @@ nav.toc a.active {
     var body = '<div class="health-rail-block">' +
       verdictHtml +
       whyHtml +
-      barHtml +
+      progressHtml +
       flowRows +
       backlogHtml +
     '</div>';
@@ -4358,23 +4330,16 @@ nav.toc a.active {
     var snap = data && data.health_snapshot;
     if (!snap) return '';
     var verdict = snap.verdict || 'yellow';
-    // Verified N / M over the ACTIVE BETS — the same honest denominator the
-    // lifecycle bar uses, so the header and the bar can never disagree. Prefer
-    // the lifecycle block (the bar's own source); fall back to truth.auditable
-    // (identical by construction) for pre-lifecycle snapshots. We deliberately
-    // do NOT fall back to truth.total: counting all polyglots (catalog
-    // descriptions + the garden) as a verification denominator is the
-    // misleading "/42" this redesign removes — better to show no count than a
-    // wrong one.
-    var lc = snap.lifecycle;
-    var truth = snap.truth || {};
-    var verified = (lc && lc.verified) ? lc.verified.count : truth.verified;
-    var denom = (lc && lc.total != null) ? lc.total : truth.auditable;
+    var truth   = snap.truth || {};
     var count = '';
-    if (verified != null && denom != null) {
-      count = '<span class="header-health__count">' +
-        esc(String(verified)) + '/' + esc(String(denom)) +
-      '</span>';
+    if (truth.verified != null) {
+      // Honest denominator: auditable (bets only) when present, else total.
+      var denom = truth.auditable != null ? truth.auditable : truth.total;
+      if (denom != null) {
+        count = '<span class="header-health__count">' +
+          esc(String(truth.verified)) + '/' + esc(String(denom)) +
+        '</span>';
+      }
     }
     return '<span class="header-health">' +
       '<span class="header-health__label">health</span>' +

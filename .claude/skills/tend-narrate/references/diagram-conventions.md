@@ -3,10 +3,10 @@
 ## Visual verification
 
 After authoring or modifying a diagram SVG in `oo-data.media`, visual verification is required.
-Use the same script that covers thumbnails — the `--diagram` mode handles arbitrary viewBox dimensions:
+Use the same CLI command that covers thumbnails — the `--diagram` mode handles arbitrary viewBox dimensions:
 
 ```bash
-node skills/tend-narrate/scripts/preview-thumbnail.mjs --diagram <media_id> --feature <feature-id>
+npx tend-cli preview-thumbnail --diagram <media_id> --feature <feature-id>
 ```
 
 This emits two paths: `/tmp/tend-thumb-<media_id>-light.png` and `-dark.png`. Read both via your
