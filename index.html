@@ -157,13 +157,21 @@
     display: grid; grid-template-columns: 1fr 1.05fr; gap: var(--space-2xl); align-items: center;
   }
   .hero-text { max-width: 560px; }
-  .hero-text .kicker { display: block; margin-bottom: var(--space-md); }
-  .hero-text h1 { margin-bottom: var(--space-md); }
+  /* spacing rhythm carries the hierarchy: tight kicker→title (they're one
+     thought), medium title→deck, generous deck→actions */
+  .hero-text .kicker { display: block; margin-bottom: var(--space-xs); }
+  .hero-text h1 { margin-bottom: var(--space-sm); }
   .hero-text h1 .em { color: var(--pp-accent); font-style: italic; }
   .hero-text .deck {
     font-size: var(--text-lead); line-height: 1.55; color: var(--pp-text-soft);
-    margin-bottom: var(--space-xl); max-width: 48ch;
+    margin-bottom: var(--space-lg); max-width: 44ch;
   }
+  .quiet-link {
+    font-weight: 600; color: var(--pp-primary); text-decoration: none;
+    border-bottom: 1.5px solid rgba(76, 94, 60, 0.35);
+    padding-bottom: 2px; transition: border-color 0.18s ease;
+  }
+  .quiet-link:hover { border-color: var(--pp-primary); }
   .cta-group { display: flex; flex-wrap: wrap; gap: var(--space-sm); align-items: center; }
   .btn {
     display: inline-flex; align-items: center; gap: var(--space-3xs);
@@ -549,7 +557,7 @@
     </p>
     <div class="cta-group">
       <a href="https://github.com/jahala/petal" class="btn btn-primary">Install petals</a>
-      <a href="#how-it-works" class="btn btn-outline">See how it works</a>
+      <a href="#how-it-works" class="quiet-link">See how it works →</a>
     </div>
   </div>
   <div class="hero-visual term">
@@ -559,15 +567,11 @@
     </div>
     <pre><span class="prompt">$</span> <span class="cmd">/petal init</span> <span class="arg">brand-assets/</span>
 
-<span class="dim">reading  40-page brand guide  </span><span class="info">(vision)</span>
-<span class="dim">reading  palette.json         </span><span class="info">(parse)</span>
-<span class="dim">reading  designer README      </span><span class="info">(text)</span>
+<span class="dim">reading  brand guide · palette.json · README</span>
 
 <span class="ok">→</span> <span class="arg">.brand/colors.md      </span><span class="dim">every explicit hex</span>
 <span class="ok">→</span> <span class="arg">.brand/typography.md  </span><span class="dim">families · weights</span>
 <span class="ok">→</span> <span class="arg">.brand/voice.md       </span><span class="dim">tone · forbidden</span>
-<span class="ok">→</span> <span class="arg">.brand/identity.md    </span><span class="dim">name · tagline</span>
-<span class="ok">→</span> <span class="arg">.brand/DESIGN.md      </span><span class="dim">9-section system</span>
 
 <span class="warn">!</span> <span class="dim">"Primary: Teal" had no hex — flagged, not guessed.</span>
 
