@@ -18,3 +18,7 @@ plotplot exists for teams that need more than another dashboard. It gives the co
 The product language comes from cultivation because coherent companies are grown, not assembled. Ideas are planted, roadmaps are tended, weak work is pruned, launches bloom, and outcomes are harvested into memory.
 
 plotplot is not only a planning tool, a brand tool, or a monitoring tool. It is a company coherence platform: a connected operating layer for teams that want to grow what matters and stop feeding what does not.
+
+## Mark (evolved 2026-06-11)
+
+A single petal: asymmetric blush form (`#D39586`) with a foliage-green vein (`#4C5E3C`), beside the lowercase wordmark "petals" set whole in ink — the mark carries the color, the word stays calm. Replaces the four-petal pinwheel. Direction: "a petal against foliage" — deep green and warm cream are the ground; the blush appears rarely and precisely.

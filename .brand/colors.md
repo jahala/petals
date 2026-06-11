@@ -5,13 +5,13 @@
 | Role | Hex | RGB | Usage |
 |------|-----|-----|-------|
 | Primary | #4C5E3C | rgb(76, 94, 60) | Primary brand green — buttons, key actions, links, selected states, product-wide emphasis. Deepened from #5F6F4E for confident contrast (6.28:1 on cream). |
-| Accent | #D97757 | rgb(217, 119, 87) | The bloom — CTAs, launch moments, attention marks, annotations, kicker labels, display numerals. |
-| Background | #F7F1E6 | rgb(247, 241, 230) | Main application and marketing background; warm paper base. |
-| Background (band) | #F1E9DA | rgb(241, 233, 218) | Alternating section band — a half-step deeper than the paper base, for vertical rhythm. |
-| Text | #211D17 | rgb(33, 29, 23) | Primary text, headings, high-emphasis copy. Deepened warm near-black (14.91:1 on cream). |
-| Text (soft) | #5C5648 | rgb(92, 86, 72) | Secondary prose, muted captions, annotation copy. Warm — AA on cream (6.49:1). |
-| Surface | #EFE7D8 | rgb(239, 231, 216) | Cards, panels, secondary sections, grouped content areas. |
-| Border | #D8CCB8 | rgb(216, 204, 184) | Dividers, card borders, input borders, subtle structural lines. |
+| Accent | #B96A4F | rgb(185, 106, 79) | The bloom — CTAs, launch moments, attention marks, annotations, kicker labels, display numerals. |
+| Background | #F8F5EC | rgb(248, 245, 236) | Main application and marketing background; warm paper base. |
+| Background (band) | #EFEDE2 | rgb(239, 237, 226) | Alternating section band — a half-step deeper than the paper base, for vertical rhythm. |
+| Text | #20241B | rgb(32, 36, 27) | Primary text, headings, high-emphasis copy. Deepened warm near-black (14.91:1 on cream). |
+| Text (soft) | #5A6150 | rgb(90, 97, 80) | Secondary prose, muted captions, annotation copy. Warm — AA on cream (6.49:1). |
+| Surface | #F0EDE1 | rgb(240, 237, 225) | Cards, panels, secondary sections, grouped content areas. |
+| Border | #D6D2C2 | rgb(214, 210, 194) | Dividers, card borders, input borders, subtle structural lines. |
 
 ## Artifact-Tier Papers
 
@@ -57,11 +57,11 @@ Each product in the plotplot portfolio has its own accent. The primary palette i
 | Role | Light Mode | Dark Mode |
 |------|-----------|-----------|
 | Primary | #4C5E3C | #A9B78D |
-| Accent | #D97757 | #E0866B |
-| Background | #F7F1E6 | #17140F |
-| Text | #211D17 | #EFE7D8 |
-| Surface | #EFE7D8 | #231F18 |
-| Border | #D8CCB8 | #453C30 |
+| Accent | #B96A4F | #E0866B |
+| Background | #F8F5EC | #17140F |
+| Text | #20241B | #F0EDE1 |
+| Surface | #F0EDE1 | #20251B |
+| Border | #D6D2C2 | #3C4433 |
 
 ## Terminal Surfaces
 
@@ -69,9 +69,9 @@ Embedded terminal panes (the landing-page demos) run a deepened dark soil so the
 
 | Role | Hex | Usage |
 |------|-----|-------|
-| Terminal background | #141109 | Deepened soil-black behind terminal text (15.3:1 for surface text). |
-| Terminal surface | #231F18 | Titlebar / chrome inside the terminal pane. |
-| Terminal border | #453C30 | Terminal pane and titlebar dividers. |
+| Terminal background | #161A12 | Deepened soil-black behind terminal text (15.3:1 for surface text). |
+| Terminal surface | #20251B | Titlebar / chrome inside the terminal pane. |
+| Terminal border | #3C4433 | Terminal pane and titlebar dividers. |
 | Terminal green (in-pane) | #86B36E | Brightened command / OK lines — legible on the deep terminal soil (7.8:1). |
 | Terminal info (in-pane) | #7E9DAD | Brightened informational lines inside the terminal (6.6:1). |
 
@@ -81,13 +81,13 @@ Embedded terminal panes (the landing-page demos) run a deepened dark soil so the
 :root {
   /* shared family palette */
   --pp-primary:    #4C5E3C;   /* botanical green — deepened from #5F6F4E */
-  --pp-accent:     #D97757;   /* the bloom — was #C97863 */
-  --pp-text:       #211D17;   /* warm near-black — deepened from #28241D */
-  --pp-text-soft:  #5C5648;   /* secondary prose — warm, AA on cream */
-  --pp-surface:    #EFE7D8;
-  --pp-border:     #D8CCB8;
-  --pp-bg:         #F7F1E6;   /* marketing paper */
-  --pp-bg-band:    #F1E9DA;   /* alternating section band */
+  --pp-accent:     #B96A4F;   /* the bloom — was #C97863 */
+  --pp-text:       #20241B;   /* warm near-black — deepened from #28241D */
+  --pp-text-soft:  #5A6150;   /* secondary prose — warm, AA on cream */
+  --pp-surface:    #F0EDE1;
+  --pp-border:     #D6D2C2;
+  --pp-bg:         #F8F5EC;   /* marketing paper */
+  --pp-bg-band:    #EFEDE2;   /* alternating section band */
   --pp-bg-artifact:#fbfaf8;   /* tend's lighter long-read paper */
 
   /* reconciled status (matches tend's glyph colors) */
@@ -98,7 +98,7 @@ Embedded terminal panes (the landing-page demos) run a deepened dark soil so the
   --pp-muted:   #8A8A86;
 
   /* product accents */
-  --pp-tend: #D97757;  /* was #6F8157 */
+  --pp-tend: #B96A4F;  /* was #6F8157 */
   --pp-bloom: #D8745F; --pp-harvest: #B89448; --pp-canopy: #3F5F46;
   --pp-soil: #735A43;  --pp-root: #4B3A2A;    --pp-seed: #A6A15F;
   --pp-stem: #4E6A4A;  --pp-petal: #D39586;   --pp-prune: #5B5A52;
@@ -108,9 +108,9 @@ Embedded terminal panes (the landing-page demos) run a deepened dark soil so the
 [data-theme="dark"] {
   --pp-primary: #A9B78D;
   --pp-accent:  #E0866B;   /* clay lifts for dark contrast */
-  --pp-text:    #EFE7D8;
-  --pp-surface: #231F18;
-  --pp-border:  #453C30;
+  --pp-text:    #F0EDE1;
+  --pp-surface: #20251B;
+  --pp-border:  #3C4433;
   --pp-bg:      #17140F;   /* dark soil at night */
 }
 ```
