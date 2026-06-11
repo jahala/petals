@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>petals — brand intelligence for AI coding agents</title>
-<meta name="description" content="petals turns brand guidelines into files your AI coding agent discovers and uses — every session, every project, without pasting a hex code into a prompt.">
+<title>petals — brand intelligence for coding agents</title>
+<meta name="description" content="petals turns brand guidelines into files your coding agent discovers and uses — every session, every project, without pasting a hex code into a prompt.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23D39586'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='%23F7F1E6'>p</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Sora:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    /* shared family palette */
+    /* shared family palette — .brand/colors.md */
     --pp-primary: #5F6F4E;
     --pp-accent: #D97757;
     --pp-text: #28241D;
@@ -20,20 +20,19 @@
     --pp-bg: #F7F1E6;
     --pp-bg-artifact: #fbfaf8;
 
-    /* reconciled status */
+    /* reconciled status — .brand/colors.md */
     --pp-healthy: #4F7942;
     --pp-caution: #C9923C;
     --pp-error: #B85C3E;
     --pp-info: #587383;
     --pp-muted: #8A8A86;
 
-    /* terminal (dark-mode invariant) */
+    /* terminal (dark-mode palette variants — .brand/colors.md) */
     --pp-terminal-bg: #17140F;
     --pp-terminal-surface: #231F18;
     --pp-terminal-border: #453C30;
-    --pp-terminal-muted: #8A8A86;
 
-    /* product accents */
+    /* product accents — .brand/colors.md */
     --pp-stem: #4E6A4A;
     --pp-tend: #D97757;
     --pp-petal: #D39586;
@@ -42,6 +41,7 @@
     --font-body: 'Source Sans 3', sans-serif;
     --font-code: 'JetBrains Mono', monospace;
 
+    /* spacing scale — multiples of 4px, .brand/typography.md */
     --space-4xs: 4px;
     --space-3xs: 8px;
     --space-2xs: 12px;
@@ -53,6 +53,7 @@
     --space-2xl: 96px;
     --space-3xl: 128px;
 
+    /* type scale — .brand/typography.md */
     --text-h1: 44px;
     --text-h2: 32px;
     --text-h3: 24px;
@@ -67,26 +68,30 @@
   body {
     font-family: var(--font-body);
     font-size: var(--text-body);
-    line-height: 1.6;
+    font-weight: 400;
+    line-height: 1.5;
     color: var(--pp-text);
     background: var(--pp-bg);
     -webkit-font-smoothing: antialiased;
   }
 
-  h1, h2, h3, h4 {
-    font-family: var(--font-heading);
-    font-weight: 700;
-    letter-spacing: -0.02em;
-  }
-  h1 { font-size: var(--text-h1); line-height: 1.15; }
-  h2 { font-size: var(--text-h2); line-height: 1.2; }
+  /* type hierarchy — sizes/weights/line-heights verbatim from typography.md */
+  h1, h2, h3, h4 { font-family: var(--font-heading); letter-spacing: -0.015em; }
+  h1 { font-size: var(--text-h1); line-height: 1.2; font-weight: 700; }
+  h2 { font-size: var(--text-h2); line-height: 1.25; font-weight: 700; }
   h3 { font-size: var(--text-h3); line-height: 1.3; font-weight: 600; }
   h4 { font-size: var(--text-h4); line-height: 1.35; font-weight: 600; }
 
-  code, pre { font-family: var(--font-code); font-size: var(--text-code); }
+  p, li, span, a, button, label, strong, em { font-family: var(--font-body); }
+  code, pre, .mono { font-family: var(--font-code); font-size: var(--text-code); }
   a { color: var(--pp-primary); text-decoration: underline; text-underline-offset: 4px; }
 
-  .container { max-width: 1040px; margin: 0 auto; padding: 0 var(--space-sm); }
+  .container { max-width: 1080px; margin: 0 auto; padding: 0 var(--space-sm); }
+  .kicker {
+    font-family: var(--font-code); font-size: var(--text-code); font-weight: 500;
+    color: var(--pp-accent); text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .lede { font-size: var(--text-body); line-height: 1.5; color: var(--pp-text); max-width: 60ch; }
 
   /* ── nav ──────────────────────────────────────────────────── */
   nav {
@@ -94,9 +99,11 @@
     padding: var(--space-sm) 0;
   }
   nav .logo {
+    display: inline-flex; align-items: center; gap: var(--space-3xs);
     font-family: var(--font-heading); font-size: var(--text-h4); font-weight: 700;
-    color: var(--pp-text); text-decoration: none; letter-spacing: -0.02em;
+    color: var(--pp-text); text-decoration: none; letter-spacing: -0.015em;
   }
+  nav .logo .mark { width: 20px; height: 20px; display: block; }
   nav .logo span { color: var(--pp-accent); }
   nav .links { display: flex; gap: var(--space-sm); align-items: center; }
   nav .links a {
@@ -106,325 +113,283 @@
   nav .links .nav-cta {
     background: var(--pp-primary); color: var(--pp-bg); text-decoration: none;
     padding: var(--space-3xs) var(--space-xs); border-radius: 4px; font-weight: 600;
-    margin-left: var(--space-3xs); transition: background 0.15s;
+    transition: background 0.15s;
   }
-  nav .links .nav-cta:hover { background: var(--pp-stem); color: var(--pp-bg); }
+  nav .links .nav-cta:hover { background: var(--pp-stem); }
 
   /* ── hero ─────────────────────────────────────────────────── */
   .hero {
-    padding: var(--space-3xl) 0;
-    display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-xl); align-items: center;
+    padding: var(--space-3xl) 0 var(--space-2xl);
+    display: grid; grid-template-columns: 1fr 1.05fr; gap: var(--space-2xl); align-items: center;
   }
-  .hero-text { max-width: 480px; }
-  .hero-text .eyebrow {
-    font-family: var(--font-code); font-size: var(--text-code); font-weight: 500;
-    color: var(--pp-accent); text-transform: uppercase; letter-spacing: 0.08em;
-    margin-bottom: var(--space-sm);
-  }
+  .hero-text { max-width: 520px; }
+  .hero-text .kicker { display: block; margin-bottom: var(--space-sm); }
   .hero-text h1 { margin-bottom: var(--space-sm); }
+  .hero-text h1 .em { color: var(--pp-accent); }
   .hero-text .deck {
-    font-size: var(--text-h4); line-height: 1.5;
-    margin-bottom: var(--space-md);
+    font-size: var(--text-h4); line-height: 1.45; color: var(--pp-text);
+    margin-bottom: var(--space-lg); max-width: 46ch;
   }
-  .hero-text .btn {
+  .cta-group { display: flex; flex-wrap: wrap; gap: var(--space-xs); align-items: center; }
+  .btn {
     display: inline-flex; align-items: center; gap: var(--space-3xs);
     font-family: var(--font-body); font-size: var(--text-small); font-weight: 600;
     padding: var(--space-2xs) var(--space-sm); border-radius: 4px; border: none;
-    cursor: pointer; text-decoration: none; transition: background 0.15s;
+    cursor: pointer; text-decoration: none; transition: background 0.15s, color 0.15s;
   }
-  .hero-text .btn-primary { background: var(--pp-primary); color: var(--pp-bg); }
-  .hero-text .btn-primary:hover { background: var(--pp-stem); }
-  .hero-text .btn-outline {
-    background: transparent; color: var(--pp-primary);
-    border: 1px solid var(--pp-primary); margin-left: var(--space-xs);
+  .btn-primary { background: var(--pp-primary); color: var(--pp-bg); }
+  .btn-primary:hover { background: var(--pp-stem); color: var(--pp-bg); }
+  .btn-outline {
+    background: transparent; color: var(--pp-primary); border: 1px solid var(--pp-border);
   }
-  .hero-text .btn-outline:hover { background: var(--pp-surface); }
+  .btn-outline:hover { background: var(--pp-surface); }
 
-  /* terminal visual */
-  .hero-visual {
-    background: var(--pp-terminal-bg);
-    border: 1px solid var(--pp-terminal-border);
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 0 0 4px var(--pp-bg), 0 0 0 6px var(--pp-border);
-  }
-  .hero-visual .titlebar {
-    display: flex; align-items: center; gap: var(--space-3xs);
-    padding: var(--space-2xs) var(--space-xs);
-    background: var(--pp-terminal-surface);
-    border-bottom: 1px solid var(--pp-terminal-border);
-  }
-  .hero-visual .titlebar .dot { width: 8px; height: 8px; border-radius: 50%; }
-  .hero-visual .titlebar .dot:nth-child(1) { background: var(--pp-error); }
-  .hero-visual .titlebar .dot:nth-child(2) { background: var(--pp-caution); }
-  .hero-visual .titlebar .dot:nth-child(3) { background: var(--pp-healthy); }
-  .hero-visual pre {
-    padding: var(--space-sm); line-height: 1.7; overflow-x: auto;
-    font-size: var(--text-code);
-  }
-  .hero-visual .prompt { color: var(--pp-accent); }
-  .hero-visual .cmd { color: var(--pp-healthy); }
-  .hero-visual .dim { color: var(--pp-terminal-muted); }
-  .hero-visual .out { color: var(--pp-bg); }
-
-  /* ── stat strip ───────────────────────────────────────────── */
-  .stat-strip {
-    display: flex; gap: var(--space-lg); justify-content: center;
-    padding: 0 0 var(--space-3xl);
-  }
-  .stat-strip .stat {
-    text-align: center;
-  }
-  .stat-strip .stat .num {
-    font-family: var(--font-heading); font-size: var(--text-h1); font-weight: 700;
-    color: var(--pp-accent); line-height: 1.1;
-  }
-  .stat-strip .stat .label {
-    font-family: var(--font-code); font-size: var(--text-code);
-    color: var(--pp-text); margin-top: var(--space-4xs);
-  }
-
-  /* ── section spacing ──────────────────────────────────────── */
-  section { padding: var(--space-3xl) 0; }
-  section + section { border-top: 1px solid var(--pp-border); }
-  .section-head { margin-bottom: var(--space-xl); }
-  .section-head .label {
-    font-family: var(--font-code); font-size: var(--text-code); font-weight: 500;
-    color: var(--pp-accent); text-transform: uppercase; letter-spacing: 0.08em;
-    margin-bottom: var(--space-3xs);
-  }
-  .section-head h2 { margin-bottom: var(--space-xs); }
-  .section-head p { max-width: 560px; font-size: var(--text-body); line-height: 1.6; }
-  .section-head.centered { text-align: center; }
-  .section-head.centered p { margin: 0 auto; }
-
-  /* ── before/after ─────────────────────────────────────────── */
-  .split {
-    display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md);
-  }
-  .split-card {
-    border-radius: 8px; padding: var(--space-md);
-    position: relative; overflow: hidden;
-  }
-  .split-card.bad {
-    background: var(--pp-bg);
-    border: 1px solid var(--pp-border);
-  }
-  .split-card.good {
-    background: var(--pp-text);
-    border: 1px solid var(--pp-text);
-  }
-  .split-card .tag {
-    display: inline-block; font-family: var(--font-code); font-size: var(--text-code); font-weight: 500;
-    text-transform: uppercase; letter-spacing: 0.06em;
-    padding: var(--space-4xs) var(--space-3xs); border-radius: 4px;
-    margin-bottom: var(--space-xs);
-  }
-  .split-card.bad .tag { background: var(--pp-surface); color: var(--pp-error); }
-  .split-card.good .tag { background: var(--pp-healthy); color: var(--pp-bg); }
-  .split-card.bad h4, .split-card.bad p { color: var(--pp-text); }
-  .split-card.good h4, .split-card.good p { color: var(--pp-surface); }
-  .split-card .code-snippet {
-    border-radius: 4px; padding: var(--space-xs);
-    font-family: var(--font-code); font-size: var(--text-code); line-height: 1.6;
-    margin: var(--space-sm) 0;
-    overflow-x: auto;
-  }
-  .split-card.bad .code-snippet { background: var(--pp-surface); color: var(--pp-text); }
-  .split-card.good .code-snippet { background: var(--pp-terminal-surface); color: var(--pp-surface); }
-  .split-card .code-snippet .err { color: var(--pp-error); }
-  .split-card .code-snippet .ok { color: var(--pp-healthy); }
-
-  /* ── pipeline ─────────────────────────────────────────────── */
-  .pipeline {
-    display: grid; grid-template-columns: 1fr auto 1fr auto 1fr;
-    gap: 0; align-items: start;
-  }
-  .pipeline .step {
-    background: var(--pp-surface);
-    border: 1px solid var(--pp-border);
-    border-radius: 8px;
-    padding: var(--space-md);
-  }
-  .pipeline .step .num {
-    font-family: var(--font-heading); font-size: var(--text-h3); font-weight: 600;
-    color: var(--pp-primary); margin-bottom: var(--space-xs); line-height: 1;
-  }
-  .pipeline .step .cmd {
-    display: inline-block; font-family: var(--font-code); font-size: var(--text-code); font-weight: 500;
-    color: var(--pp-accent); margin-bottom: var(--space-xs);
-  }
-  .pipeline .step h3 { margin-bottom: var(--space-3xs); }
-  .pipeline .step p { font-size: var(--text-small); line-height: 1.6; }
-  .pipeline .arrow {
-    display: flex; align-items: center; justify-content: center;
-    padding: 0 var(--space-xs);
-    padding-top: var(--space-xl);
-  }
-  .pipeline .arrow span {
-    font-family: var(--font-heading); font-size: var(--text-h3); font-weight: 600;
-    color: var(--pp-accent);
-  }
-
-  /* ── check demo ───────────────────────────────────────────── */
-  .check-layout {
-    display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-xl);
-  }
-  .check-layout .dim-list {
-    display: flex; flex-direction: column; gap: var(--space-xs);
-  }
-  .check-layout .dim-item {
-    display: flex; align-items: flex-start; gap: var(--space-2xs);
-    font-size: var(--text-small); line-height: 1.5;
-  }
-  .check-layout .dim-item .icon {
-    flex-shrink: 0; width: 24px; height: 24px; border-radius: 4px;
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--font-body); font-size: var(--text-small); font-weight: 600;
-  }
-  .check-layout .dim-item:nth-child(1) .icon { background: var(--pp-surface); color: var(--pp-primary); }
-  .check-layout .dim-item:nth-child(2) .icon { background: var(--pp-surface); color: var(--pp-info); }
-  .check-layout .dim-item:nth-child(3) .icon { background: var(--pp-surface); color: var(--pp-caution); }
-  .check-layout .dim-item:nth-child(4) .icon { background: var(--pp-surface); color: var(--pp-accent); }
-
-  /* terminal */
-  .terminal {
+  /* terminal — macOS-dark, brand accent */
+  .term {
     background: var(--pp-terminal-bg);
     border: 1px solid var(--pp-terminal-border);
     border-radius: 8px; overflow: hidden;
   }
-  .terminal .titlebar {
+  .hero-visual.term {
+    box-shadow: 0 1px 0 var(--pp-border), 0 12px 40px -16px rgba(40, 36, 29, 0.35);
+  }
+  .term .titlebar {
     display: flex; align-items: center; gap: var(--space-3xs);
     padding: var(--space-2xs) var(--space-xs);
     background: var(--pp-terminal-surface);
     border-bottom: 1px solid var(--pp-terminal-border);
   }
-  .terminal .titlebar .dot { width: 8px; height: 8px; border-radius: 50%; }
-  .terminal .titlebar .dot:nth-child(1) { background: var(--pp-error); }
-  .terminal .titlebar .dot:nth-child(2) { background: var(--pp-caution); }
-  .terminal .titlebar .dot:nth-child(3) { background: var(--pp-healthy); }
-  .terminal .titlebar .title {
-    font-family: var(--font-code); font-size: var(--text-code); color: var(--pp-terminal-muted); margin-left: var(--space-3xs);
+  .term .titlebar .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .term .titlebar .dot:nth-child(1) { background: var(--pp-error); }
+  .term .titlebar .dot:nth-child(2) { background: var(--pp-caution); }
+  .term .titlebar .dot:nth-child(3) { background: var(--pp-healthy); }
+  .term .titlebar .title {
+    font-family: var(--font-code); font-size: var(--text-code); color: var(--pp-muted);
+    margin-left: var(--space-3xs);
   }
-  .terminal pre {
+  .term pre {
     padding: var(--space-sm); line-height: 1.7; overflow-x: auto;
-    font-family: var(--font-code); font-size: var(--text-code);
+    font-family: var(--font-code); font-size: var(--text-code); color: var(--pp-surface);
   }
-  .terminal .pass { color: var(--pp-healthy); }
-  .terminal .fail { color: var(--pp-error); }
-  .terminal .warn { color: var(--pp-caution); }
-  .terminal .dim { color: var(--pp-terminal-muted); }
-  .terminal .bold { color: var(--pp-border); font-weight: 500; }
+  .term .prompt { color: var(--pp-accent); }
+  .term .cmd { color: var(--pp-healthy); }
+  .term .arg { color: var(--pp-surface); }
+  .term .dim { color: var(--pp-muted); }
+  .term .ok { color: var(--pp-healthy); }
+  .term .fail { color: var(--pp-error); }
+  .term .warn { color: var(--pp-caution); }
+  .term .info { color: var(--pp-info); }
+  .term .rule { color: var(--pp-terminal-border); }
+  .term .bold { color: var(--pp-surface); font-weight: 500; }
 
-  /* ── architecture ─────────────────────────────────────────── */
-  .arch-layout {
-    display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-xl);
+  /* ── outcome stats ────────────────────────────────────────── */
+  .stat-strip {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-md); padding: 0 0 var(--space-3xl);
   }
-  .dir-tree {
-    background: var(--pp-terminal-bg);
-    border: 1px solid var(--pp-terminal-border);
-    border-radius: 8px;
-    padding: var(--space-md);
-    font-family: var(--font-code); font-size: var(--text-code); line-height: 2;
+  .stat {
+    border-left: 2px solid var(--pp-border);
+    padding-left: var(--space-sm);
   }
-  .dir-tree .dir { color: var(--pp-healthy); font-weight: 500; }
-  .dir-tree .file { color: var(--pp-surface); }
-  .dir-tree .annot { color: var(--pp-terminal-muted); margin-left: var(--space-3xs); }
-  .dir-tree .indent { margin-left: var(--space-sm); }
-  .arch-points {
-    display: flex; flex-direction: column; gap: var(--space-sm);
+  .stat .num {
+    font-family: var(--font-heading); font-size: var(--text-h2); font-weight: 700;
+    color: var(--pp-primary); line-height: 1.1;
   }
-  .arch-point {
-    border-left: 4px solid var(--pp-healthy);
-    padding: var(--space-xs) 0 var(--space-xs) var(--space-sm);
+  .stat .label {
+    font-size: var(--text-small); line-height: 1.4; color: var(--pp-text); margin-top: var(--space-3xs);
   }
-  .arch-point h4 { margin-bottom: var(--space-4xs); }
-  .arch-point p { font-size: var(--text-small); line-height: 1.5; }
 
-  /* ── principles ───────────────────────────────────────────── */
-  .principles {
-    display: grid; grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-md);
+  /* ── sections ─────────────────────────────────────────────── */
+  section { padding: var(--space-3xl) 0; }
+  section + section { border-top: 1px solid var(--pp-border); }
+  .section-head { margin-bottom: var(--space-xl); max-width: 64ch; }
+  .section-head .kicker { display: block; margin-bottom: var(--space-2xs); }
+  .section-head h2 { margin-bottom: var(--space-xs); }
+  .section-head p { font-size: var(--text-body); line-height: 1.5; color: var(--pp-text); max-width: 60ch; }
+  .section-head.centered { margin-left: auto; margin-right: auto; text-align: center; }
+  .section-head.centered p { margin-left: auto; margin-right: auto; }
+
+  /* ── scene (problem as a moment) ──────────────────────────── */
+  .scene { display: grid; grid-template-columns: 1.1fr 1fr; gap: var(--space-2xl); align-items: start; }
+  .scene .prose p { margin-bottom: var(--space-sm); line-height: 1.6; max-width: 52ch; }
+  .scene .prose p:last-child { margin-bottom: 0; }
+  .scene .prose .hl { color: var(--pp-text); font-weight: 600; }
+  .scene .prose .clay { color: var(--pp-accent); font-weight: 600; }
+  .scene .ledger {
+    background: var(--pp-surface); border: 1px solid var(--pp-border);
+    border-radius: 8px; overflow: hidden;
   }
-  .principle-card {
-    padding: var(--space-md);
-    border-radius: 8px;
+  .scene .ledger .row {
+    display: flex; align-items: baseline; gap: var(--space-sm);
+    padding: var(--space-sm); border-bottom: 1px solid var(--pp-border);
+  }
+  .scene .ledger .row:last-child { border-bottom: none; }
+  .scene .ledger .when {
+    font-family: var(--font-code); font-size: var(--text-code); color: var(--pp-info);
+    flex-shrink: 0; width: 56px;
+  }
+  .scene .ledger .what { font-size: var(--text-small); line-height: 1.5; }
+  .scene .ledger .row.flag { background: var(--pp-bg); }
+  .scene .ledger .row.flag .when { color: var(--pp-error); }
+  .scene .ledger .row.resolve .when { color: var(--pp-healthy); }
+
+  /* ── three features ───────────────────────────────────────── */
+  .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-md); }
+  .feature-card {
+    display: flex; flex-direction: column;
+    background: var(--pp-bg-artifact); border: 1px solid var(--pp-border);
+    border-radius: 8px; padding: var(--space-md);
+  }
+  .feature-card .glyph { width: 44px; height: 44px; margin-bottom: var(--space-sm); }
+  .feature-card .cmd {
+    display: inline-block; font-family: var(--font-code); font-size: var(--text-code); font-weight: 500;
+    color: var(--pp-accent); margin-bottom: var(--space-2xs);
+  }
+  .feature-card h3 { margin-bottom: var(--space-3xs); }
+  .feature-card p { font-size: var(--text-small); line-height: 1.55; color: var(--pp-text); }
+  .feature-card .proof {
+    margin-top: auto; padding-top: var(--space-sm);
+    font-size: var(--text-small); font-weight: 500; color: var(--pp-primary);
+    text-decoration: none; display: inline-flex; align-items: center; gap: var(--space-4xs);
+  }
+  .feature-card .proof:hover { color: var(--pp-stem); }
+  .feature-card .proof .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--pp-healthy); }
+
+  /* ── check section ────────────────────────────────────────── */
+  .check-layout { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: var(--space-xl); align-items: start; }
+  .dim-list { display: flex; flex-direction: column; gap: var(--space-md); }
+  .dim-item { display: flex; gap: var(--space-sm); align-items: flex-start; }
+  .dim-item .icon {
+    flex-shrink: 0; width: 32px; height: 32px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-heading); font-size: var(--text-small); font-weight: 700;
+    background: var(--pp-surface);
+  }
+  .dim-item:nth-child(1) .icon { color: var(--pp-primary); }
+  .dim-item:nth-child(2) .icon { color: var(--pp-info); }
+  .dim-item:nth-child(3) .icon { color: var(--pp-caution); }
+  .dim-item:nth-child(4) .icon { color: var(--pp-accent); }
+  .dim-item .body strong { display: block; font-weight: 600; font-size: var(--text-body); margin-bottom: var(--space-4xs); }
+  .dim-item .body p { font-size: var(--text-small); line-height: 1.5; color: var(--pp-text); }
+  .repr-note {
+    font-family: var(--font-code); font-size: var(--text-code); color: var(--pp-muted);
+    margin-top: var(--space-sm); line-height: 1.5;
+  }
+
+  /* ── for / not-for ────────────────────────────────────────── */
+  .scope { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
+  .scope-col {
+    border-radius: 8px; padding: var(--space-md);
     border: 1px solid var(--pp-border);
   }
-  .principle-card:nth-child(1) { background: var(--pp-bg); }
-  .principle-card:nth-child(2) { background: var(--pp-surface); }
-  .principle-card:nth-child(3) { background: var(--pp-text); color: var(--pp-surface); border-color: var(--pp-text); }
-  .principle-card:nth-child(3) h4, .principle-card:nth-child(3) p { color: var(--pp-surface); }
-  .principle-card .icon {
-    margin-bottom: var(--space-xs); width: 32px; height: 32px;
-    display: flex; align-items: center; justify-content: center;
+  .scope-col.for { background: var(--pp-surface); }
+  .scope-col.notfor { background: var(--pp-bg-artifact); }
+  .scope-col .head {
+    display: flex; align-items: center; gap: var(--space-3xs);
+    font-family: var(--font-heading); font-size: var(--text-h4); font-weight: 600;
+    margin-bottom: var(--space-sm);
   }
-  .principle-card .icon svg { width: 24px; height: 24px; }
-  .principle-card:nth-child(1) .icon svg { stroke: var(--pp-primary); }
-  .principle-card:nth-child(2) .icon svg { stroke: var(--pp-accent); }
-  .principle-card:nth-child(3) .icon svg { stroke: var(--pp-accent); }
-  .principle-card h4 { margin-bottom: var(--space-4xs); }
-  .principle-card p { font-size: var(--text-small); line-height: 1.5; }
+  .scope-col.for .head { color: var(--pp-healthy); }
+  .scope-col.notfor .head { color: var(--pp-muted); }
+  .scope-col ul { list-style: none; }
+  .scope-col li {
+    font-size: var(--text-small); line-height: 1.5; color: var(--pp-text);
+    padding: var(--space-3xs) 0 var(--space-3xs) var(--space-sm);
+    position: relative; border-bottom: 1px solid var(--pp-border);
+  }
+  .scope-col li:last-child { border-bottom: none; }
+  .scope-col li::before { content: ""; position: absolute; left: 0; top: 14px; width: 8px; height: 1px; }
+  .scope-col.for li::before { background: var(--pp-healthy); }
+  .scope-col.notfor li::before { background: var(--pp-muted); }
+
+  /* ── files-not-dashboards ─────────────────────────────────── */
+  .arch-layout { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-xl); align-items: start; }
+  .dir-tree.term pre { line-height: 2; }
+  .dir-tree .dir { color: var(--pp-healthy); font-weight: 500; }
+  .dir-tree .file { color: var(--pp-surface); }
+  .dir-tree .annot { color: var(--pp-muted); }
+  .arch-points { display: flex; flex-direction: column; gap: var(--space-md); }
+  .arch-point { border-left: 2px solid var(--pp-border); padding: var(--space-3xs) 0 var(--space-3xs) var(--space-sm); }
+  .arch-point h4 { margin-bottom: var(--space-4xs); }
+  .arch-point p { font-size: var(--text-small); line-height: 1.5; color: var(--pp-text); }
+  .arch-point.quiet { border-left-color: var(--pp-accent); }
+  .arch-point.quiet p { color: var(--pp-muted); }
 
   /* ── install CTA ──────────────────────────────────────────── */
-  .install {
-    text-align: center;
-    padding: var(--space-3xl) 0;
-    border-top: 1px solid var(--pp-border);
+  .install { text-align: center; }
+  .install h2 { margin-bottom: var(--space-md); }
+  .install .install-term {
+    display: inline-block; text-align: left;
+    margin: 0 auto var(--space-sm); min-width: 360px; max-width: 100%;
   }
-  .install .code-block {
-    display: inline-block;
-    background: var(--pp-terminal-bg);
-    border: 1px solid var(--pp-terminal-border);
-    border-radius: 8px;
-    padding: var(--space-sm) var(--space-lg);
-    font-family: var(--font-code); font-size: var(--text-code); line-height: 1.7;
-    color: var(--pp-surface);
-    margin: var(--space-md) 0 var(--space-sm);
-    text-align: left;
+  .install .note { font-family: var(--font-code); font-size: var(--text-code); color: var(--pp-muted); }
+  .badge {
+    display: inline-flex; align-items: center; gap: var(--space-3xs);
+    background: var(--pp-surface); border: 1px solid var(--pp-border);
+    border-radius: 999px; padding: var(--space-3xs) var(--space-xs);
+    font-family: var(--font-code); font-size: var(--text-code); color: var(--pp-text);
+    margin-top: var(--space-lg);
   }
-  .install .code-block .prompt { color: var(--pp-accent); }
-  .install .code-block .cmd { color: var(--pp-healthy); }
-  .install .note {
-    font-family: var(--font-code); font-size: var(--text-code);
-    color: var(--pp-terminal-muted);
+  .badge .tick {
+    width: 16px; height: 16px; border-radius: 50%; background: var(--pp-healthy);
+    color: var(--pp-bg); display: inline-flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700;
   }
 
   /* ── footer ────────────────────────────────────────────────── */
   footer {
     border-top: 1px solid var(--pp-border);
-    padding: var(--space-lg) 0 var(--space-xl);
-    display: grid; grid-template-columns: 2fr 1fr 1fr;
-    gap: var(--space-lg);
+    padding: var(--space-2xl) 0 var(--space-xl);
+    display: grid; grid-template-columns: 2fr 1fr 1.4fr; gap: var(--space-lg);
   }
-  footer .brand-col p { font-size: var(--text-small); line-height: 1.6; max-width: 280px; margin-top: var(--space-xs); }
-  footer h4 { font-size: var(--text-small); margin-bottom: var(--space-xs); color: var(--pp-text); }
-  footer a, footer code {
-    font-size: var(--text-small); display: block; margin-bottom: var(--space-4xs);
-    color: var(--pp-text); text-decoration: none; font-family: var(--font-code); font-size: var(--text-code);
+  footer .brand-col .logo {
+    display: inline-flex; align-items: center; gap: var(--space-3xs);
+    font-family: var(--font-heading); font-size: var(--text-h4); font-weight: 700;
+    color: var(--pp-text); letter-spacing: -0.015em; margin-bottom: var(--space-xs);
   }
-  footer a:hover { color: var(--pp-primary); }
+  footer .brand-col .logo span { color: var(--pp-accent); }
+  footer .brand-col .logo .mark { width: 18px; height: 18px; }
+  footer .brand-col p { font-size: var(--text-small); line-height: 1.6; max-width: 34ch; }
+  footer h4 { font-size: var(--text-small); font-weight: 600; margin-bottom: var(--space-sm); color: var(--pp-text); }
+  footer a, footer .mono { display: block; margin-bottom: var(--space-3xs); }
+  footer .col-links a, footer .col-cmds .mono {
+    font-family: var(--font-code); font-size: var(--text-code); color: var(--pp-text);
+    text-decoration: none;
+  }
+  footer .col-links a:hover { color: var(--pp-primary); }
+  footer .col-cmds .mono { color: var(--pp-muted); }
+  footer .family { font-size: var(--text-small); color: var(--pp-muted); margin-top: var(--space-md); line-height: 1.5; }
+  footer .tend-line { display: block; margin-top: var(--space-sm); font-size: var(--text-small); color: var(--pp-muted); text-decoration: none; }
+  footer .tend-line:hover { color: var(--pp-primary); }
 
   /* ── responsive ────────────────────────────────────────────── */
-  @media (max-width: 800px) {
-    .hero { grid-template-columns: 1fr; gap: var(--space-lg); padding: var(--space-2xl) 0; }
-    .stat-strip { flex-wrap: wrap; gap: var(--space-md); }
-    .stat-strip .stat .num { font-size: var(--text-h2); }
-    .pipeline { grid-template-columns: 1fr; gap: var(--space-sm); }
-    .pipeline .arrow { padding-top: 0; transform: rotate(90deg); }
-    .split, .check-layout, .arch-layout { grid-template-columns: 1fr; }
-    .principles { grid-template-columns: 1fr; }
+  @media (max-width: 880px) {
+    .hero { grid-template-columns: 1fr; gap: var(--space-xl); padding: var(--space-2xl) 0; }
+    .hero-text .deck { margin-bottom: var(--space-md); }
+    .stat-strip { grid-template-columns: 1fr 1fr; gap: var(--space-md); }
+    .scene, .check-layout, .arch-layout { grid-template-columns: 1fr; gap: var(--space-lg); }
+    .features { grid-template-columns: 1fr; }
+    .scope { grid-template-columns: 1fr; }
     footer { grid-template-columns: 1fr 1fr; }
+    footer .brand-col { grid-column: 1 / -1; }
+  }
+  @media (max-width: 520px) {
     h1 { font-size: var(--text-h2); }
     h2 { font-size: var(--text-h3); }
+    .stat-strip { grid-template-columns: 1fr; }
+    footer { grid-template-columns: 1fr; }
   }
 </style>
 </head>
 <body>
 
 <nav class="container">
-  <a href="/" class="logo">pet<span>als</span></a>
+  <a href="/" class="logo">
+    <svg class="mark" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 12c0-3 2-6 5-7-1 3-2 5-5 7Z" fill="#D39586"/><path d="M12 12c0-3-2-6-5-7 1 3 2 5 5 7Z" fill="#D97757"/><path d="M12 12c3 0 6 2 7 5-3-1-5-2-7-5Z" fill="#D39586"/><path d="M12 12c-3 0-6 2-7 5 3-1 5-2 7-5Z" fill="#D97757"/><circle cx="12" cy="12" r="1.5" fill="#5F6F4E"/></svg>
+    pet<span>als</span>
+  </a>
   <div class="links">
+    <a href="#scene">The problem</a>
     <a href="#how-it-works">How it works</a>
     <a href="#check">Check</a>
     <a href="https://github.com/jahala/petal" class="nav-cta">GitHub →</a>
@@ -435,331 +400,370 @@
 
 <header class="hero container">
   <div class="hero-text">
-    <div class="eyebrow">Open source · self-hosted · file-based</div>
-    <h1>Brand that agents read.</h1>
+    <span class="kicker">Open source · self-hosted · file-based</span>
+    <h1>Brand that <span class="em">agents read.</span></h1>
     <p class="deck">
-      petals turns your brand guidelines into files your AI coding
-      agent discovers and uses — every session, every project, without
-      pasting a hex code into a prompt.
+      petals turns your brand guidelines into files your coding agent
+      discovers and uses — every session, every project, without pasting
+      a hex code into a prompt.
     </p>
     <div class="cta-group">
       <a href="https://github.com/jahala/petal" class="btn btn-primary">Install petals</a>
       <a href="#how-it-works" class="btn btn-outline">See how it works</a>
     </div>
   </div>
-  <div class="hero-visual">
+  <div class="hero-visual term">
     <div class="titlebar">
       <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <span class="title">project · 9:47am</span>
     </div>
-    <pre><span class="dim">$</span> <span class="cmd">/petal init</span> brand-assets/
+    <pre><span class="prompt">$</span> <span class="cmd">/petal init</span> <span class="arg">brand-assets/</span>
 
-<span class="dim">colors.md      → .brand/colors.md</span>
-<span class="dim">typography.md  → .brand/typography.md</span>
-<span class="dim">voice.md       → .brand/voice.md</span>
-<span class="dim">identity.md    → .brand/identity.md</span>
-<span class="dim">DESIGN.md      → .brand/DESIGN.md</span>
+<span class="dim">reading  40-page brand guide  </span><span class="info">(vision)</span>
+<span class="dim">reading  palette.json         </span><span class="info">(parse)</span>
+<span class="dim">reading  designer README      </span><span class="info">(text)</span>
 
-<span class="prompt">Done.</span> <span class="out">.brand/ ready.</span></pre>
+<span class="ok">→</span> <span class="arg">.brand/colors.md      </span><span class="dim">every explicit hex</span>
+<span class="ok">→</span> <span class="arg">.brand/typography.md  </span><span class="dim">families · weights</span>
+<span class="ok">→</span> <span class="arg">.brand/voice.md       </span><span class="dim">tone · forbidden</span>
+<span class="ok">→</span> <span class="arg">.brand/identity.md    </span><span class="dim">name · tagline</span>
+<span class="ok">→</span> <span class="arg">.brand/DESIGN.md      </span><span class="dim">9-section system</span>
+
+<span class="warn">!</span> <span class="dim">"Primary: Teal" had no hex — flagged, not guessed.</span>
+
+<span class="ok bold">Done.</span> <span class="dim">.brand/ ready. Next session reads it.</span></pre>
   </div>
 </header>
 
-<!-- ══ stat strip ═══════════════════════════════════════ -->
+<!-- ══ outcome stats ════════════════════════════════════ -->
 
 <div class="stat-strip container">
   <div class="stat">
     <div class="num">5</div>
-    <div class="label">brand files, one command</div>
+    <div class="label">brand files from one command</div>
+  </div>
+  <div class="stat">
+    <div class="num">0</div>
+    <div class="label">servers, databases, or accounts</div>
   </div>
   <div class="stat">
     <div class="num">4</div>
-    <div class="label">audit dimensions</div>
+    <div class="label">audit dimensions: color, type, spacing, voice</div>
   </div>
   <div class="stat">
-    <div class="num">zero</div>
-    <div class="label">servers · zero databases</div>
-  </div>
-  <div class="stat">
-    <div class="num">&lt;7K</div>
-    <div class="label">tokens per brand task</div>
+    <div class="num">3</div>
+    <div class="label">verified feature bets, mapped in tend</div>
   </div>
 </div>
 
-<!-- ══ before/after ══════════════════════════════════════ -->
+<!-- ══ the scene (problem as a moment) ══════════════════ -->
 
-<section>
+<section id="scene">
   <div class="container">
     <div class="section-head">
-      <div class="label">The problem</div>
-      <h2>Agents start from zero brand knowledge</h2>
-      <p>Every session. Every task. Unless someone pastes the hex codes.</p>
+      <span class="kicker">The problem</span>
+      <h2>The brand lives in a beautiful PDF. The agent has never seen it.</h2>
+      <p>
+        A company spends months on its identity. None of it reaches the agent
+        writing the UI — so it reaches for the defaults, and someone catches it later.
+      </p>
     </div>
 
-    <div class="split">
-      <div class="split-card bad">
-        <div class="tag">Without petals</div>
-        <h4>The agent invents a brand.</h4>
-        <p style="font-size: var(--text-small); margin-top: var(--space-3xs);">
-          The prompt says "build a pricing page." The agent picks Tailwind
-          blue-600, sets the font to Inter, and writes copy that sounds like
-          every other SaaS landing page. Someone catches it in review.
+    <div class="scene">
+      <div class="prose">
+        <p>
+          Someone types <span class="hl">"build a pricing page."</span> The agent has
+          no reason not to pick the framework's default blue. It uses Inter because
+          that is what shipped with the template. It writes a headline that sounds
+          like every other landing page on the internet.
         </p>
-        <pre class="code-snippet"><span class="dim">/* agent output */</span>
-<span class="err">background: #2563EB;
-font-family: 'Inter', sans-serif;
-"Supercharge your workflow"</span>
-        </pre>
+        <p>
+          The brand team's primary color is a warm clay. Headings are meant to be
+          Sora. The voice guide forbids the exact hype word the agent just used.
+          The agent knew none of this — the brand was a
+          <span class="hl">40-page PDF it was never handed.</span>
+        </p>
+        <p>
+          So it surfaces in <span class="clay">PR review</span>, for the fourth time
+          this week. Someone leaves a comment. Someone else pastes the hex codes into
+          the next prompt. Three months on, a campaign page ships in last year's palette
+          because that was the only stylesheet the agent could find.
+        </p>
       </div>
-      <div class="split-card good">
-        <div class="tag">With petals</div>
-        <h4>The agent reads .brand/ first.</h4>
-        <p style="font-size: var(--text-small); margin-top: var(--space-3xs);">
-          The same prompt. The same agent. It reads .brand/colors.md before
-          writing a line of CSS. Reads .brand/voice.md before writing a line
-          of copy. The output is on-brand. Nobody pasted a hex code.
-        </p>
-        <pre class="code-snippet"><span class="dim">/* agent output with petals */</span>
-<span class="ok">background: var(--pp-primary);
-font-family: 'Sora', sans-serif;
-"Grow a clearer product strategy"</span>
-        </pre>
+      <div class="ledger" aria-label="A morning where the brand never arrived">
+        <div class="row">
+          <span class="when">9:47</span>
+          <span class="what">Brand email lands: new primary, refreshed logo, one voice shift.</span>
+        </div>
+        <div class="row">
+          <span class="when">11:20</span>
+          <span class="what">Agent ships a pricing page — framework blue, Inter, generic copy.</span>
+        </div>
+        <div class="row flag">
+          <span class="when">PR</span>
+          <span class="what">Reviewer flags off-brand color and a forbidden hype word. Again.</span>
+        </div>
+        <div class="row resolve">
+          <span class="when">fix</span>
+          <span class="what">Hex codes pasted into the prompt by hand. Until next session forgets.</span>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══ pipeline ══════════════════════════════════════════ -->
+<!-- ══ three features ═══════════════════════════════════ -->
 
 <section id="how-it-works">
   <div class="container">
     <div class="section-head">
-      <div class="label">How it works</div>
-      <h2>Three features, one pipeline</h2>
+      <span class="kicker">How it works</span>
+      <h2>Three skills: extract, distribute, check</h2>
+      <p>
+        One pipeline turns brand assets into files agents read natively — then keeps
+        every project in sync, and audits the output before a human sees it.
+      </p>
     </div>
 
-    <div class="pipeline">
-      <div class="step">
-        <div class="num">01</div>
-        <div class="cmd">/petal init</div>
+    <div class="features">
+      <div class="feature-card">
+        <svg class="glyph" viewBox="0 0 44 44" fill="none" aria-hidden="true">
+          <rect x="4" y="6" width="20" height="28" rx="2" fill="#EFE7D8" stroke="#D8CCB8"/>
+          <line x1="8" y1="13" x2="20" y2="13" stroke="#8A8A86" stroke-width="1.5"/>
+          <line x1="8" y1="18" x2="20" y2="18" stroke="#8A8A86" stroke-width="1.5"/>
+          <line x1="8" y1="23" x2="16" y2="23" stroke="#8A8A86" stroke-width="1.5"/>
+          <path d="M24 20h11m0 0-4-4m4 4-4 4" stroke="#D97757" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="22" y="28" width="18" height="10" rx="2" fill="#5F6F4E"/>
+          <text x="31" y="35" font-family="JetBrains Mono, monospace" font-size="6" fill="#F7F1E6" text-anchor="middle">.brand</text>
+        </svg>
+        <span class="cmd">/petal init</span>
         <h3>Extract</h3>
         <p>
-          Point petals at a folder of brand assets. The agent reads PDFs,
-          markdown, images, CSS — extracts explicit values — and produces
-          a complete .brand/ directory. One command. No manual transcription.
+          Point petals at a folder of brand assets. The agent reads PDFs, markdown,
+          images, and JSON with its native capabilities — writes only the explicit
+          values, flags anything missing rather than guessing it.
         </p>
-        <a href="docs/tend/features/brand-extraction.tend.html" style="font-size: var(--text-small); color: var(--pp-muted); text-decoration: none; margin-top: var(--space-3xs); display: inline-block;">see the verified bet →</a>
+        <a class="proof" href="docs/tend/features/brand-extraction.tend.html"><span class="dot"></span>verified bet →</a>
       </div>
-      <div class="arrow"><span>→</span></div>
-      <div class="step">
-        <div class="num">02</div>
-        <div class="cmd">/petal init --from</div>
+
+      <div class="feature-card">
+        <svg class="glyph" viewBox="0 0 44 44" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="4" fill="#5F6F4E"/>
+          <circle cx="33" cy="9" r="3" fill="#EFE7D8" stroke="#D8CCB8"/>
+          <circle cx="34" cy="24" r="3" fill="#EFE7D8" stroke="#D8CCB8"/>
+          <circle cx="30" cy="37" r="3" fill="#EFE7D8" stroke="#D8CCB8"/>
+          <path d="M16 11l14-2M16 13l15 10M15 15l13 21" stroke="#D97757" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span class="cmd">/petal init --from</span>
         <h3>Distribute</h3>
         <p>
-          Connect projects to a central brand repo. Drift detection warns
-          when the central brand moves ahead. Updates preserve
-          project-specific overrides. One push, every project syncs.
+          Connect projects to one central brand repo. Drift detection warns when the
+          central brand moves ahead. Updates flow through while project-level overrides
+          are preserved. One push, every project syncs.
         </p>
-        <a href="docs/tend/features/brand-distribution.tend.html" style="font-size: var(--text-small); color: var(--pp-muted); text-decoration: none; margin-top: var(--space-3xs); display: inline-block;">see the verified bet →</a>
+        <a class="proof" href="docs/tend/features/brand-distribution.tend.html"><span class="dot"></span>verified bet →</a>
       </div>
-      <div class="arrow"><span>→</span></div>
-      <div class="step">
-        <div class="num">03</div>
-        <div class="cmd">/petal check</div>
+
+      <div class="feature-card">
+        <svg class="glyph" viewBox="0 0 44 44" fill="none" aria-hidden="true">
+          <rect x="6" y="5" width="24" height="30" rx="2" fill="#fbfaf8" stroke="#D8CCB8"/>
+          <line x1="11" y1="12" x2="25" y2="12" stroke="#D8CCB8" stroke-width="1.5"/>
+          <line x1="11" y1="17" x2="22" y2="17" stroke="#D8CCB8" stroke-width="1.5"/>
+          <line x1="11" y1="22" x2="25" y2="22" stroke="#D8CCB8" stroke-width="1.5"/>
+          <circle cx="29" cy="29" r="9" fill="#4F7942"/>
+          <path d="M25 29l3 3 6-6" stroke="#F7F1E6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="cmd">/petal check</span>
         <h3>Check</h3>
         <p>
-          The agent audits its own output against .brand/ rules before a
-          human reviews it. Colors, typography, spacing, voice — four
-          dimensions, caught at generation time.
+          The agent audits its own output against the rules before a human reviews it.
+          Color, typography, spacing, and voice — four dimensions, caught at generation
+          time, with the nearest on-brand value suggested for each miss.
         </p>
-        <a href="docs/tend/features/brand-check.tend.html" style="font-size: var(--text-small); color: var(--pp-muted); text-decoration: none; margin-top: var(--space-3xs); display: inline-block;">see the verified bet →</a>
+        <a class="proof" href="docs/tend/features/brand-check.tend.html"><span class="dot"></span>verified bet →</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══ check demo ════════════════════════════════════════ -->
+<!-- ══ check demo ═══════════════════════════════════════ -->
 
 <section id="check">
   <div class="container">
     <div class="section-head">
-      <div class="label">Self-audit</div>
+      <span class="kicker">Self-audit</span>
       <h2>The agent checks its own work</h2>
-      <p>Before a human sees it. Before PR review. Before it ships.</p>
+      <p>Before a human sees it. Before review. Before it ships.</p>
     </div>
 
     <div class="check-layout">
       <div class="dim-list">
         <div class="dim-item">
           <div class="icon">C</div>
-          <div>
-            <strong style="font-weight: 600;">Colors against colors.md.</strong>
-            Hex codes checked against the palette. Data URIs excluded.
-            Nearest-match suggested for every off-palette value.
+          <div class="body">
+            <strong>Color, against colors.md</strong>
+            <p>Every hex matched to the palette. Data URIs and base64 excluded. The nearest palette color named for each off-brand value.</p>
           </div>
         </div>
         <div class="dim-item">
           <div class="icon">T</div>
-          <div>
-            <strong style="font-weight: 600;">Typography against typography.md.</strong>
-            Font-family, weight, size, line-height verified against the
-            type scale. Heading/body classification checked.
+          <div class="body">
+            <strong>Type, against typography.md</strong>
+            <p>Heading and body families checked against the hierarchy. Body text in a heading font is an error, not a warning.</p>
           </div>
         </div>
         <div class="dim-item">
           <div class="icon">S</div>
-          <div>
-            <strong style="font-weight: 600;">Spacing against the grid.</strong>
-            px values scanned. Off-scale values flagged as warnings
-            with closest valid alternatives.
+          <div class="body">
+            <strong>Spacing, against the 4px grid</strong>
+            <p>Padding, margin, and gap values scanned. Off-scale values flagged as warnings with the closest valid step.</p>
           </div>
         </div>
         <div class="dim-item">
           <div class="icon">V</div>
-          <div>
-            <strong style="font-weight: 600;">Voice against voice.md.</strong>
-            Forbidden terms detected case-insensitive. Tone rules
-            checked. Replacement suggested for every flagged term.
+          <div class="body">
+            <strong>Voice, against voice.md</strong>
+            <p>Forbidden terms caught case-insensitive. Each one named with the preferred replacement from the guide.</p>
           </div>
         </div>
       </div>
 
-      <div class="terminal">
-        <div class="titlebar">
-          <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-          <span class="title">/petal check src/components/Hero.tsx</span>
+      <div>
+        <div class="term">
+          <div class="titlebar">
+            <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            <span class="title">/petal check src/components/Hero.tsx</span>
+          </div>
+          <pre><span class="rule">── color ──────────────────────────────────</span>
+<span class="fail">ERROR</span> <span class="dim">line 14:</span> framework-default blue, not in palette.
+      <span class="dim">closest: </span><span class="info">brand primary</span><span class="dim"> (clay)</span>
+
+<span class="rule">── typography ─────────────────────────────</span>
+<span class="fail">ERROR</span> <span class="dim">line 22:</span> 'Inter' used for body text.
+      <span class="dim">body must use </span><span class="ok">Source Sans 3</span><span class="dim">.</span>
+
+<span class="rule">── spacing ────────────────────────────────</span>
+<span class="warn">WARN</span>  <span class="dim">line 38:</span> 13px outside 4px scale.
+      <span class="dim">nearest: 12px or 16px.</span>
+
+<span class="rule">── voice ──────────────────────────────────</span>
+<span class="fail">ERROR</span> <span class="dim">line 9:</span> a forbidden hype term.
+      <span class="dim">use </span><span class="ok">strengthen</span><span class="dim"> instead.</span>
+
+<span class="rule">── summary ────────────────────────────────</span>
+<span class="bold">Colors</span>     2 errors, 0 warnings
+<span class="bold">Typography</span> 1 error,  0 warnings
+<span class="bold">Spacing</span>    0 errors, 1 warning
+<span class="bold">Voice</span>      1 error,  0 warnings
+
+<span class="fail">Result: FAIL</span> <span class="dim">— 4 errors to fix, 1 warning to review.</span></pre>
         </div>
-        <pre><span class="dim">── Color ────────────────────────────────────────────</span>
-<span class="fail">✗  Line 14: #3B82F6 — not in palette.</span>
-<span class="dim">   Closest: #587383 (info)</span>
-<span class="pass">✓  1 off-palette color. 0 false positives.</span>
-
-<span class="dim">── Typography ───────────────────────────────────────</span>
-<span class="fail">✗  Line 22: 'Raleway' — expected Source Sans 3.</span>
-<span class="pass">✓  Sora on h1-h4. Weights correct.</span>
-
-<span class="dim">── Spacing ─────────────────────────────────────────</span>
-<span class="warn">!  Line 38: 13px — outside 4px scale.</span>
-<span class="dim">   Nearest: 12px or 16px.</span>
-
-<span class="dim">── Voice ───────────────────────────────────────────</span>
-<span class="fail">✗  "supercharge" — forbidden. Use: strengthen.</span>
-<span class="pass">✓  Headlines, CTAs, errors: on voice.</span>
-
-<span class="dim">─────────────────────────────────────────────────────</span>
-<span class="bold">3 errors</span><span class="dim">, </span><span class="warn">1 warning</span><span class="dim">, </span><span class="pass">2 dimensions clean.</span></pre>
+        <p class="repr-note">
+          Representative output, in petals' documented <code>/petal check</code> format.
+          The file audit is an agent-procedural skill, not a binary — the format above
+          is what the skill prints, line for line.
+        </p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══ architecture ══════════════════════════════════════ -->
+<!-- ══ for / not-for ════════════════════════════════════ -->
+
+<section id="scope">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">Honest scope</span>
+      <h2>What petals is for — and what it isn't</h2>
+      <p>petals is a thin, sharp layer. It does one thing: carry an agreed brand to the agent. It is not a design tool.</p>
+    </div>
+
+    <div class="scope">
+      <div class="scope-col for">
+        <div class="head">Built for</div>
+        <ul>
+          <li>Teams shipping UI and copy with coding agents in the loop.</li>
+          <li>Projects that already have brand guidelines — a PDF, a palette, a voice guide.</li>
+          <li>Keeping many projects on one central brand, with project overrides where needed.</li>
+          <li>Catching off-brand color, type, and voice at generation time, not in review.</li>
+        </ul>
+      </div>
+      <div class="scope-col notfor">
+        <div class="head">Not for</div>
+        <ul>
+          <li>Inventing a brand from scratch — petals reads what exists, it does not design.</li>
+          <li>Pixel-perfect visual QA — it checks rules in files, not rendered layouts.</li>
+          <li>Replacing designers — the brand is theirs; petals carries their decisions.</li>
+          <li>Guessing missing values — a missing hex is flagged for a human, never approximated.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ files, not dashboards ════════════════════════════ -->
 
 <section id="architecture">
   <div class="container">
     <div class="section-head">
-      <div class="label">Architecture</div>
+      <span class="kicker">Architecture</span>
       <h2>Files, not dashboards</h2>
-      <p>No server. No database. No SaaS. Just files and git.</p>
+      <p>No server. No database. No account. The brand lives in markdown, distributed with git.</p>
     </div>
 
     <div class="arch-layout">
-      <div class="dir-tree">
-<span class="dir">.brand/</span>
-<span class="indent"><span class="file">DESIGN.md</span>      <span class="annot">9-section design system</span></span>
-<span class="indent"><span class="file">colors.md</span>      <span class="annot">palette, semantic roles, CSS vars</span></span>
-<span class="indent"><span class="file">typography.md</span>  <span class="annot">font families, type scale, spacing</span></span>
-<span class="indent"><span class="file">voice.md</span>       <span class="annot">forbidden terms, tone, examples</span></span>
-<span class="indent"><span class="file">identity.md</span>    <span class="annot">name, tagline, mission, story</span></span>
-<span class="indent"><span class="dir">assets/</span></span>
-<span class="indent" style="margin-left: calc(var(--space-sm) * 2);"><span class="file">logo.svg</span></span>
-<span class="indent" style="margin-left: calc(var(--space-sm) * 2);"><span class="file">hero.jpg</span></span>
+      <div class="dir-tree term">
+        <div class="titlebar">
+          <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+          <span class="title">.brand/</span>
+        </div>
+        <pre><span class="dir">.brand/</span>
+  <span class="file">DESIGN.md</span>      <span class="annot"># 9-section design system</span>
+  <span class="file">colors.md</span>      <span class="annot"># palette, roles, CSS vars</span>
+  <span class="file">typography.md</span>  <span class="annot"># families, scale, spacing</span>
+  <span class="file">voice.md</span>       <span class="annot"># forbidden terms, tone</span>
+  <span class="file">identity.md</span>    <span class="annot"># name, tagline, story</span>
+  <span class="dir">assets/</span>
+    <span class="file">logo.svg</span>     <span class="annot"># byte-for-byte original</span></pre>
       </div>
       <div class="arch-points">
         <div class="arch-point">
-          <h4>.brand/ is a cache, not source code.</h4>
-          <p>
-            Gitignored. The project commits .petalrc instead — a small
-            config that records the source URL, version, and overrides.
-          </p>
+          <h4>.brand/ is a cache, not source.</h4>
+          <p>Gitignored. The project commits .petalrc instead — a small config recording the source repo, version, and any overrides.</p>
         </div>
         <div class="arch-point">
-          <h4>Progressive disclosure.</h4>
-          <p>
-            ~160 tokens at discovery. ~5,700 at activation. Individual
-            files loaded on demand. Most brand work under 7,000 tokens.
-          </p>
+          <h4>Read on demand.</h4>
+          <p>Files load individually, only when the work needs them — colors for UI, voice for copy. The agent treats the brand like a tsconfig: present by default, applied without being asked.</p>
         </div>
-        <div class="arch-point">
-          <h4>Distributed via git.</h4>
-          <p>
-            One central repo. Projects fetch via shallow clone or HTTPS.
-            Drift detection at session start. One push propagates to
-            every connected project.
-          </p>
+        <div class="arch-point quiet">
+          <h4>Lightweight by design.</h4>
+          <p>Most brand work lands under 7K tokens — progressive disclosure keeps the agent's context for the work, not the rules.</p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══ principles ════════════════════════════════════════ -->
-
-<section>
-  <div class="container">
-    <div class="section-head">
-      <div class="label">Design</div>
-      <h2>Built for how agents actually work</h2>
-    </div>
-
-    <div class="principles">
-      <div class="principle-card">
-        <div class="icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.5"/><line x1="9" y1="9" x2="15" y2="9" stroke="currentColor" stroke-width="1.5"/><line x1="9" y1="13" x2="15" y2="13" stroke="currentColor" stroke-width="1.5"/></svg>
-        </div>
-        <h4>Finite context budget</h4>
-        <p>
-          Agents have ~200K tokens. Brand files use progressive
-          disclosure — the agent loads only what it needs, when it
-          needs it. Most brand tasks take under 7,000 tokens.
-        </p>
-      </div>
-      <div class="principle-card">
-        <div class="icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="4" fill="currentColor"/></svg>
-        </div>
-        <h4>Generic defaults</h4>
-        <p>
-          Without brand context, every agent produces Tailwind blue
-          + Inter + neutral tone. Petals gives the agent a target to
-          aim at — explicit, machine-readable, discoverable.
-        </p>
-      </div>
-      <div class="principle-card">
-        <div class="icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 18L11 7L17 12L22 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
-        <h4>File-based truth</h4>
-        <p>
-          Brand rules live in markdown files — reviewable in PRs,
-          diffable in git, readable by humans and agents alike.
-          No API. No UI. No vendor lock-in.
-        </p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══ install CTA ═══════════════════════════════════════ -->
+<!-- ══ install CTA ══════════════════════════════════════ -->
 
 <section class="install">
   <div class="container">
     <div class="section-head centered">
-      <div class="label">Get started</div>
+      <span class="kicker">Get started</span>
       <h2>One command. Brand that agents read.</h2>
     </div>
-    <div class="code-block">
-<span class="prompt">$</span> <span class="cmd">/petal init</span> brand-assets/
+    <div class="term install-term">
+      <div class="titlebar">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      </div>
+      <pre><span class="prompt">$</span> <span class="cmd">/petal init</span> <span class="arg">brand-assets/</span>
+<span class="dim"># .brand/ produced. Next session reads it.</span></pre>
     </div>
-    <p class="note">.brand/ produced. Agents read it on next session. No hex codes pasted.</p>
+    <p class="note">No hex codes pasted. No prompt to remember. The brand arrives before the first line of code.</p>
+
+    <div class="badge" title="Verified — see the final message for hex / type / voice counts">
+      <span class="tick">✓</span> this page passes <code>/petal check</code>
+    </div>
   </div>
 </section>
 
@@ -767,26 +771,30 @@ font-family: 'Sora', sans-serif;
 
 <footer class="container">
   <div class="brand-col">
-    <div class="logo" style="margin-bottom: var(--space-4xs);">pet<span>als</span></div>
+    <div class="logo">
+      <svg class="mark" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 12c0-3 2-6 5-7-1 3-2 5-5 7Z" fill="#D39586"/><path d="M12 12c0-3-2-6-5-7 1 3 2 5 5 7Z" fill="#D97757"/><path d="M12 12c3 0 6 2 7 5-3-1-5-2-7-5Z" fill="#D39586"/><path d="M12 12c-3 0-6 2-7 5 3-1 5-2 7-5Z" fill="#D97757"/><circle cx="12" cy="12" r="1.5" fill="#5F6F4E"/></svg>
+      pet<span>als</span>
+    </div>
     <p>
-      Brand intelligence for AI coding agents. Open source, self-hosted,
-      file-based. Part of the Plotplot family.
+      Brand intelligence for coding agents. Open source, self-hosted, file-based.
+      Read what your team already agreed on; ship it on-brand before review.
     </p>
+    <p class="family">petals grows in the same garden as tilth and tend.</p>
   </div>
-  <div>
+  <div class="col-cmds">
     <h4>Commands</h4>
-    <code>/petal init</code>
-    <code>/petal init --from</code>
-    <code>/petal update</code>
-    <code>/petal check</code>
-    <code>/petal voice</code>
+    <span class="mono">/petal init</span>
+    <span class="mono">/petal init --from</span>
+    <span class="mono">/petal update</span>
+    <span class="mono">/petal check</span>
+    <span class="mono">/petal voice</span>
   </div>
-  <div>
+  <div class="col-links">
     <h4>Links</h4>
     <a href="https://github.com/jahala/petal">GitHub</a>
     <a href="https://github.com/jahala/petal/blob/main/petals/SKILL.md">SKILL.md</a>
     <a href=".brand/colors.md">.brand/</a>
-    <a href="docs/tend/overview.html" style="color: var(--pp-muted);">petals is mapped and verified with tend — browse the living feature map</a>
+    <a class="tend-line" href="docs/tend/overview.html">petals is mapped and verified with tend — browse the living feature map →</a>
   </div>
 </footer>
 
