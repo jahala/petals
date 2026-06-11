@@ -219,6 +219,51 @@ When the change touches the catalog spine, cascade explicitly:
 - **`opportunity.personas` edited**: scan every feature whose `solves` includes the affected opportunity. Surface those features for review — the persona alignment claim has shifted.
 - **`persona.jobs[idx].validation` text edited**: the spec the check enforces just changed. Invalidate audit on every check whose `validates_job` points at this job (the validation clause is the pass criterion; if its text changes, prior verdicts no longer apply).
 
+### Step 5.7: Re-judge only what you touched
+
+A change edits a slice of the bet, not all of it. The cached `judgments[]` on the feature stay valid for every target the diff didn't touch — re-asking them would re-buy a verdict for text that hasn't changed. So compute **which judgment targets the diff hit**, re-ask ONLY those, and write the refreshed verdicts **in the same `tend_update_feature` call** as the change (the step-4 write). **Untouched targets keep their cached verdicts** — that is the whole point of caching by `judged_sha`.
+
+Map the edit to its targets using the judgment hash-input table — a target is touched iff the change altered any field that target hashes:
+
+| what the change edited | judgment targets it hits |
+|---|---|
+| `what` and/or `why` | `slots:what+why`, every `persona:<id>` (personas hash the slots), and `feature` (the whole-bet `one_bet`) |
+| `impact` | `slots:impact` and `feature` |
+| `fit` / `where` / `how` | `feature` only (these feed the whole-bet shape, no per-slot question) |
+| `personas[]` set changed | every affected `persona:<id>` and `feature` |
+| a `check` added / removed / `description` or `verification_recipe` edited | `check:<check_id>` and `feature` (the bet's check-id set changed) |
+
+Re-ask only the questions whose target appears in the right column, then record the verdict:
+
+- `what_relieves_why` (`slots:what+why`) — does the new WHAT still relieve the pain WHY names, for the bound persona's job?
+- `persona_load_bearing` (`persona:<id>`) — does anything in the changed design still depend on this persona, or did the edit make it decoration?
+- `impact_measurable` (`slots:impact`) — does the new IMPACT name an observable change a check measures?
+- `one_bet` (`feature`) — after the edit, is this still ONE bet, or did the change smuggle a second one in (route the split to a follow-up `/tend change`)?
+- `check_discriminates` (`check:<id>`) — would the edited check fail if the unit were broken?
+
+Each entry is `{ question_id, target, verdict, rationale }` with `verdict` one of `pass | push_back | n_a`. A `push_back` is advisory — surface it as a coaching note, never a block.
+
+**Never supply `judged_sha`** — the write side-effect stamps it from the feature's own current text (a caller-supplied value is overwritten). You supply only `question_id` / `target` / `verdict` / `rationale`.
+
+Generic shape (own ids only — never another project's). A change that edited WHAT + WHY and one check re-judges exactly the touched targets; `slots:impact` and any untouched `persona:*` keep their cached verdicts:
+
+```
+tend_update_feature({
+  id: "auth-login",
+  changes: {
+    /* ...the changed slots / checks... */
+    judgments: [
+      { question_id: "what_relieves_why", target: "slots:what+why", verdict: "pass",
+        rationale: "New WHAT adds magic-link login; still relieves the same lost-session pain WHY names." },
+      { question_id: "one_bet", target: "feature", verdict: "pass",
+        rationale: "Magic link is the same login bet, not a second one — no clean split." },
+      { question_id: "check_discriminates", target: "check:c001", verdict: "pass",
+        rationale: "Edited check asserts the seeded user reaches the dashboard; fails on an empty handler." }
+    ]
+  }
+})
+```
+
 ### 6. Identify cross-feature cascade effects
 
 Read every feature's polyglot to find references to the changed feature:
@@ -306,3 +351,25 @@ next: /tend audit auth-login (audit needs to re-evaluate after check changes)
 - `tend_validate` passes with no errors.
 - Clear summary of what changed, what cascaded locally (auto), what cascaded across features (flagged), and what audit work is now pending.
 - Spine refs (`validates_job` on checks, `personas` on opportunities) are consistent post-change: no orphans (every `validates_job` resolves to a live persona-job), no silent reindexing (every reorder of `persona.jobs[]` updated every dependent `validates_job`), no persona-set drift (every feature's `personas[]` aligns with the personas on its `solves` opportunities).
+- Only the judgment targets the diff touched were re-judged (per the hash-input table); untouched targets kept their cached verdicts. The refreshed `judgments[]` rode in the same `tend_update_feature` call as the change, and `judged_sha` was never supplied — the side-effect stamped it.
+
+## Next move
+
+Close the loop — don't leave the user guessing what comes next.
+
+1. **Compute it.** Call `tend_get_next` (MCP preferred; CLI fallback
+   `node dist/bin/tend.js next --json`). It reads on-disk state and
+   returns the highest-leverage action with reason codes.
+2. **Present it plainly.** State the recommended `action` verbatim and the
+   reason in plain words (paraphrase the reason code, don't paste it). A
+   change that touched spec-of-truth auto-invalidated the audit, so the
+   move is usually `/tend audit <id>` — *"the checks changed, so the prior
+   verdict no longer holds; re-audit before trusting it."*
+3. **Offer to chain — never auto-execute.** Ask before continuing:
+   *"Want me to run `/tend audit <id>` now?"* Only proceed on the user's
+   yes. If the change opened new work (a split feature, a flagged
+   dependent), route there instead on their direction.
+
+A change ripples — let `tend_get_next` name the highest-leverage follow-up
+(re-audit, re-plan a flagged dependent, or close a freshly-surfaced gap)
+rather than assuming the edit is the end of the work.

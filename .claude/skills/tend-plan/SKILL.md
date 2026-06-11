@@ -197,6 +197,36 @@ orphan checks (a check that no step traces to) when steps exist - fix
 orphans by adding traces, or by removing the check if it's truly out of
 scope (via `/tend change`).
 
+### 4.5. Push back before you write
+
+At the pre-write junction — steps drafted, traces assigned, Test blocks
+written — **interrogate the plan before committing it.** Coaching
+pressure, not a gate: ask the discriminability questions that apply, push
+back with the specific criterion when an answer is weak, let the user
+revise OR deliberately accept. Never block the write.
+
+- **Would each step's test FAIL if the implementation were broken?** A
+  `Test:` block whose asserts pass on a stub (`expect(x).toBeDefined()`,
+  asserting a mock's own return) discriminates nothing. Sharpen the
+  asserts to the persona-job validation clause's measurable, or the RED
+  phase is theater.
+- **Does the assert mirror the bound job's validation clause — or a
+  weaker paraphrase?** If the validation says "within 60s on cold start"
+  and the assert only checks "returns 200", the plan can't prove the bet.
+  Name the gap; tighten the assert to the measured dimension.
+- **Is this ONE bet's plan, or has scope crept across several?** If steps
+  reach into an adjacent concern with no check tracing to it, that work is
+  a different bet on a different feature — cut it (route to `/tend change`).
+- **Does any step trace to a check that doesn't discriminate?** If the
+  underlying check is vague, the step inherits the vagueness — surface it
+  back to `/tend brainstorm` to sharpen the check before planning steps
+  for it.
+
+Present each weak answer as a coaching prompt anchored to the criterion
+("step i003's assert checks the mock's return, not real DB state — it
+won't fail if the query breaks"). The user revises or accepts. Generic
+examples only.
+
 ### 5. Write plan
 
 ```
@@ -275,6 +305,25 @@ See `references/test-design.md` for the full procedure.
 - Security analysis run if relevant; critical/high findings have checks with appropriate `integration_level` and `verification_recipe`.
 - Test specifications complete for every step.
 - For each step tracing to a check with `validates_job` set, the Test block's Asserts mirror the bound persona-job validation clause measurably (timing, error-text, end-state, count) — no paraphrase, no abstract "good enough" asserts.
+
+## Next move
+
+Close the loop — don't leave the user guessing what comes next.
+
+1. **Compute it.** Call `tend_get_next` (MCP preferred; CLI fallback
+   `node dist/bin/tend.js next --json`). It reads on-disk state and
+   returns the highest-leverage action with reason codes.
+2. **Present it plainly.** State the recommended `action` verbatim and the
+   reason in plain words (paraphrase the reason code, don't paste it).
+   Example: *"Next: `/tend run auth-login` — the plan is written and the
+   DAG is valid, so it's ready to execute."*
+3. **Offer to chain — never auto-execute.** Ask before continuing:
+   *"Want me to run `/tend run auth-login` now?"* Only proceed on the
+   user's yes. If they decline, route to whichever sub-skill matches
+   their intent.
+
+After a written plan the usual move is `/tend run`; let `tend_get_next`
+confirm rather than assuming.
 
 ## See also
 

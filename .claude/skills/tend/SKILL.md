@@ -13,7 +13,7 @@ Entry point for all tend-* skills. The primary move is **route the user to their
 - The project has been initialized with `tend init` (garden polyglot at `docs/tend/overview.html` exists).
 - MCP tools are available — preferred path is `mcp__tend__tend_get_next`. CLI fallback is `node dist/bin/tend.js next --json` when MCP is not wired.
 - The user wants a routing recommendation, a status read, or to be handed off to a sub-skill.
-- Nothing is assumed about the project's spine state — if it's empty, the next-action engine returns `/tend brainstorm` with reason code `unbound_persona` and this skill surfaces that as-is.
+- Nothing is assumed about the project's spine state — if it's empty, the next-action engine returns a bootstrap action with reason code `unbound_persona` and this skill surfaces that as-is.
 
 ## Trigger
 
@@ -43,18 +43,18 @@ Both return the same `NextAction` shape:
 
 ```json
 {
-  "action": "/tend audit cli-init",
-  "feature_id": "cli-init",
+  "action": "/tend audit checkout",
+  "feature_id": "checkout",
   "reason_codes": ["stale_evidence"],
-  "explanation": "Feature \"cli-init\": An audit verdict cites a file whose SHA has changed since the verdict was recorded… Run `/tend audit cli-init`.",
+  "explanation": "Feature \"checkout\": An audit verdict cites a file whose SHA has changed since the verdict was recorded… Run `/tend audit checkout`.",
   "not_chosen": [
-    { "feature_id": "cli-progress", "reason_codes": ["stale_evidence"], "explanation": "…" },
-    { "feature_id": "mcp-server.discovery-tools", "reason_codes": ["blocked"], "explanation": "…" }
+    { "feature_id": "user-login", "reason_codes": ["stale_evidence"], "explanation": "…" },
+    { "feature_id": "search-filters", "reason_codes": ["blocked"], "explanation": "…" }
   ]
 }
 ```
 
-If the project has no features yet, the engine returns `/tend brainstorm` with `reason_codes: ["unbound_persona"]` — surface it and stop.
+If the project has no features yet, the engine returns a bootstrap action with `reason_codes: ["unbound_persona"]` — surface it and stop.
 
 If `tend next` cannot be reached at all (no MCP, no built CLI), say so plainly and suggest `npm run build` or check the MCP wiring. Do not fabricate a recommendation.
 
@@ -68,11 +68,11 @@ Show the user, concisely:
 
 Format example:
 
-> **Next:** `/tend audit cli-init`
+> **Next:** `/tend audit checkout`
 >
-> The `cli-init` feature has a verified audit verdict, but its cited evidence file has changed on disk since the verdict was recorded. Re-audit before trusting the verdict.
+> The `checkout` feature has a verified audit verdict, but its cited evidence file has changed on disk since the verdict was recorded. Re-audit before trusting the verdict.
 >
-> Other candidates: `cli-progress` has the same staleness; `mcp-server.discovery-tools` is blocked by an unverified dependency.
+> Other candidates: `user-login` has the same staleness; `search-filters` is blocked by an unverified dependency.
 
 Paraphrasing rule: read `REASON_CODES[code].long_explanation`, then rewrite it as a sentence anchored to the specific feature id. The codes themselves (`stale_evidence`, `false_done`, `broken_refs`, `cycle_detected`, `mock_only_evidence`, `orphan_check`, `blocked`, `unblocked`, `unbound_persona`, …) are stable strings — useful as identifiers when the user asks "why?" but not the prose the user reads first.
 
@@ -80,7 +80,7 @@ Paraphrasing rule: read `REASON_CODES[code].long_explanation`, then rewrite it a
 
 After presenting:
 
-- **User agrees** → reference the recommended slash-command (e.g., `/tend audit cli-init`) so the user (or harness) invokes it. Do not directly act — this skill routes, it doesn't audit or plan.
+- **User agrees** → reference the recommended slash-command (e.g., `/tend audit checkout`) so the user (or harness) invokes it. Do not directly act — this skill routes, it doesn't audit or plan.
 - **User wants context first** → run step 4 (status overview) or list other ready features via `mcp__tend__tend_get_unblocked`.
 - **User wants to override** → respect their pick; route them to the sub-skill that matches their intent (see "Sub-skill map" below).
 
@@ -113,16 +113,40 @@ Group by `journey_phase` if populated. Box-drawing connectors:
 
 Glyphs: `v` verified, `!` false-done or blocked, `o` in-progress, `.` planned, `x` failed. 80-col target. No file writes.
 
+## The chain protocol
+
+Tend's skills form a chain, and the chain is **consent-gated at every
+hop.** Two halves:
+
+- **Every junction skill ends by offering the next move.** After
+  `/tend position`, `/tend brainstorm`, `/tend plan`, `/tend run`,
+  `/tend audit`, `/tend narrate`, `/tend change`, and `/tend discover`
+  finish their work, each one calls `tend_get_next`, presents the
+  recommended action and the reason in plain words, and **offers** to
+  chain into the matching skill. It never auto-executes the next skill
+  without the user's yes. (Look for the "Next move" section at the end of
+  each sub-skill's SKILL.md — that's where this lives.)
+- **This router confirms and routes.** When the user lands here — via a
+  `/tend` invocation, a "what's next?", or a junction skill handing back —
+  the router computes `tend_get_next`, presents the move (step 2 below),
+  and routes to the sub-skill on the user's confirmation (step 3). The
+  router is the one place the recommendation is *surfaced for a decision*;
+  the sub-skills *offer*, the router *confirms*.
+
+The invariant across both halves: **tend leads, the user decides.** No
+skill silently chains into the next; the next move is always computed,
+always presented in plain words, always gated on consent.
+
 ## When NOT to use this skill
 
 This skill is the **routing layer**. It computes, presents, and hands off. It does not author, audit, plan, run, brainstorm, narrate, or change.
 
 If the user's intent is clearly one of the sub-skills, **invoke that skill directly** without going through `/tend`:
 
-- "audit cli-init" → `/tend audit` directly
-- "plan the discovery-tools feature" → `/tend plan` directly
+- "audit checkout" → `/tend audit` directly
+- "plan the search-filters feature" → `/tend plan` directly
 - "brainstorm a new feature for X" → `/tend brainstorm` directly
-- "narrate the cli-progress page" → `/tend narrate` directly
+- "narrate the user-login page" → `/tend narrate` directly
 
 `/tend` (this skill) is for "what should I do?" — not for "do this specific thing."
 
