@@ -4,10 +4,12 @@
 
 | Role | Hex | RGB | Usage |
 |------|-----|-----|-------|
-| Primary | #5F6F4E | rgb(95, 111, 78) | Primary brand color, key actions, selected states, product-wide emphasis. |
-| Accent | #D97757 | rgb(217, 119, 87) | The bloom — CTAs, launch moments, attention marks, annotations. |
+| Primary | #4C5E3C | rgb(76, 94, 60) | Primary brand green — buttons, key actions, links, selected states, product-wide emphasis. Deepened from #5F6F4E for confident contrast (6.28:1 on cream). |
+| Accent | #D97757 | rgb(217, 119, 87) | The bloom — CTAs, launch moments, attention marks, annotations, kicker labels, display numerals. |
 | Background | #F7F1E6 | rgb(247, 241, 230) | Main application and marketing background; warm paper base. |
-| Text | #28241D | rgb(40, 36, 29) | Primary text, headings, high-emphasis interface copy. |
+| Background (band) | #F1E9DA | rgb(241, 233, 218) | Alternating section band — a half-step deeper than the paper base, for vertical rhythm. |
+| Text | #211D17 | rgb(33, 29, 23) | Primary text, headings, high-emphasis copy. Deepened warm near-black (14.91:1 on cream). |
+| Text (soft) | #5C5648 | rgb(92, 86, 72) | Secondary prose, muted captions, annotation copy. Warm — AA on cream (6.49:1). |
 | Surface | #EFE7D8 | rgb(239, 231, 216) | Cards, panels, secondary sections, grouped content areas. |
 | Border | #D8CCB8 | rgb(216, 204, 184) | Dividers, card borders, input borders, subtle structural lines. |
 
@@ -54,24 +56,38 @@ Each product in the plotplot portfolio has its own accent. The primary palette i
 
 | Role | Light Mode | Dark Mode |
 |------|-----------|-----------|
-| Primary | #5F6F4E | #A9B78D |
+| Primary | #4C5E3C | #A9B78D |
 | Accent | #D97757 | #E0866B |
 | Background | #F7F1E6 | #17140F |
-| Text | #28241D | #EFE7D8 |
+| Text | #211D17 | #EFE7D8 |
 | Surface | #EFE7D8 | #231F18 |
 | Border | #D8CCB8 | #453C30 |
+
+## Terminal Surfaces
+
+Embedded terminal panes (the landing-page demos) run a deepened dark soil so the warm-paper page reads above them and the in-pane accent lines pop.
+
+| Role | Hex | Usage |
+|------|-----|-------|
+| Terminal background | #141109 | Deepened soil-black behind terminal text (15.3:1 for surface text). |
+| Terminal surface | #231F18 | Titlebar / chrome inside the terminal pane. |
+| Terminal border | #453C30 | Terminal pane and titlebar dividers. |
+| Terminal green (in-pane) | #86B36E | Brightened command / OK lines — legible on the deep terminal soil (7.8:1). |
+| Terminal info (in-pane) | #7E9DAD | Brightened informational lines inside the terminal (6.6:1). |
 
 ## CSS Custom Properties
 
 ```css
 :root {
   /* shared family palette */
-  --pp-primary:    #5F6F4E;
+  --pp-primary:    #4C5E3C;   /* botanical green — deepened from #5F6F4E */
   --pp-accent:     #D97757;   /* the bloom — was #C97863 */
-  --pp-text:       #28241D;
+  --pp-text:       #211D17;   /* warm near-black — deepened from #28241D */
+  --pp-text-soft:  #5C5648;   /* secondary prose — warm, AA on cream */
   --pp-surface:    #EFE7D8;
   --pp-border:     #D8CCB8;
   --pp-bg:         #F7F1E6;   /* marketing paper */
+  --pp-bg-band:    #F1E9DA;   /* alternating section band */
   --pp-bg-artifact:#fbfaf8;   /* tend's lighter long-read paper */
 
   /* reconciled status (matches tend's glyph colors) */

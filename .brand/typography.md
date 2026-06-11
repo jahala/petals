@@ -4,8 +4,8 @@
 
 | Role | Font Family | Weight | Style |
 |------|------------|--------|-------|
-| Headings | Sora | 600, 700 | normal |
-| Body | Source Sans 3 | 400, 500, 600 | normal |
+| Headings | Fraunces | 500, 560, 600, 620 | normal |
+| Body | Source Sans 3 | 400, 500, 600, 700 | normal |
 | Interface | Source Sans 3 | 400, 500, 600 | normal |
 | Code | JetBrains Mono | 400, 500 | normal |
 
@@ -14,21 +14,29 @@
 | Weight | Value | Usage |
 |--------|-------|-------|
 | Regular | 400 | Body, interface |
-| Medium | 500 | Labels, small headings |
-| Semibold | 600 | Subheadings |
-| Bold | 700 | Headings |
+| Medium | 500 | Labels, small headings, h3/h4 |
+| Display | 560 | h2 |
+| Semibold | 600 | Subheadings, emphasis |
+| Display Bold | 620 | h1 |
+| Bold | 700 | Strong body emphasis, stat numerals |
+
+Fraunces is a variable font with optical sizing (`opsz`) and a soft axis (`SOFT`). Headings set `font-optical-sizing: auto`; display headings carry a touch of `SOFT` for warmth.
 
 ## Type Scale
 
+Base: `html { font-size: 18px }`. Sizes below are in `rem` (relative to 18px) for fluid scaling; the clamp on h1 keeps the hero balanced across viewports.
+
 | Level | Size | Line Height | Weight | Usage |
 |-------|------|------------|--------|-------|
-| h1 | 44px | 1.2 | Bold | Page titles |
-| h2 | 32px | 1.25 | Bold | Section headings |
-| h3 | 24px | 1.3 | Semibold | Subsection headings |
-| h4 | 18px | 1.35 | Semibold | Card titles |
-| body | 16px | 1.5 | Regular | Body text |
-| small | 14px | 1.4 | Regular | Captions, labels |
-| code | 13px | 1.5 | Regular | Code blocks |
+| h1 | clamp(3.4rem, 6vw, 4.6rem) | 1.04 | 620 | Page / hero titles |
+| h2 | 2.4rem | 1.12 | 560 | Section headings |
+| h3 | 1.6rem | 1.2 | 560 | Subsection headings |
+| h4 | 1.25rem | 1.3 | 560 | Card titles |
+| lead | 1.3rem | 1.5 | 400 | Hero deck, section ledes |
+| body | 1.0625rem | 1.65 | 400 | Body text |
+| small | 0.9375rem | 1.5 | 400 | Captions, labels |
+| stat | 3.75rem | 1.0 | 700 | Display numerals |
+| code | 0.95rem | 1.6 | 400 | Code / terminal text |
 
 ## Spacing Scale
 
@@ -45,11 +53,12 @@ Multiples of 4px:
 | lg | 48px | Page sections |
 | xl | 64px | Hero spacing |
 | 2xl | 96px | Layout breaks |
+| 3xl | 128px | Marketing section rhythm |
 
 ## Font Sources
 
-- Sora: Google Fonts — used for headings because it has a distinctive, literate geometric voice without feeling playful.
-- Source Sans 3: Google Fonts — used for body and interface because it is readable, neutral, warm, and precise.
+- Fraunces: Google Fonts — used for headings and display because it is a warm, characterful serif with optical sizing and a soft axis; literate and botanical (fits "petals") without feeling decorative or playful.
+- Source Sans 3: Google Fonts — used for body and interface because it is readable, neutral, warm, and precise at the scaled-up sizes.
 - JetBrains Mono: Google Fonts — used for code because it is compact, legible, and familiar in developer workflows.
 
 ## Google Fonts Import
@@ -57,14 +66,14 @@ Multiples of 4px:
 ```html
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Sora:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,560;9..144,600;9..144,620&family=JetBrains+Mono:wght@400;500&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
 ```
 
 ```css
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Sora:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,560;9..144,600;9..144,620&family=JetBrains+Mono:wght@400;500&family=Source+Sans+3:wght@400;500;600;700&display=swap');
 
 :root {
-  --font-heading: 'Sora', sans-serif;
+  --font-heading: 'Fraunces', Georgia, serif;
   --font-body: 'Source Sans 3', sans-serif;
   --font-interface: 'Source Sans 3', sans-serif;
   --font-code: 'JetBrains Mono', monospace;

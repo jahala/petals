@@ -25,31 +25,31 @@ Plotplot is built around the idea that companies need a living map of what they 
 
 ## 3. Color System
 
-The palette is a botanical archive: warm paper, dark soil, muted green labels, dried specimens, and occasional bloom-colored annotation marks. The shared primary palette is defined in `colors.md` and uses #4A6741 as primary moss green, #F7F1E6 as warm paper background, #28241D as soil-black text, #EFE7D8 as card surface, #C4B8A2 as border, and #E0704C as restrained bloom coral accent.
+The palette is a botanical archive: warm paper, dark soil, muted green labels, dried specimens, and occasional bloom-colored annotation marks. The shared primary palette is defined in `colors.md` and uses #4C5E3C as primary botanical green, #F7F1E6 as warm paper background, #211D17 as soil-black text, #EFE7D8 as card surface, #D8CCB8 as border, and #D97757 as restrained bloom clay accent.
 
 Each product has its own muted accent color while keeping the same family feel. Root, Soil, Seed, Tend, Stem, Petal, Prune, Graft, Cultivate, Weather, Bloom, Harvest, and Canopy all have explicit hex values in `colors.md`. Use product accents for navigation markers, small badges, product headers, chart highlights, and focused states — not as full-screen theme replacements.
 
-Dark mode should feel like dark soil at night, not a harsh developer theme. Use #17140F for dark backgrounds, #231F18 for surfaces, #EFE7D8 for text, and #3D362E for borders.
+Dark mode should feel like dark soil at night, not a harsh developer theme. Use #17140F for dark backgrounds, #231F18 for surfaces, #EFE7D8 for text, and #453C30 for borders.
 
 ## 4. Typography System
 
-Plotplot uses Google Fonts only. Headings use Sora for a distinctive, literate, geometric voice. Body and interface use Source Sans 3 for readable, warm precision. Code uses JetBrains Mono for compact developer legibility.
+Plotplot uses Google Fonts only. Headings and display use Fraunces — a warm, characterful serif with optical sizing and a soft axis, literate and botanical without being decorative. Body and interface use Source Sans 3 for readable, warm precision. Code uses JetBrains Mono for compact developer legibility.
 
-The type scale is editorial but not oversized: h1 is 44px, h2 is 32px, h3 is 24px, h4 is 18px, body is 16px, small text is 14px, and code is 13px. Full font weights, line heights, spacing values, and import URLs are defined in `typography.md`.
+The type scale is editorial and confident: the html base is 18px; h1 is a fluid clamp(3.4rem, 6vw, 4.6rem); h2 is 2.4rem; h3 is 1.6rem; h4 is 1.25rem; body is 1.0625rem with 1.65 line-height; small text is 0.9375rem; and code is 0.95rem. Display numerals run to 3.75rem. Full font weights, line heights, spacing values, and import URLs are defined in `typography.md`.
 
 ## 5. Spacing & Layout
 
-All spacing uses a 4px grid. Tokens are 4xs 4px, 3xs 8px, 2xs 12px, xs 16px, sm 24px, md 32px, lg 48px, xl 64px, and 2xl 96px.
+All spacing uses a 4px grid. Tokens are 4xs 4px, 3xs 8px, 2xs 12px, xs 16px, sm 24px, md 32px, lg 48px, xl 64px, 2xl 96px, and 3xl 128px. Marketing sections breathe at the 96–128px end of the scale for vertical rhythm.
 
 Layouts should feel calm and readable. Use generous whitespace, quiet grids, clear section boundaries, and visible relationships between objects. Avoid crowded dashboards, dense SaaS panels, decorative cards, and arbitrary spacing. Important strategic relationships should get spatial priority over raw data volume.
 
 ## 6. Component Foundations
 
-Buttons should be restrained, direct, and legible. Primary buttons use #4A6741 with #F7F1E6 text. Accent buttons use #E0704C only for high-momentum actions such as launch, publish, or confirm. Destructive buttons use #B8453A.
+Buttons should be restrained, direct, and legible. Primary buttons use #4C5E3C with #F7F1E6 text. Accent buttons use #D97757 only for high-momentum actions such as launch, publish, or confirm. Destructive buttons use #B85C3E.
 
-Inputs should feel like annotated archive fields: warm surfaces, subtle borders, clear focus states, and plain labels. Use #EFE7D8 for input backgrounds, #C4B8A2 for borders, #4A6741 for focus, and #28241D for text.
+Inputs should feel like annotated archive fields: warm surfaces, subtle borders, clear focus states, and plain labels. Use #EFE7D8 for input backgrounds, #D8CCB8 for borders, #4C5E3C for focus, and #211D17 for text.
 
-Cards should group context, not decorate content. Use #EFE7D8 surfaces, #C4B8A2 borders, small product accent markers, and clear headings. Cards should expose source, owner, status, and relationship when relevant.
+Cards should group context, not decorate content. Use #EFE7D8 surfaces, #D8CCB8 borders, small product accent markers, and clear headings. Cards should expose source, owner, status, and relationship when relevant.
 
 Navigation should make the portfolio understandable. Use product accents sparingly as section identifiers. Keep labels plain: Root, Soil, Seed, Tend, Stem, Petal, Prune, Graft, Cultivate, Weather, Bloom, Harvest, Canopy.
 
