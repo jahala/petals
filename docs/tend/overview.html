@@ -2689,7 +2689,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
     {
       "id": "brand-check",
       "title": "Brand Check",
-      "status": "in-progress",
+      "status": "verified",
       "priority": "high",
       "personas": [
         "shipping-developer",
@@ -2787,36 +2787,58 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
         "alt": "A context window bar showing three tiers — a tiny discovery chip, a medium activation block, and small on-demand files, with most of the bar available for the task",
         "content": "<svg viewBox=\"0 0 120 80\" xmlns=\"http://www.w3.org/2000/svg\"><rect class=\"tc-bg tc-frame\" x=\"6\" y=\"8\" width=\"108\" height=\"14\" rx=\"2\"/><rect class=\"tc-ac\" x=\"10\" y=\"11\" width=\"4\" height=\"8\" rx=\"1\"/><rect class=\"tc-wh\" x=\"18\" y=\"11\" width=\"8\" height=\"8\" rx=\"1\"/><rect class=\"tc-fg\" x=\"30\" y=\"11\" width=\"6\" height=\"8\" rx=\"1\"/><rect class=\"tc-bg\" x=\"40\" y=\"11\" width=\"70\" height=\"8\" rx=\"1\"/><rect class=\"tc-bg tc-frame\" x=\"6\" y=\"44\" width=\"32\" height=\"30\" rx=\"2\"/><rect class=\"tc-wh\" x=\"10\" y=\"48\" width=\"24\" height=\"6\" rx=\"1\"/><rect class=\"tc-wh\" x=\"10\" y=\"56\" width=\"18\" height=\"6\" rx=\"1\"/><rect class=\"tc-ac\" x=\"10\" y=\"64\" width=\"20\" height=\"6\" rx=\"1\"/><rect class=\"tc-bg tc-frame\" x=\"44\" y=\"44\" width=\"70\" height=\"30\" rx=\"2\"/><rect class=\"tc-wh\" x=\"50\" y=\"48\" width=\"12\" height=\"6\" rx=\"1\"/><rect class=\"tc-wh\" x=\"64\" y=\"48\" width=\"10\" height=\"6\" rx=\"1\"/><rect class=\"tc-wh\" x=\"76\" y=\"48\" width=\"16\" height=\"6\" rx=\"1\"/><rect class=\"tc-fg\" x=\"50\" y=\"58\" width=\"8\" height=\"6\" rx=\"1\"/><rect class=\"tc-fg\" x=\"62\" y=\"58\" width=\"14\" height=\"6\" rx=\"1\"/></svg>"
       }
+    },
+    {
+      "id": "brand-book",
+      "title": "Brand Book",
+      "status": "in-progress",
+      "priority": "medium",
+      "dependencies": [
+        "brand-extraction"
+      ],
+      "personas": [
+        "brand-operator",
+        "shipping-developer"
+      ],
+      "solves": [
+        "pdf-to-agent-gap",
+        "review-bottleneck"
+      ],
+      "journey_phase": "review",
+      "what": "/petal book renders the whole .brand/ directory as a single self-contained HTML page — palette with contrast pairings, type specimens, layout ruler, surface tokens, component exemplars, voice rules, a",
+      "thumbnail": {
+        "kind": "svg",
+        "alt": "An open book page with the three-petal mark on it — the brand rendered for human eyes",
+        "content": "<svg viewBox=\"0 0 120 80\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"22\" y=\"10\" width=\"76\" height=\"60\" rx=\"4\" fill=\"#fbfaf8\" stroke=\"#D6D2C2\"/><line x1=\"60\" y1=\"10\" x2=\"60\" y2=\"70\" stroke=\"#D6D2C2\"/><line x1=\"30\" y1=\"22\" x2=\"52\" y2=\"22\" stroke=\"#5A6150\" stroke-width=\"2\"/><line x1=\"30\" y1=\"30\" x2=\"48\" y2=\"30\" stroke=\"#D6D2C2\" stroke-width=\"2\"/><line x1=\"30\" y1=\"38\" x2=\"52\" y2=\"38\" stroke=\"#D6D2C2\" stroke-width=\"2\"/><rect x=\"30\" y=\"48\" width=\"8\" height=\"8\" rx=\"2\" fill=\"#3F7A33\"/><rect x=\"41\" y=\"48\" width=\"8\" height=\"8\" rx=\"2\" fill=\"#C04B3C\"/><rect x=\"52\" y=\"48\" width=\"8\" height=\"8\" rx=\"2\" fill=\"#E8917F\"/><g transform=\"translate(67 18) scale(1.6)\"><path d=\"M12 21 C9.4 15 9.4 9 12 4.5 C14.6 9 14.6 15 12 21 Z\" fill=\"#3F7A33\" transform=\"rotate(-38 12 21)\"/><path d=\"M12 21 C9.4 15 9.4 9 12 4.5 C14.6 9 14.6 15 12 21 Z\" fill=\"#E8917F\" transform=\"rotate(38 12 21)\"/><path d=\"M12 21 C9.4 15 9.4 9 12 4.5 C14.6 9 14.6 15 12 21 Z\" fill=\"#C04B3C\"/></g></svg>"
+      }
     }
   ],
   "health_snapshot": {
-    "verdict": "yellow",
+    "verdict": "green",
     "reason_codes": [
-      "stale_evidence",
-      "false_done",
       "unblocked"
     ],
     "truth": {
-      "verified": 2,
-      "total": 11,
-      "stale": 3,
+      "verified": 3,
+      "total": 12,
+      "stale": 0,
       "mock_only": 0,
-      "false_done": 2,
-      "auditable": 3,
-      "audited": 2
+      "false_done": 0,
+      "auditable": 4,
+      "audited": 4
     },
     "flow": {
       "ready_now": 1,
       "blocked": 0
     },
     "value": {
-      "highest_value_unblocked": "brand-check",
+      "highest_value_unblocked": "brand-book",
       "weakest_opportunity_coverage": "distribution-drift"
     },
     "lifecycle": {
-      "total": 3,
+      "total": 4,
       "planned": {
-        "count": 0,
+        "count": 1,
         "blocked": 0
       },
       "building": {
@@ -2824,27 +2846,19 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
         "blocked": 0
       },
       "built": {
-        "count": 1,
+        "count": 0,
         "blocked": 0
       },
       "verified": {
-        "count": 2,
-        "at_risk": 1
+        "count": 3,
+        "at_risk": 0
       }
     },
     "coherence": {
-      "total": 3,
-      "groups": [
-        {
-          "kind": "judgment_stale",
-          "label": "judgment refresh",
-          "count": 3,
-          "route": "/tend audit",
-          "section": "spine"
-        }
-      ]
+      "total": 0,
+      "groups": []
     },
-    "computed_at": "2026-06-12T08:23:31.972Z"
+    "computed_at": "2026-06-12T08:40:56.338Z"
   },
   "what": "Petals is the brand layer for AI coding agents. It's a skill that takes whatever a company already has — a 40-page brand PDF, a folder of logo SVGs, a color palette in JSON, a style guide in someone's head — and turns it into a clean, structured .brand/ directory that every agent in every project can read. Agents write UI and copy. Petals makes sure they write it on-brand. No new tools to learn. No servers to deploy. No databases to maintain. Just files.",
   "why": "Here's what happens today. An agent opens a session. Someone types \"build a pricing page.\" The agent picks Tailwind's default blue — it has no reason not to. Uses Inter because that's what shipped with the template. Writes headline copy that sounds like every other SaaS landing page on the internet. Someone catches it in PR review. Someone else pastes the hex codes into the prompt next time. Everyone burns time and tokens on setup that should be invisible. And when the brand changes — new logo, palette refresh, voice shift — someone has to Slack every team and hope the old brand dies quietly. It never does. The brand team spent months on that identity. The PDF is beautiful. It means nothing to an agent.",

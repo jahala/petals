@@ -2980,8 +2980,8 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       {
         "check_id": "c004",
         "verdict": "pass",
-        "evidence_path": "petals/SKILL.md:96-108. Two guard clauses: (1) .brand/ already exists → warn 'Running init --from will overwrite it. Continue? (y/N)' and wait for confirmation. (2) .petalrc already exists → warn 'Overwriting will change the brand source. Continue? (y/N)' and wait for confirmation. Both exit without changes if denied. Clear prompt text, clear conditional branching. This is structured agent behavior — the agent is instructed to present the prompt and wait. Verified by code inspection on 2026-06-05. Also proven structurally: the extraction → check → update pipeline ran in this session without ever silently overwriting .brand/.",
-        "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
+        "evidence_path": "petals/SKILL.md:96-115 (init --from guard clauses; shifted from 96-108 by the workflow growth). Both prompts verified present 2026-06-12: 'Running init --from will overwrite it. Continue? (y/N)' at line 103 and 'Overwriting will change the brand source. Continue? (y/N)' at line 110; both exit without changes if denied. Text unchanged from the 2026-06-05 verification — the SKILL.md edits this week were additive (dimensions, book, logo, guardrails) and did not touch the distribution workflows.",
+        "evidence_sha": "a2fd6e9e7ed734b486809216643f5b553d656f1b"
       },
       {
         "check_id": "c005",
@@ -3004,14 +3004,14 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       {
         "check_id": "c008",
         "verdict": "pass",
-        "evidence_path": "petals/SKILL.md",
-        "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
+        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12: the gitignore step and .petalrc structure sections of SKILL.md are unchanged by this week's additive edits; claims re-checked against the current file.",
+        "evidence_sha": "a2fd6e9e7ed734b486809216643f5b553d656f1b"
       },
       {
         "check_id": "c009",
         "verdict": "pass",
-        "evidence_path": "petals/SKILL.md",
-        "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
+        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12: the gitignore step and .petalrc structure sections of SKILL.md are unchanged by this week's additive edits; claims re-checked against the current file.",
+        "evidence_sha": "a2fd6e9e7ed734b486809216643f5b553d656f1b"
       },
       {
         "check_id": "c010",
@@ -3033,7 +3033,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       }
     ],
     "result": "pass",
-    "ran_at": "2026-06-05T16:05:00Z"
+    "ran_at": "2026-06-12"
   },
   "dek": "When a brand changes, every project keeps its own fossilized copy and three versions of the truth drift apart within months — nobody can Slack every team and hope they update before the next agent session. Distribution makes the brand as easy to get as `git pull`: one command connects a project to a central repo, drift surfaces automatically, and `/petal update` syncs new versions while project overrides survive. One push, every project current, zero manual propagation.",
   "personas_resolved": [

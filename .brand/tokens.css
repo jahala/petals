@@ -1,0 +1,66 @@
+/* .brand/tokens.css — machine view of the brand, generated from .brand/*.md.
+   The markdown files are canonical; regenerate this file via /petal update.
+   Import it and reference the variables — never hard-code brand values. */
+:root {
+  /* color — colors.md */
+  --pp-primary: #3F7A33;
+  --pp-primary-deep: #356428;
+  --pp-accent: #C04B3C;
+  --pp-text: #20241B;
+  --pp-text-soft: #5A6150;
+  --pp-surface: #F0EDE1;
+  --pp-border: #D6D2C2;
+  --pp-bg: #F8F5EC;
+  --pp-bg-band: #EFEDE2;
+  --pp-bg-artifact: #fbfaf8;
+  --pp-healthy: #46913C;
+  --pp-caution: #C9923C;
+  --pp-error: #B85C3E;
+  --pp-info: #587383;
+  --pp-muted: #8A8A86;
+  --pp-terminal-bg: #161A12;
+  --pp-terminal-surface: #20251B;
+  --pp-terminal-border: #3C4433;
+  --pp-term-green: #8FCB63;
+  --pp-term-info: #7E9DAD;
+  --pp-petal: #E8917F;
+  --pp-stem: #4E6A4A;
+  --pp-tend: #D97757;
+
+  /* type — typography.md */
+  --font-heading: 'Fraunces', Georgia, serif;
+  --font-body: 'Source Sans 3', sans-serif;
+  --font-code: 'JetBrains Mono', monospace;
+
+  /* layout — layout.md */
+  --space-4xs: 4px;
+  --space-3xs: 8px;
+  --space-2xs: 12px;
+  --space-xs: 16px;
+  --space-sm: 24px;
+  --space-md: 32px;
+  --space-lg: 48px;
+  --space-xl: 64px;
+  --space-2xl: 96px;
+  --space-3xl: 128px;
+  --container-max: 1200px;
+  --container-gutter: 32px;
+
+  /* surface — components.md */
+  --radius-xs: 3px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-full: 999px;
+  --stroke-hairline: 1px;
+  --stroke-emphasis: 1.5px;
+  --stroke-rule: 2px;
+  --shadow-rest: 0 1px 0 #D6D2C2, 0 12px 40px -16px rgba(40, 36, 29, 0.35);
+  --shadow-lift: 0 2px 4px rgba(32, 36, 27, 0.05), 0 14px 32px rgba(32, 36, 27, 0.08);
+  --shadow-float: 0 2px 6px rgba(32, 36, 27, 0.07), 0 18px 44px rgba(32, 36, 27, 0.12);
+  --ease-petal: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-unfold: 0.8s;
+  --dur-micro: 0.18s;
+  --stagger-step: 0.1s;
+}

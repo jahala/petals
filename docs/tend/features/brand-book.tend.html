@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# tend feature artifact: brand-operator
+# tend feature artifact: brand-book
 : << 'OO_HTML'
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>brand-operator · tend</title>
+<title>brand-book · tend</title>
 
 <!-- OO:STYLE:START -->
 <!-- template_version: 1 -->
@@ -2426,7 +2426,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
     <span class="bed-top-header__sep" data-top-header-garden-sep>/</span>
     <a class="bed-top-header__garden" data-top-header-garden href="#">garden</a>
     <span class="bed-top-header__sep" data-top-header-crumb-sep>/</span>
-    <span class="bed-top-header__crumb" data-top-header-crumb>brand-operator</span>
+    <span class="bed-top-header__crumb" data-top-header-crumb>brand-book</span>
     <span class="bed-top-header__stats">
       <span class="bed-top-header__health" data-top-header-health></span>
       <span class="bed-top-header__stat" data-top-header-status></span>
@@ -2457,7 +2457,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
   <main class="center-col">
     <header class="article-head">
       <div class="article-head__text">
-        <h1 class="article-title" data-article-title>Brand Operator</h1>
+        <h1 class="article-title" data-article-title>Brand Book</h1>
       </div>
       <div class="article-head__thumb" data-article-thumb></div>
     </header>
@@ -2481,233 +2481,106 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
   "schema_version": "1",
   "kind": "feature",
   "tend_version": "0.4.0",
-  "generated_at": "2026-06-04T14:43:20.456Z",
+  "generated_at": "2026-06-12T08:34:09.487Z",
   "project_name": "Petals"
 }
 </script>
 
 <script id="oo-data" type="application/json">
 {
-  "id": "brand-operator",
-  "title": "Brand Operator",
-  "status": "planned",
-  "persona": {
-    "archetype": "A senior developer or tech lead who translates between the brand steward's world (PDFs, Figma, brand guidelines) and the development world (git repos, markdown files, CLI tools). They set up brand infrastructure once, maintain it when the brand changes, and otherwise trust it to run. Their week: PR reviews, architecture decisions, unblocking their team. They use git, CLI, and markdown as naturally as breathing. They are not a designer — but they're the person the designer comes to when the brand needs to reach the product.",
-    "jobs": [
-      "When the brand team sends me a 40-page PDF brand guide, a folder of logo SVGs, and a Slack message about the new accent color (#FF4D00, not #E7000B, \"please update everywhere\"), because every AI agent across six projects is still generating the old accent color and nobody else on the team knows how to bridge the gap between a PDF and an agent's context window, we believe I should be able to point petal at that folder and get a complete, correct .brand/ directory in one command — colors extracted to hex, fonts identified, voice rules captured, logos copied — without manually typing 47 hex codes or guessing which font weight is the heading weight. We'll know we got it right when the generated colors.md contains #FF4D00 as the accent (not #E7000B, which was the old accent), the generated typography.md names the correct heading font family and weight, and every asset in assets/ matches its source — verified by diffing the output against known values from the brand guide.",
-      "When I start a new project repo and the team expects their agents to produce on-brand output from day one, because if brand isn't set up before the first agent session, the first PR will hardcode Tailwind's default blue into the hero section and someone (me) will catch it in review, we believe one command should pull the current brand into .brand/ and wire it into the project so every future agent session reads brand context without anyone thinking about it. We'll know we got it right when a developer who has never heard of petal opens a new agent session in this project, types \"build a contact page,\" and the agent produces output with the correct primary color, heading font, and voice tone — without the developer pasting a single hex code into the prompt.",
-      "When the central brand repo gets a new tag (v1.2.0 to v1.3.0 — primary color changed, new logo variant added), because I can't manually Slack every developer on every project and hope they update before their next agent session, we believe every connected project should detect the drift automatically on the next /petal check or agent session, show what changed, and update with one command without losing project-specific overrides. We'll know we got it right when six projects detect the v1.3.0 drift on their next agent session, four update immediately, two with campaign overrides update without losing their seasonal palette, and zero projects are still silently using v1.2.0 two weeks later."
-    ],
-    "description": "Maria opens her laptop at 9pm after the kids are down. She has 90 minutes before she crashes. The brand team sent her a 40-page PDF yesterday — the new palette, the updated voice guide, the fresh logo variants. She's supposed to get this into six projects. Every agent is still generating the old accent color. Nobody else on the team knows how to bridge the gap between a PDF and an agent's context window. She's the bridge. She points petals at the folder. One command. Five minutes later, .brand/ exists. She pushes it to the central repo, tags v2.0.0, and closes her laptop. Three days later, a developer on the dashboard project opens a session and types 'build a pricing page' — the agent produces output in the new brand colors without anyone pasting a hex code. The developer has never heard of Maria. They don't need to.",
-    "bound_features": [
-      {
-        "id": "brand-book",
-        "title": "Brand Book",
-        "status": "in-progress",
-        "priority": "medium",
-        "dependencies": [
-          "brand-extraction"
-        ],
-        "personas": [
-          "brand-operator",
-          "shipping-developer"
-        ],
-        "solves": [
-          "pdf-to-agent-gap",
-          "review-bottleneck"
-        ],
-        "journey_phase": "review",
-        "what": "/petal book renders the whole .brand/ directory as a single self-contained HTML page — palette with contrast pairings, type specimens, layout ruler, surface tokens, component exemplars, voice rules, a",
-        "thumbnail": {
-          "kind": "svg",
-          "alt": "An open book page with the three-petal mark on it — the brand rendered for human eyes",
-          "content": "<svg viewBox=\"0 0 120 80\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"22\" y=\"10\" width=\"76\" height=\"60\" rx=\"4\" fill=\"#fbfaf8\" stroke=\"#D6D2C2\"/><line x1=\"60\" y1=\"10\" x2=\"60\" y2=\"70\" stroke=\"#D6D2C2\"/><line x1=\"30\" y1=\"22\" x2=\"52\" y2=\"22\" stroke=\"#5A6150\" stroke-width=\"2\"/><line x1=\"30\" y1=\"30\" x2=\"48\" y2=\"30\" stroke=\"#D6D2C2\" stroke-width=\"2\"/><line x1=\"30\" y1=\"38\" x2=\"52\" y2=\"38\" stroke=\"#D6D2C2\" stroke-width=\"2\"/><rect x=\"30\" y=\"48\" width=\"8\" height=\"8\" rx=\"2\" fill=\"#3F7A33\"/><rect x=\"41\" y=\"48\" width=\"8\" height=\"8\" rx=\"2\" fill=\"#C04B3C\"/><rect x=\"52\" y=\"48\" width=\"8\" height=\"8\" rx=\"2\" fill=\"#E8917F\"/><g transform=\"translate(67 18) scale(1.6)\"><path d=\"M12 21 C9.4 15 9.4 9 12 4.5 C14.6 9 14.6 15 12 21 Z\" fill=\"#3F7A33\" transform=\"rotate(-38 12 21)\"/><path d=\"M12 21 C9.4 15 9.4 9 12 4.5 C14.6 9 14.6 15 12 21 Z\" fill=\"#E8917F\" transform=\"rotate(38 12 21)\"/><path d=\"M12 21 C9.4 15 9.4 9 12 4.5 C14.6 9 14.6 15 12 21 Z\" fill=\"#C04B3C\"/></g></svg>"
-        }
-      },
-      {
-        "id": "brand-distribution",
-        "title": "Brand Distribution",
-        "status": "verified",
-        "priority": "high",
-        "enables": [
-          "brand-check"
-        ],
-        "personas": [
-          "brand-operator"
-        ],
-        "solves": [
-          "distribution-drift",
-          "agent-off-brand"
-        ],
-        "journey_phase": "author",
-        "what": "/petal init --from <repo-url> connects a project to a central brand repository. /petal update syncs with new versions. Automatic drift detection warns when the central brand has moved ahead. Project o",
-        "thumbnail": {
-          "kind": "svg",
-          "alt": "A central hub labeled .brand/ v1.3.0 with five project nodes connected by lines — four synced, one drifted showing v1.2.0",
-          "content": "<svg viewBox=\"0 0 120 80\" xmlns=\"http://www.w3.org/2000/svg\"><rect class=\"tc-wh tc-frame\" x=\"42\" y=\"26\" width=\"36\" height=\"28\" rx=\"4\"/><rect class=\"tc-bg\" x=\"47\" y=\"31\" width=\"26\" height=\"4\" rx=\"1\"/><rect class=\"tc-bg\" x=\"50\" y=\"39\" width=\"20\" height=\"3\" rx=\"1\"/><rect class=\"tc-ac\" x=\"48\" y=\"46\" width=\"24\" height=\"4\" rx=\"1\"/><line class=\"tc-ln\" x1=\"60\" y1=\"30\" x2=\"19\" y2=\"10\"/><circle class=\"tc-ac\" cx=\"17\" cy=\"10\" r=\"5\"/><line class=\"tc-ln\" x1=\"60\" y1=\"30\" x2=\"101\" y2=\"10\"/><circle class=\"tc-ac\" cx=\"103\" cy=\"10\" r=\"5\"/><line class=\"tc-ln\" x1=\"48\" y1=\"50\" x2=\"10\" y2=\"52\"/><circle class=\"tc-ac\" cx=\"8\" cy=\"52\" r=\"5\"/><line class=\"tc-la\" x1=\"55\" y1=\"52\" x2=\"28\" y2=\"72\"/><circle class=\"tc-fg\" cx=\"26\" cy=\"72\" r=\"5\"/><line class=\"tc-ln\" x1=\"60\" y1=\"54\" x2=\"60\" y2=\"72\"/><circle class=\"tc-ac\" cx=\"60\" cy=\"72\" r=\"5\"/><line class=\"tc-ln\" x1=\"72\" y1=\"50\" x2=\"105\" y2=\"68\"/><circle class=\"tc-ac\" cx=\"107\" cy=\"68\" r=\"5\"/></svg>"
-        }
-      },
-      {
-        "id": "brand-extraction",
-        "title": "Brand Extraction",
-        "status": "verified",
-        "priority": "high",
-        "enables": [
-          "brand-distribution",
-          "brand-check"
-        ],
-        "personas": [
-          "brand-operator",
-          "shipping-developer",
-          "ai-agent"
-        ],
-        "solves": [
-          "pdf-to-agent-gap",
-          "agent-off-brand"
-        ],
-        "journey_phase": "author",
-        "what": "/petal init <folder> reads brand assets using the agent's native capabilities and produces two things: a complete .brand/ directory of agent-readable brand files, and the SKILL.md that makes those fil",
-        "thumbnail": {
-          "kind": "svg",
-          "alt": "A document on the left with content lines feeding through an arrow into a structured .brand/ directory on the right with labeled file rows",
-          "content": "<svg viewBox=\"0 0 120 80\" xmlns=\"http://www.w3.org/2000/svg\"><rect class=\"tc-wh tc-frame\" x=\"6\" y=\"10\" width=\"28\" height=\"50\" rx=\"2\"/><rect class=\"tc-bg\" x=\"11\" y=\"18\" width=\"18\" height=\"3\" rx=\"1\"/><rect class=\"tc-bg\" x=\"11\" y=\"25\" width=\"14\" height=\"3\" rx=\"1\"/><rect class=\"tc-bg\" x=\"11\" y=\"32\" width=\"20\" height=\"3\" rx=\"1\"/><rect class=\"tc-bg\" x=\"11\" y=\"39\" width=\"16\" height=\"3\" rx=\"1\"/><rect class=\"tc-ac\" x=\"11\" y=\"48\" width=\"12\" height=\"3\" rx=\"1\"/><polygon class=\"tc-ac\" points=\"38,32 46,35 38,38\"/><rect class=\"tc-wh tc-frame\" x=\"50\" y=\"8\" width=\"64\" height=\"56\" rx=\"3\"/><rect class=\"tc-bg\" x=\"55\" y=\"12\" width=\"6\" height=\"6\" rx=\"1\"/><rect class=\"tc-bg\" x=\"64\" y=\"12\" width=\"6\" height=\"6\" rx=\"1\"/><circle class=\"tc-ac\" cx=\"76\" cy=\"15\" r=\"3\"/><rect class=\"tc-bg\" x=\"55\" y=\"23\" width=\"54\" height=\"4\" rx=\"1\"/><rect class=\"tc-bg\" x=\"55\" y=\"31\" width=\"46\" height=\"4\" rx=\"1\"/><rect class=\"tc-ac\" x=\"55\" y=\"39\" width=\"38\" height=\"4\" rx=\"1\"/><rect class=\"tc-bg\" x=\"55\" y=\"47\" width=\"50\" height=\"4\" rx=\"1\"/><rect class=\"tc-bg\" x=\"55\" y=\"55\" width=\"42\" height=\"4\" rx=\"1\"/></svg>"
-        }
-      }
-    ],
-    "bound_checks": [
-      {
-        "feature_id": "brand-distribution",
-        "check_id": "c001",
-        "job_index": 1
-      },
-      {
-        "feature_id": "brand-distribution",
-        "check_id": "c002",
-        "job_index": 2
-      },
-      {
-        "feature_id": "brand-distribution",
-        "check_id": "c003",
-        "job_index": 2
-      },
-      {
-        "feature_id": "brand-distribution",
-        "check_id": "c004",
-        "job_index": 1
-      },
-      {
-        "feature_id": "brand-distribution",
-        "check_id": "c005",
-        "job_index": 1
-      },
-      {
-        "feature_id": "brand-distribution",
-        "check_id": "c006",
-        "job_index": 2
-      },
-      {
-        "feature_id": "brand-distribution",
-        "check_id": "c007",
-        "job_index": 1
-      },
-      {
-        "feature_id": "brand-distribution",
-        "check_id": "c008",
-        "job_index": 1
-      },
-      {
-        "feature_id": "brand-distribution",
-        "check_id": "c009",
-        "job_index": 1
-      },
-      {
-        "feature_id": "brand-distribution",
-        "check_id": "c010",
-        "job_index": 2
-      },
-      {
-        "feature_id": "brand-distribution",
-        "check_id": "c011",
-        "job_index": 2
-      },
-      {
-        "feature_id": "brand-distribution",
-        "check_id": "c012",
-        "job_index": 1
-      },
-      {
-        "feature_id": "brand-extraction",
-        "check_id": "c001",
-        "job_index": 0
-      },
-      {
-        "feature_id": "brand-extraction",
-        "check_id": "c002",
-        "job_index": 0
-      },
-      {
-        "feature_id": "brand-extraction",
-        "check_id": "c003",
-        "job_index": 0
-      },
-      {
-        "feature_id": "brand-extraction",
-        "check_id": "c004",
-        "job_index": 0
-      },
-      {
-        "feature_id": "brand-extraction",
-        "check_id": "c005",
-        "job_index": 0
-      },
-      {
-        "feature_id": "brand-extraction",
-        "check_id": "c006",
-        "job_index": 0
-      },
-      {
-        "feature_id": "brand-extraction",
-        "check_id": "c007",
-        "job_index": 0
-      },
-      {
-        "feature_id": "brand-extraction",
-        "check_id": "c010",
-        "job_index": 0
-      },
-      {
-        "feature_id": "brand-extraction",
-        "check_id": "c011",
-        "job_index": 0
-      },
-      {
-        "feature_id": "brand-extraction",
-        "check_id": "c012",
-        "job_index": 0
-      },
-      {
-        "feature_id": "brand-extraction",
-        "check_id": "c013",
-        "job_index": 0
-      }
-    ],
-    "felt_opportunities": [
-      "agent-off-brand",
-      "pdf-to-agent-gap",
-      "distribution-drift",
-      "context-waste"
-    ]
-  },
-  "narrative": "## \"The brand team ships PDFs. I ship hex codes.\"\n\n\"I don't pick the blue. I don't choose the font. I'm the person who makes sure the agent knows the blue is `#2F99A4` and the heading is Raleway Bold, not Inter SemiBold — because the brand team spent six months on that decision and the agent starts from zero every session.\"\n\n\"If I skip this, someone's agent ships `#3B82F6` into production tomorrow. I know because I've caught it. The agent didn't know any better. That's what I fix — not the hex code, the system that let the agent get it wrong in the first place.\"\n\n\"Everyone assumes the brand just flows to the code. It doesn't. Someone has to read the 40-page PDF and turn it into files an agent can load in 2,000 tokens. I'm that person. After that, I'm not needed — the infrastructure runs itself.\"\n\n## Tuesday at 9:17pm, the Slack message from Design arrives\n\nThe kids are down. Maria opens her laptop. Slack notification from the brand team: \"New palette PDF attached. Accent changed to #FF4D00 — please update everywhere.\" The PDF is 40 pages. Six projects are still generating the old accent.\n\nShe points petals at the folder. One command. The agent reads the PDF, identifies every color value, catalogs the font hierarchy, copies the new logo SVGs. Five minutes later, `.brand/` exists. She opens `colors.md` — `accent: \"#FF4D00\"`, not `#E7000B`. She diffs against her mental checklist from the brand guide. The heading weight matches. Every asset is accounted for. She pushes to the central repo, tags `v2.0.0`. Twenty-two minutes total. She closes the laptop at 9:39pm.\n\nThree days later, a developer on the dashboard project types \"build a pricing page.\" The agent generates the hero in `#FF4D00` — a color the developer has never typed. The developer doesn't know the accent changed. They don't need to know Maria exists.\n\nSprint day one. New project repo, empty except for a README. Maria arrives at 8:30am and runs `/petal init --from brand-repo` before the first standup. Three minutes. She doesn't mention it. Nobody asks.\n\nTwo sprints later, a junior developer opens an agent session and types \"build a contact page.\" The agent produces the hero in the primary color, the heading in the correct font, the copy in brand voice. The developer pasted zero hex codes. They don't know Maria wired this up three sprints ago. It's not supposed to be visible.\n\nv1.3.0 drops mid-sprint. The central repo has a new tag. Primary color changed. Six projects are connected. Maria doesn't Slack anyone. On the next agent session in each project, drift detection fires — `.brand/` is behind. The agent shows what changed: new primary, updated logo. Four projects update immediately. Two have seasonal campaign overrides — they update without losing their custom palette. One project shows stale because a gitignore mistake blocked the fetch. Maria spots it in the drift report, fixes it in 30 seconds. By Friday, zero projects are on `v1.2.0`.\n\n## Nobody bridges the PDF and the prompt\n\nA brand team ships a 40-page PDF. A developer opens an IDE. An agent generates UI. These things share no format, no vocabulary, no protocol. The PDF is a human document made for human eyes. The agent reads markdown, JSON, and code. They need a translator.\n\nMaria is that translator. She takes what the brand team produces — PDFs, Figma libraries, asset folders, Slack messages about accent colors — and turns it into structured `.brand/` files that every agent in the org reads on startup. She doesn't design the brand. She doesn't consume the brand. She builds the pipe that carries brand intelligence from the design team's shared drive to the agent's context window — exactly once, correctly, with explicit values and no guesses.\n\nIf this persona didn't exist, the brand stays in the PDF. Agents default to Tailwind blue and Inter on every session. Developers paste hex codes into prompts — sometimes correctly, sometimes from memory, sometimes not at all. Reviewers spend 40% of their review time catching brand violations that the agent could have caught itself. When the brand changes — and it always changes — nobody knows which projects updated and which are silently running last year's palette.\n\nThe damage compounds with every agent deployed. Ten agents across six projects, each producing UI without brand context, each PR needing manual brand review. The [brand extraction](brand-extraction.tend.html) tool is the hammer; Maria is the hand that swings it. Without her, the tool sits unused and the brand team's months of work rot in a shared drive, beautiful and invisible.\n\n## Nobody designed this job. It appeared when agents started writing code.\n\nMaria's role didn't exist two years ago. The brand team designed PDFs for human designers. The engineering team wrote CSS by hand and knew the palette by heart. Agents changed the equation. They produce more code than any human team, but they start from zero every session. Someone has to bridge that gap. It became Maria's job by default — she was the one who caught the first `#3B82F6` in review and asked \"why doesn't the agent know our brand?\"\n\nThis archetype matters because it names a role that already exists in every AI-assisted engineering team but isn't on any org chart. Every team has a Maria — the person who catches brand drift, who pastes the hex codes into the prompt when they remember, who Slacks the team when the palette changes. Petals makes that role a first-class operation: one command instead of forty Slack messages, a central repo instead of tribal knowledge, files instead of hope. The work Maria already does — just intentional, automated, invisible.",
+  "id": "brand-book",
+  "title": "Brand Book",
+  "status": "in-progress",
+  "priority": "medium",
+  "dependencies": [
+    "brand-extraction"
+  ],
+  "enables": [],
+  "journey_phase": "review",
+  "personas": [
+    "brand-operator",
+    "shipping-developer"
+  ],
+  "solves": [
+    "pdf-to-agent-gap",
+    "review-bottleneck"
+  ],
+  "what": "/petal book renders the whole .brand/ directory as a single self-contained HTML page — palette with contrast pairings, type specimens, layout ruler, surface tokens, component exemplars, voice rules, and logo usage — plus a needs-an-answer card for every extraction flag.",
+  "why": "Everything in petals is markdown, CLI, and agent — the person who OWNS the brand has no surface at all. The brand operator cannot review what the agent reads, cannot spot a wrong green, and cannot share the brand with their team without sending raw markdown.",
+  "impact": "The brand operator reviews an extraction in minutes by reading one page, catches wrong values before agents propagate them, and shares the book as the team's brand reference. Agents copy the exemplar components and are on-brand by construction.",
+  "fit": "Closes the review loop that extraction opens: init produces .brand/, the book renders it back for human sign-off, check enforces it. The book is also the exemplar source — the show-don't-tell layer the rules alone can't carry.",
+  "where": "petals/SKILL.md (/petal book workflow). petals/references/book-guide.md (structure contract). .brand/book.html (the rendered artifact — porto's own is the living demo).",
+  "how": "Agent-rendered from all .brand/ files in one pass (a rendering job, not an audit — the one workflow that loads everything). One section per brand file, every value sourced from its file, true-size demonstrations over descriptions, flags float to the top. The book must pass its own /petal check.",
   "progress": {
     "implementation": 0,
-    "verification": 0
+    "verification": 75
   },
+  "personas_resolved": [
+    {
+      "id": "brand-operator",
+      "name": "Brand Operator",
+      "jobs": [
+        "When the brand team sends me a 40-page PDF brand guide, a folder of logo SVGs, and a Slack message about the new accent color (#FF4D00, not #E7000B, \"please update everywhere\"), because every AI agent across six projects is still generating the old accent color and nobody else on the team knows how to bridge the gap between a PDF and an agent's context window, we believe I should be able to point petal at that folder and get a complete, correct .brand/ directory in one command — colors extracted to hex, fonts identified, voice rules captured, logos copied — without manually typing 47 hex codes or guessing which font weight is the heading weight. We'll know we got it right when the generated colors.md contains #FF4D00 as the accent (not #E7000B, which was the old accent), the generated typography.md names the correct heading font family and weight, and every asset in assets/ matches its source — verified by diffing the output against known values from the brand guide.",
+        "When I start a new project repo and the team expects their agents to produce on-brand output from day one, because if brand isn't set up before the first agent session, the first PR will hardcode Tailwind's default blue into the hero section and someone (me) will catch it in review, we believe one command should pull the current brand into .brand/ and wire it into the project so every future agent session reads brand context without anyone thinking about it. We'll know we got it right when a developer who has never heard of petal opens a new agent session in this project, types \"build a contact page,\" and the agent produces output with the correct primary color, heading font, and voice tone — without the developer pasting a single hex code into the prompt.",
+        "When the central brand repo gets a new tag (v1.2.0 to v1.3.0 — primary color changed, new logo variant added), because I can't manually Slack every developer on every project and hope they update before their next agent session, we believe every connected project should detect the drift automatically on the next /petal check or agent session, show what changed, and update with one command without losing project-specific overrides. We'll know we got it right when six projects detect the v1.3.0 drift on their next agent session, four update immediately, two with campaign overrides update without losing their seasonal palette, and zero projects are still silently using v1.2.0 two weeks later."
+      ]
+    },
+    {
+      "id": "shipping-developer",
+      "name": "Shipping Developer",
+      "jobs": [
+        "When I'm about to review 12 PRs and 8 of them contain agent-generated UI or copy, because I currently spend 40% of my review time catching brand violations — wrong blue, wrong font, 'leverage' when we said 'use', 13px padding when our scale is multiples of 4 — all things the agent could catch before I see them, we believe the agent should run /petal check on its own output before marking work ready for review, fixing or flagging violations without human intervention. We'll know we got it right when over a two-week period, PRs containing agent-generated UI or copy have zero violations that /petal check would have caught — color mismatches, font deviations, spacing outside scale, forbidden terms, and tone violations all trend to zero.",
+        "When I open a new agent session and start building — new page, new component, new campaign — because I don't want to start every session by pasting 'Use Raleway for headings, Open Sans for body, primary is #2F99A4, accent is #FF4D00, voice is direct and warm, never say leverage' — that's 200 tokens I'm burning on setup instead of the task, we believe the agent should discover brand context from .brand/ files without me mentioning it, treating brand values as ambient infrastructure rather than per-task setup. We'll know we got it right when I can start a session with 'build a pricing page' — no brand context in the prompt — and the agent produces output using the correct colors, fonts, spacing scale, and voice, and can tell me where it got each value from .brand/ files."
+      ]
+    }
+  ],
+  "audit": {
+    "ran_at": "2026-06-12",
+    "result": "partial",
+    "verdicts": [
+      {
+        "check_id": "c001",
+        "verdict": "pass",
+        "evidence_path": ".brand/book.html created 2026-06-12; single file; section kickers verified by grep: colors.md, typography.md, layout.md, components.md (+exemplars), voice.md, identity.md+assets/logo.svg, plus masthead and footer. Only external requests are the brand's Google Fonts imports (fonts.googleapis.com / fonts.gstatic.com), per the book-guide contract.",
+        "evidence_sha": "5b3d65c91118b15b1e3f441572123f9fc4d6a2d8"
+      },
+      {
+        "check_id": "c002",
+        "verdict": "pass",
+        "evidence_path": "Deterministic audits ran 2026-06-12: hex set of book.html is a strict subset of colors.md (comm -23 returned empty); font-family declarations are exactly the three brand stacks (Fraunces / Source Sans 3 / JetBrains Mono + var() references); forbidden-term scan found only 'unlock' and 'seamless' inside the voice section's never-column (lines 304-305) — quoting context by design, mirroring voice.md itself."
+      },
+      {
+        "check_id": "c003",
+        "verdict": "partial",
+        "evidence_path": "Spec verified: SKILL.md /petal book step 4 and book-guide.md's Flags row both specify flags render as needs-an-answer cards before all other sections, naming file and question. NOT yet exercised end-to-end: porto's .brand/ carries no [FLAG:] entries, so no book has rendered a real flag card. Honest gap — needs a flagged-fixture generation to close."
+      },
+      {
+        "check_id": "c004",
+        "verdict": "pass",
+        "evidence_path": "Exemplar section inspected 2026-06-12: .btn/.exemplar-card/.term styles reference token custom properties (var(--pp-*), var(--radius-*), var(--shadow-lift), var(--ease-petal)); the terminal exemplar's three inline span colors (#C04B3C, #8FCB63, #8A8A86) are documented palette tokens. No off-token literal in the exemplar markup."
+      }
+    ]
+  },
+  "coverage_files": [
+    "petals/references/book-guide.md"
+  ],
   "thumbnail": {
     "kind": "svg",
-    "alt": "A figure bridging two worlds — a document on the left, a terminal with hex codes and file outputs on the right",
-    "content": "<svg viewBox=\"0 0 120 80\" xmlns=\"http://www.w3.org/2000/svg\"><rect class=\"tc-wh tc-frame\" x=\"4\" y=\"12\" width=\"28\" height=\"40\" rx=\"2\"/><rect class=\"tc-bg\" x=\"9\" y=\"18\" width=\"18\" height=\"3\" rx=\"1\"/><rect class=\"tc-bg\" x=\"9\" y=\"25\" width=\"14\" height=\"3\" rx=\"1\"/><rect class=\"tc-bg\" x=\"9\" y=\"32\" width=\"20\" height=\"3\" rx=\"1\"/><rect class=\"tc-ac\" x=\"9\" y=\"42\" width=\"10\" height=\"3\" rx=\"1\"/><line class=\"tc-ln\" x1=\"32\" y1=\"32\" x2=\"54\" y2=\"32\"/><rect class=\"tc-wh tc-frame\" x=\"56\" y=\"10\" width=\"56\" height=\"44\" rx=\"3\"/><rect class=\"tc-bg\" x=\"62\" y=\"16\" width=\"12\" height=\"4\" rx=\"1\"/><rect class=\"tc-bg\" x=\"62\" y=\"24\" width=\"44\" height=\"4\" rx=\"1\"/><rect class=\"tc-ac\" x=\"62\" y=\"34\" width=\"38\" height=\"4\" rx=\"1\"/><rect class=\"tc-bg\" x=\"80\" y=\"32\" width=\"3\" height=\"8\" rx=\"1\"/><rect class=\"tc-bg\" x=\"62\" y=\"44\" width=\"30\" height=\"4\" rx=\"1\"/></svg>"
-  }
+    "alt": "An open book page with the three-petal mark on it — the brand rendered for human eyes",
+    "content": "<svg viewBox=\"0 0 120 80\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"22\" y=\"10\" width=\"76\" height=\"60\" rx=\"4\" fill=\"#fbfaf8\" stroke=\"#D6D2C2\"/><line x1=\"60\" y1=\"10\" x2=\"60\" y2=\"70\" stroke=\"#D6D2C2\"/><line x1=\"30\" y1=\"22\" x2=\"52\" y2=\"22\" stroke=\"#5A6150\" stroke-width=\"2\"/><line x1=\"30\" y1=\"30\" x2=\"48\" y2=\"30\" stroke=\"#D6D2C2\" stroke-width=\"2\"/><line x1=\"30\" y1=\"38\" x2=\"52\" y2=\"38\" stroke=\"#D6D2C2\" stroke-width=\"2\"/><rect x=\"30\" y=\"48\" width=\"8\" height=\"8\" rx=\"2\" fill=\"#3F7A33\"/><rect x=\"41\" y=\"48\" width=\"8\" height=\"8\" rx=\"2\" fill=\"#C04B3C\"/><rect x=\"52\" y=\"48\" width=\"8\" height=\"8\" rx=\"2\" fill=\"#E8917F\"/><g transform=\"translate(67 18) scale(1.6)\"><path d=\"M12 21 C9.4 15 9.4 9 12 4.5 C14.6 9 14.6 15 12 21 Z\" fill=\"#3F7A33\" transform=\"rotate(-38 12 21)\"/><path d=\"M12 21 C9.4 15 9.4 9 12 4.5 C14.6 9 14.6 15 12 21 Z\" fill=\"#E8917F\" transform=\"rotate(38 12 21)\"/><path d=\"M12 21 C9.4 15 9.4 9 12 4.5 C14.6 9 14.6 15 12 21 Z\" fill=\"#C04B3C\"/></g></svg>"
+  },
+  "decisions": [
+    {
+      "id": "d001",
+      "at": "brainstorm",
+      "decision": "The book is rendered by the agent from .brand/ on demand, following the structure contract in book-guide.md — petals ships no build pipeline.",
+      "rationale": "The agent already reads every brand file natively; a rendering job needs a structure contract, not a runtime. The book must carry the human-facing half of the brand (voice, identity, flags), which tokens alone cannot.",
+      "alternatives_considered": [
+        "A Node generator binary — adds a runtime petals doesn't have",
+        "Rendering from tokens.json alone — loses voice, identity, and extraction flags"
+      ]
+    }
+  ]
 }
 </script>
 <!-- OO:DATA:END -->
@@ -5554,6 +5427,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
 })();
 
 </script>
+
 <!-- OO:CLIENT:END -->
 
 <script>window.stop();</script>

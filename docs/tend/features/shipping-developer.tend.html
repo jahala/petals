@@ -2500,9 +2500,33 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
     "description": "Sam is reviewing 12 PRs before the sprint ends. Eight of them contain agent-generated UI or copy. Sam spends the first 40 minutes catching the same three things in every PR: a shade of blue that isn't the brand blue, a font that isn't the brand font, and the word 'leverage' which the voice guide explicitly bans. The agent wrote the code. The agent had access to .brand/. The agent didn't check its own work. Sam catches what the machine should have caught before anyone saw it. After petals is installed, Sam's review shifts. The agent reads .brand/ before generating, applies brand rules at generation time, and runs /petal check before marking work ready for review. Sam reviews architecture and abstractions — not hex codes and forbidden words.",
     "bound_features": [
       {
+        "id": "brand-book",
+        "title": "Brand Book",
+        "status": "in-progress",
+        "priority": "medium",
+        "dependencies": [
+          "brand-extraction"
+        ],
+        "personas": [
+          "brand-operator",
+          "shipping-developer"
+        ],
+        "solves": [
+          "pdf-to-agent-gap",
+          "review-bottleneck"
+        ],
+        "journey_phase": "review",
+        "what": "/petal book renders the whole .brand/ directory as a single self-contained HTML page — palette with contrast pairings, type specimens, layout ruler, surface tokens, component exemplars, voice rules, a",
+        "thumbnail": {
+          "kind": "svg",
+          "alt": "An open book page with the three-petal mark on it — the brand rendered for human eyes",
+          "content": "<svg viewBox=\"0 0 120 80\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"22\" y=\"10\" width=\"76\" height=\"60\" rx=\"4\" fill=\"#fbfaf8\" stroke=\"#D6D2C2\"/><line x1=\"60\" y1=\"10\" x2=\"60\" y2=\"70\" stroke=\"#D6D2C2\"/><line x1=\"30\" y1=\"22\" x2=\"52\" y2=\"22\" stroke=\"#5A6150\" stroke-width=\"2\"/><line x1=\"30\" y1=\"30\" x2=\"48\" y2=\"30\" stroke=\"#D6D2C2\" stroke-width=\"2\"/><line x1=\"30\" y1=\"38\" x2=\"52\" y2=\"38\" stroke=\"#D6D2C2\" stroke-width=\"2\"/><rect x=\"30\" y=\"48\" width=\"8\" height=\"8\" rx=\"2\" fill=\"#3F7A33\"/><rect x=\"41\" y=\"48\" width=\"8\" height=\"8\" rx=\"2\" fill=\"#C04B3C\"/><rect x=\"52\" y=\"48\" width=\"8\" height=\"8\" rx=\"2\" fill=\"#E8917F\"/><g transform=\"translate(67 18) scale(1.6)\"><path d=\"M12 21 C9.4 15 9.4 9 12 4.5 C14.6 9 14.6 15 12 21 Z\" fill=\"#3F7A33\" transform=\"rotate(-38 12 21)\"/><path d=\"M12 21 C9.4 15 9.4 9 12 4.5 C14.6 9 14.6 15 12 21 Z\" fill=\"#E8917F\" transform=\"rotate(38 12 21)\"/><path d=\"M12 21 C9.4 15 9.4 9 12 4.5 C14.6 9 14.6 15 12 21 Z\" fill=\"#C04B3C\"/></g></svg>"
+        }
+      },
+      {
         "id": "brand-check",
         "title": "Brand Check",
-        "status": "in-progress",
+        "status": "verified",
         "priority": "high",
         "personas": [
           "shipping-developer",

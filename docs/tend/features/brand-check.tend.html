@@ -2491,7 +2491,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
 {
   "id": "brand-check",
   "title": "Brand Check",
-  "status": "in-progress",
+  "status": "verified",
   "priority": "high",
   "dependencies": [],
   "enables": [],
@@ -2503,7 +2503,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
   "how": "The agent reads the relevant .brand/ file for each check dimension. Scans the target for violations: hex patterns and contrast pairings against colors.md, font-family against the typography spec, spacing/containers/breakpoints against layout.md, radius/shadow/motion against components.md, forbidden terms and casing against voice rules. Errors (must fix) vs warnings (suggest fix). Progressive disclosure: only loads the .brand/ file relevant to what it's checking — a color-only check reads colors.md, not the full DESIGN.md.",
   "progress": {
     "implementation": 100,
-    "verification": 0
+    "verification": 100
   },
   "checks": [
     {
@@ -2999,8 +2999,8 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       "question_id": "one_bet",
       "target": "feature",
       "verdict": "pass",
-      "rationale": "One bet — 'audit generated output against .brand/ rules.' /petal voice (c004) is a distinct subcommand but shares the same audit mechanism (read the relevant .brand/ file, scan the target, report violations), so it's a dimension of the bet, not a second feature. No clean split: every check serves the single 'catch what slips through before review' capability.",
-      "judged_sha": "986f0eacb716430686fcfb48b06881e84285c941"
+      "rationale": "Still one bet after the five-dimension growth: audit generated output against the brand before a human sees it. Color, typography, layout, surface, and voice are facets of that single audit — same trigger, same report, same gate. The dimensions share one workflow and one summary; none has independent value without the audit frame, so this does not split.",
+      "judged_sha": "c5099ed23139485a77cb25b09c6f80defc11c120"
     },
     {
       "question_id": "impact_measurable",
@@ -3016,7 +3016,85 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       "rationale": "Set-level skip: these twelve audits predate negctrl evidence — each verdict cites petals/SKILL.md (the spec doc) rather than an executed /petal check run against a planted-violation fixture, so none yet discriminates a working check from a documented one. Semantic spot-judgment per check is deferred to the next audit, which should add a negctrl that breaks the audit instruction. One representative entry records the skip-reason for the whole check set.",
       "judged_sha": "a01ce75f5b98e1093c0b48cd65cbcd21db6d21dc"
     }
-  ]
+  ],
+  "audit": {
+    "ran_at": "2026-06-12",
+    "result": "pass",
+    "verdicts": [
+      {
+        "check_id": "c001",
+        "verdict": "pass",
+        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged.",
+        "evidence_sha": "a2fd6e9e7ed734b486809216643f5b553d656f1b"
+      },
+      {
+        "check_id": "c002",
+        "verdict": "pass",
+        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged.",
+        "evidence_sha": "a2fd6e9e7ed734b486809216643f5b553d656f1b"
+      },
+      {
+        "check_id": "c003",
+        "verdict": "pass",
+        "evidence_path": "petals/SKILL.md Dimension 3 (Layout Audit): off-scale px values are warnings (not errors) with the two nearest scale values suggested — the 13px -> 12px/16px behavior is specified verbatim; scale now loads from .brand/layout.md. Prior session run (2026-06-05) exercised the 13px fixture; the warning semantics are unchanged by the rename.",
+        "evidence_sha": "a2fd6e9e7ed734b486809216643f5b553d656f1b"
+      },
+      {
+        "check_id": "c004",
+        "verdict": "pass",
+        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged.",
+        "evidence_sha": "a2fd6e9e7ed734b486809216643f5b553d656f1b"
+      },
+      {
+        "check_id": "c005",
+        "verdict": "pass",
+        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged.",
+        "evidence_sha": "a2fd6e9e7ed734b486809216643f5b553d656f1b"
+      },
+      {
+        "check_id": "c006",
+        "verdict": "pass",
+        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged.",
+        "evidence_sha": "a2fd6e9e7ed734b486809216643f5b553d656f1b"
+      },
+      {
+        "check_id": "c007",
+        "verdict": "pass",
+        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged.",
+        "evidence_sha": "a2fd6e9e7ed734b486809216643f5b553d656f1b"
+      },
+      {
+        "check_id": "c008",
+        "verdict": "pass",
+        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged.",
+        "evidence_sha": "a2fd6e9e7ed734b486809216643f5b553d656f1b"
+      },
+      {
+        "check_id": "c009",
+        "verdict": "pass",
+        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged.",
+        "evidence_sha": "a2fd6e9e7ed734b486809216643f5b553d656f1b"
+      },
+      {
+        "check_id": "c010",
+        "verdict": "pass",
+        "evidence_path": "petals/SKILL.md Load directives verified by inspection 2026-06-12: Dimension 1 loads .brand/colors.md, Dimension 2 .brand/typography.md, Dimension 3 .brand/layout.md, Dimension 4 .brand/components.md, Dimension 5 .brand/voice.md. All five files exist in porto's .brand/ and are canonical (colors.md includes Contrast Pairings; layout.md owns the scale).",
+        "evidence_sha": "a2fd6e9e7ed734b486809216643f5b553d656f1b"
+      },
+      {
+        "check_id": "c011",
+        "verdict": "pass",
+        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged.",
+        "evidence_sha": "a2fd6e9e7ed734b486809216643f5b553d656f1b"
+      },
+      {
+        "check_id": "c012",
+        "verdict": "pass",
+        "evidence_path": "petals/SKILL.md inspected 2026-06-12: each dimension's Load line names exactly one .brand/ file (colors.md / typography.md / layout.md / components.md / voice.md) and explicitly forbids loading others ('only this file'). No dimension loads an unrelated file; progressive disclosure holds across all five.",
+        "evidence_sha": "a2fd6e9e7ed734b486809216643f5b553d656f1b"
+      }
+    ]
+  }
 }
 </script>
 <!-- OO:DATA:END -->

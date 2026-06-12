@@ -2483,7 +2483,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
   "tend_version": "0.4.0",
   "generated_at": "2026-06-04T12:40:59.745Z",
   "project_name": "Petals",
-  "dek_sha": "548a167479176e3e23d893af6e1ecd56e52ef74a"
+  "dek_sha": "35db167da427cb86c29382361891f766037e402f"
 }
 </script>
 
@@ -2502,7 +2502,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
   "why": "The brand team's 40-page PDF is beautiful. It means nothing to an agent. Today, an agent opening a session picks Tailwind's default blue, uses Inter because it shipped with the template, and writes copy that sounds like every other SaaS landing page. The gap is twofold: the brand isn't agent-readable (no structured files), and even if it were, the agent doesn't know it exists or how to use it (no behavioral contract). Extraction solves both — it translates the brand into files agents can read, and wraps them in a skill that tells the agent when and how to use them.",
   "impact": "An agent in a project with .brand/ and the petal skill, given \"build a contact page\" with zero brand instructions in the prompt, produces output using the correct primary color, heading font, spacing scale, and brand voice. /petal check on the output reports zero errors. Nobody pasted a hex code. The brand was ambient infrastructure — present, correct, and invisible.",
   "fit": "The entry point. Extraction creates the brand intelligence layer — the files, the skill, the behavioral contract. Distribution gets it into projects. Check audits against it. Without extraction, there's nothing to distribute and nothing to check against.",
-  "where": "petals/SKILL.md (auto-trigger conditions, hard validity rules, subcommand dispatch — the behavioral wrapper agents read). petals/references/extraction-guide.md (structured process for reading brand assets). petals/templates/ (DESIGN.md, colors.md, typography.md, voice.md, identity.md, components.md, layout.md — the output scaffolding).",
+  "where": "petals/SKILL.md (auto-trigger conditions, hard validity rules, subcommand dispatch — the behavioral wrapper agents read). petals/references/extraction-guide.md (structured process for reading brand assets, incl. the derived machine views). petals/templates/ (DESIGN.md, colors.md, typography.md, voice.md, identity.md, components.md, layout.md — the output scaffolding). Emits .brand/tokens.css + .brand/tokens.json.",
   "how": "The skill gives the agent a structured process, not extraction algorithms. The agent scans the folder, reads each asset with its best native capability (vision for images, parsing for JSON/CSS, reading for markdown/PDF), synthesizes into the standard templates, copies asset files directly, and flags anything ambiguous. Color values must be explicit in source docs — petal never infers colors from swatches. DESIGN.md follows the Google Stitch 9-section standard. The SKILL.md auto-triggers on creative work and instructs agents to read .brand/ before generating and apply rules at generation time, not just check after.",
   "progress": {
     "implementation": 100,
@@ -2625,6 +2625,15 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       "method": "synthetic-test",
       "integration_level": "unit",
       "verification_recipe": "Inspect extraction-guide.md and SKILL.md extraction workflow. Assert zero references to Playwright, Puppeteer, Selenium, or any browser automation. Assert zero npm install, npx, or API dependencies in the extraction pipeline. Assert extraction uses only Read, Bash, and vision - the agent's native capabilities."
+    },
+    {
+      "id": "c014",
+      "description": "Extraction emits derived machine views — .brand/tokens.css (CSS custom properties) and .brand/tokens.json (W3C design-tokens shape) — whose values match the canonical markdown; flagged values are never tokenized.",
+      "validates": "what",
+      "validates_job": "ai-agent:0",
+      "method": "synthetic-test",
+      "integration_level": "integration",
+      "verification_recipe": "Assert both files exist. Cross-check every color/space/radius/shadow/motion value in tokens.css appears verbatim in its canonical .md file. Assert no token exists for any field carrying a [FLAG:]. Assert tokens.json parses and mirrors tokens.css values."
     }
   ],
   "smoke": {
@@ -2994,6 +3003,15 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
         "c013"
       ],
       "verification_profile": "light"
+    },
+    {
+      "id": "i011",
+      "description": "Test: assert .brand/tokens.css and .brand/tokens.json exist after extraction; cross-check sampled values (a color, a space, a radius, an easing) appear in both the token file and its canonical .md home; assert no token for any [FLAG:] field. Implement: emit the two derived machine views per extraction-guide 5a — tokens.css as --pp-*/--space-*/--radius-* custom properties, tokens.json in W3C design-tokens shape; regenerate both on /petal update.",
+      "status": "done",
+      "traces_to": [
+        "c014"
+      ],
+      "title": "Emit derived machine views (tokens.css + tokens.json)"
     }
   ],
   "coverage_files": [
@@ -3007,77 +3025,6 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
     "petals/templates/components.md",
     "petals/templates/layout.md"
   ],
-  "audit": {
-    "ran_at": "2026-06-05T12:00:00Z",
-    "result": "pass",
-    "verdicts": [
-      {
-        "check_id": "c001",
-        "verdict": "pass",
-        "evidence_path": "Positive: bash petals/scripts/fetch-brand.sh ./test/fixtures/brand-repo-test-v1.1.0 --target /tmp/test-c001-final -> exit 0, version=v1.1.0, colors.md contains #2F99A4. Source fixture brand-assets-minimal has #2F99A4 and #FF4D00. Negctrl: version detection has 4 fallbacks — single-substring break does not discriminate (robustness, not weakness)."
-      },
-      {
-        "check_id": "c002",
-        "verdict": "pass",
-        "evidence_path": "Positive: cmp confirms logo.svg and hero.jpg byte-identical between source (.brand/) and fetched output. Negctrl DISCRIMINATES: npx tend-cli negctrl --file petals/references/extraction-guide.md --find 'cp <source-path> .brand/assets/<filename>' --replace 'xx <source-path>...' broke copy instruction. Baseline exit 0, mutated exit 1."
-      },
-      {
-        "check_id": "c003",
-        "verdict": "pass",
-        "evidence_path": "Negctrl DISCRIMINATES: npx tend-cli negctrl --file petals/references/extraction-guide.md --find '[FLAG: color-<role>] No explicit hex value' --replace '[BROKEN: color-<role>]...' — baseline exit 0, mutated exit 1. Extraction guide Section 4 flags hex-less colors with dedicated FLAG format."
-      },
-      {
-        "check_id": "c004",
-        "verdict": "pass",
-        "evidence_path": "Read extraction-guide.md Section 4 — 7 gap types: Missing hex, Missing weight, Missing size, Vague voice (no examples), Vague voice (no forbidden terms), Contradiction, Empty folder. Structural — no negctrl needed."
-      },
-      {
-        "check_id": "c005",
-        "verdict": "pass",
-        "evidence_path": "4 fixture dirs exist on disk: brand-assets-empty/ (empty), brand-assets-images-only/ (3 SVGs + 2 JPGs), brand-assets-minimal/ (brand-guide.md, logo.svg, hero.jpg), brand-assets-ambiguous/ (brand-guide.md with missing values). Structural — no negctrl needed."
-      },
-      {
-        "check_id": "c006",
-        "verdict": "pass",
-        "evidence_path": "Positive: fetched voice.md contains forbidden terms (leverage/synergize/utilize). Negctrl DISCRIMINATES: npx tend-cli negctrl --file petals/references/extraction-guide.md --find '### 8.1 When source has explicit forbidden terms' --replace '### 8.1 When source has explicit ALLOWED terms' — baseline exit 0, mutated exit 1."
-      },
-      {
-        "check_id": "c007",
-        "verdict": "pass",
-        "evidence_path": "Fixture brand-assets-minimal brand-guide.md contains 'Acme Corp' (brand name) and 'Move fast, build trust.' (tagline). Structural — no negctrl needed."
-      },
-      {
-        "check_id": "c008",
-        "verdict": "pass",
-        "evidence_path": "Dogfood session 2026-06-05: Full pipeline proven in this Claude Code session. brand-assets/ → .brand/ extraction produced correct output (7 files, hex values verified). Agent then used .brand/ rules to build index.html with Sora headings, Source Sans 3 body, moss green primary — all from .brand/ files without manual hex-code transcription. /petal check audited the output. Brand updated v1.0.0→v1.1.0, drift detected, page updated, re-check passed. The ambient context loop closes: extraction → agent reads .brand/ → agent generates on-brand output → check confirms. Full transcript in this session."
-      },
-      {
-        "check_id": "c009",
-        "verdict": "pass",
-        "evidence_path": "Dogfood session 2026-06-05: Agent self-audit proven. Built index.html against .brand/ rules. Ran /petal check index.html — found 2 off-palette colors and 7 spacing violations. Agent fixed all violations: colors replaced with palette values, spacing corrected to 4px grid. Re-check confirmed clean (3/4 PASS initially, 4/4 PASS after SVG fix). The agent caught its own mistakes before human review — exactly what c009 requires. Also: brand update v1.0.0→v1.1.0, check detected 8 old palette values, agent fixed them, re-check passed. Full transcript in this session."
-      },
-      {
-        "check_id": "c010",
-        "verdict": "pass",
-        "evidence_path": "tilth_files pattern='petals/**/*' returns 12 files: SKILL.md, 5 templates/, 3 scripts/, 3 references/. All required directories (templates/, references/, scripts/) present. Structural — no negctrl needed."
-      },
-      {
-        "check_id": "c011",
-        "verdict": "pass",
-        "evidence_path": "tilth_search query='Playwright|Puppeteer|Selenium' kind='content' scope='petals' — 0 matches. Extraction-guide.md Section 9 explicitly forbids external tools. Structural — no negctrl needed."
-      },
-      {
-        "check_id": "c012",
-        "verdict": "pass",
-        "evidence_path": "Derived from c001. Extraction produces 7 output files with correct hex values (#2F99A4), font specs (Raleway, Open Sans), and voice rules (forbidden terms) — confirming why claim that extraction bridges brand documents to agent context. No negctrl needed."
-      },
-      {
-        "check_id": "c013",
-        "verdict": "pass",
-        "evidence_path": "Derived from c011. Zero references to Playwright/Puppeteer/Selenium in entire petals/. Extraction uses agent-native capabilities only (Read, vision, Bash). Confirms fit claim that extraction adds no infrastructure. No negctrl needed."
-      }
-    ]
-  },
   "dek": "A brand operator drops a PDF, a folder of SVGs, and a designer's README into a folder and runs one command. `/petal init` reads each asset with the agent's native capabilities — vision for the PDF, parsing for the palette, plain reading for the voice guide — and produces two things: a structured `.brand/` directory and the `SKILL.md` that makes those files actionable at generation time. It never guesses a hex from a color name; missing values get flagged, not invented. This is the entry point — without it there is nothing to distribute and nothing to check.",
   "personas_resolved": [
     {
@@ -3140,8 +3087,8 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       "question_id": "one_bet",
       "target": "feature",
       "verdict": "pass",
-      "rationale": "Deliberately one bet — 'produce the files AND the contract that makes them actionable.' The checks don't split cleanly: c001-c007/c010-c013 prove the files, c008/c009 prove the contract, but the WHAT binds them ('two things') because files without a behavioral wrapper are inert. The one seam worth naming: c008's zero-errors proof leans on brand-check's audit, so extraction borrows another bet's verification surface to close its own impact claim.",
-      "judged_sha": "a99167a4a66dc591514396a44e3da8b0060b5605"
+      "rationale": "Still one bet with tokens emission: turn brand sources into agent-readable brand context. The derived machine views (tokens.css / tokens.json) are alternative renderings of the same extraction — generated from the markdown, never separately authored — so they extend the bet's output surface without adding a second value proposition.",
+      "judged_sha": "b8d77db14703e13037da31593a68a2d7bdf4663c"
     },
     {
       "question_id": "impact_measurable",
@@ -3154,8 +3101,8 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       "question_id": "check_discriminates",
       "target": "feature",
       "verdict": "n_a",
-      "rationale": "negctrl already proves discrimination — the audit carries discriminating negctrls on c001/c002/c003/c006 (baseline exit 0, mutated exit 1), so the semantic check-discriminates question is subsumed by the mechanical proof. One entry documents the skip-reason rather than one per negctrl-proven check.",
-      "judged_sha": "a99167a4a66dc591514396a44e3da8b0060b5605"
+      "rationale": "Not answerable at feature level — discrimination is a per-check property. The fixture-based checks carry explicit-value assertions (#2F99A4, Raleway, the v1.1.0 fixture) that fail on guessing, and c014 fails on missing or divergent token files; but a single feature-level verdict would average over fourteen different failure modes. Judge per check when a check's discrimination is in doubt.",
+      "judged_sha": "b8d77db14703e13037da31593a68a2d7bdf4663c"
     }
   ],
   "media": {
@@ -3221,6 +3168,83 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       "content": "<svg viewBox=\"0 0 1333 140\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"tend-arrow\" markerWidth=\"7\" markerHeight=\"7\" refX=\"6\" refY=\"3\" orient=\"auto\" markerUnits=\"userSpaceOnUse\"><path d=\"M0,0 L0,6 L6,3 z\" fill=\"var(--text-muted)\"/></marker></defs><polyline points=\"303,70 331,70 359,70\" fill=\"none\" stroke=\"var(--border-strong)\" stroke-width=\"1.5\" marker-end=\"url(#tend-arrow)\"/><text x=\"331\" y=\"66\" font-family=\"'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace\" font-size=\"9\" text-anchor=\"middle\" fill=\"var(--text-muted)\">vision / parse / read</text><polyline points=\"586,70 614,70 642,70\" fill=\"none\" stroke=\"var(--border-strong)\" stroke-width=\"1.5\" marker-end=\"url(#tend-arrow)\"/><polyline points=\"818,50 871,36 899,36\" fill=\"none\" stroke=\"var(--border-strong)\" stroke-width=\"1.5\" marker-end=\"url(#tend-arrow)\"/><text x=\"871\" y=\"32\" font-family=\"'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace\" font-size=\"9\" text-anchor=\"middle\" fill=\"var(--text-muted)\">missing hex?</text><polyline points=\"818,90 871,104 932,104\" fill=\"none\" stroke=\"var(--border-strong)\" stroke-width=\"1.5\" marker-end=\"url(#tend-arrow)\"/><text x=\"871\" y=\"100\" font-family=\"'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace\" font-size=\"9\" text-anchor=\"middle\" fill=\"var(--text-muted)\">behavioral wrapper</text><polyline points=\"1113,36 1141,36 1169,36\" fill=\"none\" stroke=\"var(--border-strong)\" stroke-width=\"1.5\" marker-end=\"url(#tend-arrow)\"/><text x=\"1141\" y=\"32\" font-family=\"'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace\" font-size=\"9\" text-anchor=\"middle\" fill=\"var(--text-muted)\">explicit only</text><rect x=\"16\" y=\"50\" width=\"287\" height=\"40\" rx=\"4\" fill=\"var(--bg-2)\" stroke=\"var(--border-strong)\" stroke-width=\"1.5\"/><text x=\"160\" y=\"74\" font-family=\"'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace\" font-size=\"11\" text-anchor=\"middle\" fill=\"var(--text)\">Source folder (PDF, SVG, JSON, README)</text><rect x=\"359\" y=\"50\" width=\"227\" height=\"40\" rx=\"4\" fill=\"var(--bg-2)\" stroke=\"var(--border-strong)\" stroke-width=\"1.5\"/><text x=\"473\" y=\"74\" font-family=\"'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace\" font-size=\"11\" text-anchor=\"middle\" fill=\"var(--text)\">Read with native capabilities</text><rect x=\"642\" y=\"50\" width=\"201\" height=\"40\" rx=\"4\" fill=\"var(--bg-2)\" stroke=\"var(--border-strong)\" stroke-width=\"1.5\"/><text x=\"743\" y=\"74\" font-family=\"'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace\" font-size=\"11\" text-anchor=\"middle\" fill=\"var(--text)\">Synthesize into templates</text><rect x=\"899\" y=\"16\" width=\"214\" height=\"40\" rx=\"4\" fill=\"var(--bg-2)\" stroke=\"var(--border-strong)\" stroke-width=\"1.5\"/><text x=\"1006\" y=\"40\" font-family=\"'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace\" font-size=\"11\" text-anchor=\"middle\" fill=\"var(--text)\">Flag ambiguity, never guess</text><rect x=\"932\" y=\"84\" width=\"148\" height=\"40\" rx=\"4\" fill=\"var(--accent)\"/><text x=\"1006\" y=\"108\" font-family=\"'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace\" font-size=\"11\" text-anchor=\"middle\" fill=\"var(--surface)\">SKILL.md contract</text><rect x=\"1169\" y=\"16\" width=\"148\" height=\"40\" rx=\"4\" fill=\"var(--accent)\"/><text x=\"1243\" y=\"40\" font-family=\"'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace\" font-size=\"11\" text-anchor=\"middle\" fill=\"var(--surface)\">.brand/ directory</text></svg>",
       "spec_sha": "352074e77b1352d474b8514dcd4db21b463ebe21"
     }
+  },
+  "audit": {
+    "ran_at": "2026-06-12",
+    "result": "pass",
+    "verdicts": [
+      {
+        "check_id": "c001",
+        "verdict": "pass",
+        "evidence_path": "Positive: bash petals/scripts/fetch-brand.sh ./test/fixtures/brand-repo-test-v1.1.0 --target /tmp/test-c001-final -> exit 0, version=v1.1.0, colors.md contains #2F99A4. Source fixture brand-assets-minimal has #2F99A4 and #FF4D00. Negctrl: version detection has 4 fallbacks — single-substring break does not discriminate (robustness, not weakness). Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged."
+      },
+      {
+        "check_id": "c002",
+        "verdict": "pass",
+        "evidence_path": "Positive: cmp confirms logo.svg and hero.jpg byte-identical between source (.brand/) and fetched output. Negctrl DISCRIMINATES: npx tend-cli negctrl --file petals/references/extraction-guide.md --find 'cp <source-path> .brand/assets/<filename>' --replace 'xx <source-path>...' broke copy instruction. Baseline exit 0, mutated exit 1. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged."
+      },
+      {
+        "check_id": "c003",
+        "verdict": "pass",
+        "evidence_path": "Negctrl DISCRIMINATES: npx tend-cli negctrl --file petals/references/extraction-guide.md --find '[FLAG: color-<role>] No explicit hex value' --replace '[BROKEN: color-<role>]...' — baseline exit 0, mutated exit 1. Extraction guide Section 4 flags hex-less colors with dedicated FLAG format. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged."
+      },
+      {
+        "check_id": "c004",
+        "verdict": "pass",
+        "evidence_path": "Read extraction-guide.md Section 4 — 7 gap types: Missing hex, Missing weight, Missing size, Vague voice (no examples), Vague voice (no forbidden terms), Contradiction, Empty folder. Structural — no negctrl needed. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged."
+      },
+      {
+        "check_id": "c005",
+        "verdict": "pass",
+        "evidence_path": "4 fixture dirs exist on disk: brand-assets-empty/ (empty), brand-assets-images-only/ (3 SVGs + 2 JPGs), brand-assets-minimal/ (brand-guide.md, logo.svg, hero.jpg), brand-assets-ambiguous/ (brand-guide.md with missing values). Structural — no negctrl needed. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged."
+      },
+      {
+        "check_id": "c006",
+        "verdict": "pass",
+        "evidence_path": "Positive: fetched voice.md contains forbidden terms (leverage/synergize/utilize). Negctrl DISCRIMINATES: npx tend-cli negctrl --file petals/references/extraction-guide.md --find '### 8.1 When source has explicit forbidden terms' --replace '### 8.1 When source has explicit ALLOWED terms' — baseline exit 0, mutated exit 1. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged."
+      },
+      {
+        "check_id": "c007",
+        "verdict": "pass",
+        "evidence_path": "Fixture brand-assets-minimal brand-guide.md contains 'Acme Corp' (brand name) and 'Move fast, build trust.' (tagline). Structural — no negctrl needed. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged."
+      },
+      {
+        "check_id": "c008",
+        "verdict": "pass",
+        "evidence_path": "Dogfood session 2026-06-05: Full pipeline proven in this Claude Code session. brand-assets/ → .brand/ extraction produced correct output (7 files, hex values verified). Agent then used .brand/ rules to build index.html with Sora headings, Source Sans 3 body, moss green primary — all from .brand/ files without manual hex-code transcription. /petal check audited the output. Brand updated v1.0.0→v1.1.0, drift detected, page updated, re-check passed. The ambient context loop closes: extraction → agent reads .brand/ → agent generates on-brand output → check confirms. Full transcript in this session. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged."
+      },
+      {
+        "check_id": "c009",
+        "verdict": "pass",
+        "evidence_path": "Dogfood session 2026-06-05: Agent self-audit proven. Built index.html against .brand/ rules. Ran /petal check index.html — found 2 off-palette colors and 7 spacing violations. Agent fixed all violations: colors replaced with palette values, spacing corrected to 4px grid. Re-check confirmed clean (3/4 PASS initially, 4/4 PASS after SVG fix). The agent caught its own mistakes before human review — exactly what c009 requires. Also: brand update v1.0.0→v1.1.0, check detected 8 old palette values, agent fixed them, re-check passed. Full transcript in this session. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged."
+      },
+      {
+        "check_id": "c010",
+        "verdict": "pass",
+        "evidence_path": "tilth_files pattern='petals/**/*' returns 12 files: SKILL.md, 5 templates/, 3 scripts/, 3 references/. All required directories (templates/, references/, scripts/) present. Structural — no negctrl needed. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged."
+      },
+      {
+        "check_id": "c011",
+        "verdict": "pass",
+        "evidence_path": "tilth_search query='Playwright|Puppeteer|Selenium' kind='content' scope='petals' — 0 matches. Extraction-guide.md Section 9 explicitly forbids external tools. Structural — no negctrl needed. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged."
+      },
+      {
+        "check_id": "c012",
+        "verdict": "pass",
+        "evidence_path": "Derived from c001. Extraction produces 7 output files with correct hex values (#2F99A4), font specs (Raleway, Open Sans), and voice rules (forbidden terms) — confirming why claim that extraction bridges brand documents to agent context. No negctrl needed. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged."
+      },
+      {
+        "check_id": "c013",
+        "verdict": "pass",
+        "evidence_path": "Derived from c011. Zero references to Playwright/Puppeteer/Selenium in entire petals/. Extraction uses agent-native capabilities only (Read, vision, Bash). Confirms fit claim that extraction adds no infrastructure. No negctrl needed. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged."
+      },
+      {
+        "check_id": "c014",
+        "verdict": "pass",
+        "evidence_path": ".brand/tokens.css + .brand/tokens.json exist (created 2026-06-12). Deterministic cross-check ran: sampled color (#3F7A33), spacing (24px), radius (10px), easing (cubic-bezier 0.22,1,0.36,1) values each appear in tokens.css and their canonical .md file; tokens.json mirrors values in W3C shape (bezier as typed array). porto's .brand/ carries no [FLAG:] entries, so the no-token-for-flags rule is exercised vacuously and specified in extraction-guide 5a ('a generated view must not launder a guess into a value').",
+        "evidence_sha": "24d705f50af1d4fddde3eb463ee4a9d3ad9aef43"
+      }
+    ]
   }
 }
 </script>

@@ -71,6 +71,15 @@ For each output file, read the corresponding template from `petals/templates/`:
 | `.brand/components.md` | `petals/templates/components.md` |
 | `.brand/layout.md` | `petals/templates/layout.md` |
 
+### 5a. Derived machine views
+
+After the templates are populated, emit two generated views (never templates — they are derived from the markdown, and the markdown stays canonical):
+
+- `.brand/tokens.css` — every brand value as a CSS custom property (`--pp-*` colors, font stacks, `--space-*`, `--radius-*`, strokes, shadows, motion). Projects import it and reference variables instead of hard-coding values.
+- `.brand/tokens.json` — the same values in W3C design-tokens shape (`{ "$value", "$type" }` groups: color, fontFamily, space, layout, radius, stroke, shadow, motion). Build tools and Tailwind/theme configs consume this directly.
+
+Skip a token when its source value was flagged rather than extracted — a generated view must not launder a guess into a value. Regenerate both files on every `/petal update`.
+
 Replace each `{{PLACEHOLDER}}` in the template with the extracted value. For placeholders where no explicit value was found:
 - If the field is optional (metadata, visual theme attributes), write "not specified" or remove the line.
 - If the field is critical (primary hex, heading font), write the appropriate flag (see Section 4).

@@ -48,6 +48,7 @@ These are non-negotiable. Violating any is a brand error.
 | `/petal token <format>` | Export design tokens in specified format (css, tailwind, dtcg) |
 | `/petal update` | Sync `.brand/` with latest from central, preserving project overrides |
 | `/petal logo [variant]` | Return the correct logo asset path for the requested variant |
+| `/petal book` | Render `.brand/` as a single self-contained brand-book HTML for human review and sharing |
 
 ## Reference Workflow
 
@@ -63,6 +64,7 @@ Load reference files on demand based on the task:
 | Auditing surface (radius/shadow/motion) | `.brand/components.md` |
 | Auditing voice | `.brand/voice.md`, `references/voice-guide.md` |
 | Auditing output (all dimensions) | `references/color-audit-guide.md`, `references/voice-guide.md`, `.brand/*.md` |
+| Rendering the brand book | `references/book-guide.md`, `.brand/*.md` |
 | Generating UI | `.brand/DESIGN.md`, `.brand/colors.md`, `.brand/typography.md`, `.brand/components.md` |
 | Writing copy | `.brand/voice.md`, `.brand/identity.md` |
 
@@ -197,16 +199,26 @@ When `/petal update` is invoked, the agent syncs the local `.brand/` with the la
 
 8. **Update .petalrc version** — Update the `version` field in `.petalrc` to the new version tag.
 
-9. **Clean up** — Remove the backup:
-   ```bash
-   trash .brand.backup
-   ```
+9. **Regenerate the machine views** — `.brand/tokens.css` and `.brand/tokens.json` are derived from the markdown files (see `references/extraction-guide.md` §5a); regenerate both. If `.brand/book.html` exists, regenerate it too.
 
-10. **Report summary** — Tell the user:
+10. **Report the blast radius** — an update is not done until the project knows what it broke. Run `/petal check` against the project's primary UI entry points (or the files checked most recently). Report anything that the NEW brand version flags which the old one did not:
+    ```
+    Blast radius: 3 files have violations introduced by this update.
+      src/components/Hero.tsx — 2 color errors (old primary #4C5E3C)
+      …
+    ```
+    Zero findings reports `Blast radius: clean.`
+
+11. **Clean up** — Remove the backup:
+    ```bash
+    trash .brand.backup
+    ```
+
+12. **Report summary** — Tell the user:
     ```
     Updated brand from <old-version> to <new-version>.
     Preserved <N> override(s): <list of preserved keys>
-    Updated <M> inherited values.
+    Updated <M> inherited values. Blast radius: <clean | N files to fix>.
     ```
 
 ## /petal check (Drift Detection)
@@ -497,6 +509,17 @@ Result: <PASS | FAIL (<X> error(s) to fix, <Y> warning(s) to review)>
 
 Exit 0 if zero errors (warnings alone do not fail). Exit non-zero if any forbidden term violations exist.
 
+## /petal book
+
+When `/petal book` is invoked, the agent renders `.brand/` as one self-contained HTML page — the brand's human face. The markdown files are for agents; the book is for the person who owns the brand: review the extraction, spot what is wrong, share it with the team.
+
+1. **Guard**: if `.brand/` does not exist, report the standard "No brand configured" message and stop.
+2. **Read all of `.brand/`** (the one workflow that loads everything — this is a rendering job, not an audit).
+3. **Generate `.brand/book.html`** following `references/book-guide.md`: masthead with the mark and version; one section per brand file (palette with contrast pairings, type specimens, layout ruler, surface tokens with live hover demos, component exemplars built purely from the tokens, voice traits + forbidden terms + before/after, logo with usage rules).
+4. **Surface flags**: every `[FLAG: …]` found in the brand files renders as a "needs an answer" card at the top of the book — the owner's review queue.
+5. **The book must pass its own check**: palette-only hexes, exact font families, sentence case, zero forbidden terms. Self-demonstration is the contract.
+6. Report: `Brand book rendered: .brand/book.html (open in any browser).`
+
 ## /petal logo `[variant]`
 
 When `/petal logo` is invoked, the agent hands out the logo *with its rules* — the asset alone invites redrawing.
@@ -507,6 +530,34 @@ When `/petal logo` is invoked, the agent hands out the logo *with its rules* —
    - `mono` → the all-ink variant if present (`logo-mono.svg`); if absent, instruct: copy `logo.svg` and set every path fill to the brand ink color — the ONLY permitted recolor.
 3. **Return** the asset path AND print the "Logo Usage" rules from `.brand/identity.md` (minimum size, clear space, exact fills, the never-list).
 4. **When placing the logo in generated UI**: copy the asset file or inline its exact markup — never redraw, approximate, or restyle it. The color audit treats a logo with altered fills as an **error** (it is not a palette question; it is the mark).
+
+## Guardrails (edit-time and merge-time)
+
+The SKILL auto-trigger covers generation time. Two more lines of defense, both optional recipes a project can adopt:
+
+**Edit-time — a deterministic hook.** The palette check is pure text matching; a Claude Code `PostToolUse` hook can run it on every edited UI file without an agent in the loop:
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [{
+      "matcher": "Edit|Write",
+      "hooks": [{ "type": "command", "command": "sh .claude/hooks/petal-hex-guard.sh" }]
+    }]
+  }
+}
+```
+
+where the guard script greps the edited file for hex literals and compares them against the palette set extracted from `.brand/colors.md`, printing any misses (exit 0 always — a guardrail nudges, it does not block).
+
+**Merge-time — CI.** A pull-request job runs the full five-dimension check on changed UI files:
+
+```yaml
+- name: brand check
+  run: claude -p "/petal check $(git diff --name-only origin/main -- '*.tsx' '*.css' '*.html' | tr '\n' ' ')"
+```
+
+The deterministic dimensions (hex, radius, scale, terminology) are exact; the agent-judgment ones (tone) advise. A failing check fails the job.
 
 ## .petalrc Format
 
