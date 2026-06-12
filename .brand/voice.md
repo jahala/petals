@@ -46,20 +46,12 @@ Never use these words in plotplot copy:
 
 ## Terminology
 
-Canonical nouns — the product has names; use them:
+Family-wide canonical terms live here; each product adds its own table in
+`products/<product>/voice.md` (merged at read time).
 
 | Use | Not | Why |
 |-----|-----|-----|
-| .brand/ | "brand folder", "brand config", "brand cache" | The artifact has a name. |
-| skill | plugin, extension, bot | What petals is to the agent. |
-| check | lint, validate, scan | The product's own verb for auditing. |
-| agent | AI, copilot, assistant | Who reads the brand. |
-| extract | scrape, ingest, import | Explicit-only reading of stated values. |
-| brand guidelines | brand bible | Plain and accurate. ("Brand book" is the /petals book artifact, not a synonym for the guidelines.) |
-
-Product names are lowercase, always: petals, tend, tilth, plotplot — even at
-the start of a sentence. Capitalizing them is off-brand. Commands are plural
-like the product: /petals init, /petals check — never /petal.
+| brand guidelines | brand bible | Plain and accurate. |
 
 ## Capitalization & Microcopy
 

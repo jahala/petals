@@ -22,12 +22,33 @@
 # Exit: 0 when zero errors (warnings alone do not fail), else the error count.
 set -uo pipefail
 
-TARGET="${1:?usage: check.sh <file> [--brand <dir>]}"
+TARGET="${1:?usage: check.sh <file> [--brand <dir>] [--product <name>]}"
 shift || true
-BRAND=".brand"
-if [ "${1:-}" = "--brand" ]; then BRAND="${2:?--brand needs a dir}"; fi
+BRAND=".brand"; PRODUCT=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --brand)   BRAND="${2:?--brand needs a dir}"; shift 2 ;;
+    --product) PRODUCT="${2:?--product needs a name}"; shift 2 ;;
+    *) shift ;;
+  esac
+done
+# product context: flag > .petalsrc > the single products/ dir > flat brand
+if [ -z "$PRODUCT" ] && [ -f .petalsrc ]; then
+  PRODUCT=$(awk -F': *' '/^[ ]*product:/{print $2; exit}' .petalsrc 2>/dev/null)
+fi
 [ -f "$TARGET" ] || { echo "ERROR target file not found: $TARGET"; exit 1; }
 [ -d "$BRAND" ] || { echo "No brand configured. Run /petals init first."; exit 1; }
+
+if [ -z "$PRODUCT" ] && [ -d "$BRAND/products" ]; then
+  PCOUNT=$(ls -1 "$BRAND/products" 2>/dev/null | wc -l | tr -d " ")
+  [ "$PCOUNT" = "1" ] && PRODUCT=$(ls -1 "$BRAND/products")
+fi
+PRODUCT_VOICE=""
+[ -n "$PRODUCT" ] && [ -f "$BRAND/products/$PRODUCT/voice.md" ] && PRODUCT_VOICE="$BRAND/products/$PRODUCT/voice.md"
+
+# Product accents from the umbrella Product Accents table ("HEX|name" rows).
+# In a product context, other products accents are markers, not UI colors.
+ACCENTS=$(awk -F"|" "/^## Product Accents/{f=1} /^## /{if(f&&\$0!~/Product Accents/)f=0} f && NF>=4 && \$3~/#[0-9a-fA-F]{6}/ {gsub(/^ +| +\$/,\"\",\$2); gsub(/^ +| +\$/,\"\",\$3); print toupper(\$3) \"|\" \$2}" "$BRAND/colors.md" 2>/dev/null | tr "\n" "\036")
 
 PALETTE=$(grep -ohE '#[0-9a-fA-F]{6}' "$BRAND/colors.md" 2>/dev/null | tr 'a-f' 'A-F' | sort -u | tr '\n' ' ')
 RADII=$(grep -ohE '^\| radius-[a-z]+ \| [0-9]+px' "$BRAND/components.md" 2>/dev/null | grep -oE '[0-9]+px' | tr '\n' ' ')
@@ -50,10 +71,10 @@ DOCPAIRS=$(awk '/^## Contrast Pairings/{f=1;next} /^## /{f=0} f && /^\|.* on .*\
 
 # Forbidden terms: "term<TAB>alternatives" rows from voice.md's Forbidden Terms
 # table, newline -> \036 (awk -v cannot carry newlines portably)
-FORBIDDEN=$(awk -F'|' '/^## Forbidden Terms/{f=1} /^## /{if(f&&$0!~/Forbidden/)f=0} f && NF>=4 && $2!~/Term|---/ {gsub(/^ +| +$/,"",$2); gsub(/^ +| +$/,"",$4); if($2!="") print $2"\t"$4}' "$BRAND/voice.md" 2>/dev/null | tr '\n' '\036')
+FORBIDDEN=$(awk -F'|' '/^## Forbidden Terms/{f=1} /^## /{if(f&&$0!~/Forbidden/)f=0} f && NF>=4 && $2!~/Term|---/ {gsub(/^ +| +$/,"",$2); gsub(/^ +| +$/,"",$4); if($2!="") print $2"\t"$4}' "$BRAND/voice.md" $PRODUCT_VOICE 2>/dev/null | tr '\n' '\036')
 
 awk -v palette="$PALETTE" -v radii="$RADII" -v bps="$BREAKPOINTS" \
-    -v unit="$SPACE_UNIT" -v forbidden="$FORBIDDEN" -v docpairs="$DOCPAIRS" '
+    -v unit="$SPACE_UNIT" -v forbidden="$FORBIDDEN" -v docpairs="$DOCPAIRS" -v accents="$ACCENTS" -v product="$PRODUCT" '
 function hexval(c,   i){ return index("0123456789ABCDEF", toupper(c)) - 1 }
 function h2(s){ return hexval(substr(s,1,1))*16 + hexval(substr(s,2,1)) }
 function expand(h){ if(length(h)==4) return "#" substr(h,2,1) substr(h,2,1) substr(h,3,1) substr(h,3,1) substr(h,4,1) substr(h,4,1); return h }
@@ -62,6 +83,7 @@ function chan(c){ c=c/255; return c<=0.03928 ? c/12.92 : ((c+0.055)/1.055)^2.4 }
 function lum(h,   a){ rgb(h,a); return 0.2126*chan(a[1]) + 0.7152*chan(a[2]) + 0.0722*chan(a[3]) }
 function ratio(f,b,   lf,lb,hi,lo){ lf=lum(f); lb=lum(b); hi=(lf>lb?lf:lb); lo=(lf>lb?lb:lf); return (hi+0.05)/(lo+0.05) }
 function nearest(h,   a,b,i,d,best,bd){ rgb(h,a); bd=1e9; for(i=1;i<=np;i++){ rgb(pal[i],b); d=(a[1]-b[1])^2+(a[2]-b[2])^2+(a[3]-b[3])^2; if(d<bd){bd=d;best=pal[i]} } return best }
+function nearname(h,   n){ n=nearest(h); return (n in accent_owner) ? n " (" accent_owner[n] "\047s product accent)" : n }
 function err(dim,msg){ printf "ERROR [%s] %s\n", dim, msg; e[dim]++ }
 function warn(dim,msg){ printf "WARNING [%s] %s\n", dim, msg; w[dim]++ }
 function quotectx(s){ return (s ~ /never|use instead|forbidden|class="no"|class="ba bad"/) }
@@ -70,6 +92,8 @@ BEGIN{
   np=split(palette, pal, " ")
   nr=split(radii, rad, " ")
   nb=split(bps, bp, " ")
+  na=split(accents, arows, "\036")
+  for(i=1;i<=na;i++){ m=split(arows[i], akv, "|"); if(m>=2) accent_owner[akv[1]]=akv[2] }
   ndp=split(docpairs, dprows, "\036")
   for(i=1;i<=ndp;i++){ m=split(dprows[i], dpkv, "|"); if(m>=3) docclass[dpkv[1] "|" dpkv[2]] = tolower(dpkv[3]) }
   nf=split(forbidden, frows, "\036")
@@ -98,7 +122,9 @@ BEGIN{
     hx=substr(tmp, RSTART, RLENGTH); sub(/[^0-9a-fA-F#]$/, "", hx)
     uhx=toupper(expand(hx)); found=0
     for(i=1;i<=np;i++) if(pal[i]==uhx){found=1;break}
-    if(!found) err("color", "line " NR ": " hx " is not in the palette. Did you mean " nearest(uhx) "?")
+    if(!found) err("color", "line " NR ": " hx " is not in the palette. Did you mean " nearname(uhx) "?")
+    else if(product!="" && (uhx in accent_owner) && accent_owner[uhx]!=product)
+      warn("color", "line " NR ": " uhx " is " accent_owner[uhx] "\047s product accent — product accents mark products, not " product " UI (products/" product "/colors.md).")
     tmp=substr(tmp, RSTART+RLENGTH)
   }
   # var definitions are also brand values — check them too

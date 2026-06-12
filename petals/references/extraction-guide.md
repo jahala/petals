@@ -71,6 +71,10 @@ For each output file, read the corresponding template from `petals/templates/`:
 | `.brand/components.md` | `petals/templates/components.md` |
 | `.brand/layout.md` | `petals/templates/layout.md` |
 
+### 5a-pre. Product layers (multi-product organizations)
+
+When the source material describes a brand FAMILY (an organization plus named products), write the shared truth to the umbrella files and each product's deltas to `.brand/products/<product>/` — accent claim, mark, tagline, product terminology. Deltas only; never copy umbrella values down. Single-brand sources stay flat.
+
 ### 5a. Derived machine views
 
 After the templates are populated, emit two generated views (never templates — they are derived from the markdown, and the markdown stays canonical):

@@ -1,4 +1,5 @@
-/* .brand/tokens.css — machine view of the brand, generated from .brand/*.md.
+/* .brand/tokens.css — machine view of the RESOLVED brand (umbrella plotplot
+   ⊕ products/petals), generated from .brand/*.md.
    The markdown files are canonical; regenerate this file via /petals update.
    Import it and reference the variables — never hard-code brand values. */
 :root {
