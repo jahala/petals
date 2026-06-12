@@ -118,7 +118,9 @@
   a:hover { text-decoration-color: var(--pp-accent); }
   :focus-visible { outline: 2px solid var(--pp-accent); outline-offset: 3px; border-radius: 3px; }
 
-  .container { max-width: 1200px; margin: 0 auto; padding: 0 var(--space-md); }
+  /* horizontal-only, longhand — a shorthand here zeroes the vertical padding
+     of every element that also carries .container (nav, footer) */
+  .container { max-width: 1200px; margin: 0 auto; padding-left: var(--space-md); padding-right: var(--space-md); }
   .kicker {
     font-family: var(--font-code); font-size: var(--text-small); font-weight: 500;
     color: var(--pp-accent); text-transform: uppercase; letter-spacing: 0.1em;
@@ -140,7 +142,7 @@
   }
   nav .logo .mark { width: 26px; height: 26px; display: block; margin-right: 8px; }
   nav .logo span { color: var(--pp-accent); }
-  nav .links { display: flex; gap: var(--space-md); align-items: center; }
+  nav .links { display: flex; gap: var(--space-lg); align-items: center; }
   nav .links a {
     font-size: 1rem; font-weight: 500; color: var(--pp-text); text-decoration: none;
     transition: color 0.15s;
@@ -464,8 +466,13 @@
   footer .brand-col .logo span { color: var(--pp-accent); }
   footer .brand-col .logo .mark { width: 22px; height: 22px; }
   footer .brand-col p { font-size: var(--text-small); line-height: 1.65; max-width: 38ch; color: var(--pp-text-soft); }
-  footer h4 { font-size: var(--text-small); font-weight: 600; margin-bottom: var(--space-sm); color: var(--pp-text); }
-  footer a, footer .mono { display: block; margin-bottom: var(--space-3xs); }
+  /* column headers speak the page's kicker language — quiet, structural */
+  footer h4 {
+    font-family: var(--font-code); font-size: 0.8rem; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: var(--space-sm); color: var(--pp-text-soft);
+  }
+  footer a, footer .mono { display: block; margin-bottom: var(--space-2xs); }
   footer .col-links a, footer .col-cmds .mono {
     font-family: var(--font-code); font-size: var(--text-code); color: var(--pp-text);
     text-decoration: none;
