@@ -513,11 +513,13 @@ Exit 0 if zero errors (warnings alone do not fail). Exit non-zero if any forbidd
 
 When `/petal book` is invoked, the agent renders `.brand/` as one self-contained HTML page — the brand's human face. The markdown files are for agents; the book is for the person who owns the brand: review the extraction, spot what is wrong, share it with the team.
 
+The book is set in the **project's own brand**, chrome included — its fonts, its palette, its casing, its spacing. petals has no visual identity inside your project; everything it produces there (book, tokens, exemplars) carries yours.
+
 1. **Guard**: if `.brand/` does not exist, report the standard "No brand configured" message and stop.
 2. **Read all of `.brand/`** (the one workflow that loads everything — this is a rendering job, not an audit).
 3. **Generate `.brand/book.html`** following `references/book-guide.md`: masthead with the mark and version; one section per brand file (palette with contrast pairings, type specimens, layout ruler, surface tokens with live hover demos, component exemplars built purely from the tokens, voice traits + forbidden terms + before/after, logo with usage rules).
 4. **Surface flags**: every `[FLAG: …]` found in the brand files renders as a "needs an answer" card at the top of the book — the owner's review queue.
-5. **The book must pass its own check**: palette-only hexes, exact font families, sentence case, zero forbidden terms. Self-demonstration is the contract.
+5. **The book must pass its own check**: palette-only hexes, exact font families, and the project's own casing, terminology, and voice rules. Self-demonstration is the contract.
 6. Report: `Brand book rendered: .brand/book.html (open in any browser).`
 
 ## /petal logo `[variant]`

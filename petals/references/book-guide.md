@@ -13,8 +13,9 @@ a copy-source for agents.
   never a second source of truth. Name the source file in each section's
   kicker (`colors.md`, `typography.md`, …).
 - **The book passes `/petal check`**: palette-only hexes, exact font
-  families, brand spacing and surface tokens, sentence case, zero forbidden
-  terms. Self-demonstration is the contract.
+  families, brand spacing and surface tokens, and the brand's own voice
+  rules (casing, terminology, forbidden terms). Self-demonstration is the
+  contract.
 - **Flags float to the top.** Every `[FLAG: …]` in the brand files renders
   as a "needs an answer" card before any other section — the owner's review
   queue from extraction.
@@ -43,4 +44,4 @@ a copy-source for agents.
   real recipes.
 - Keep it calm: no animation beyond the one motion-demo hover; the book is
   for reading.
-- Sentence case headings; the section kickers are mono, uppercase via CSS.
+- Headings, labels, and chrome follow the brand's own casing and type rules — the book about the brand is set in the brand, chrome included. petals imposes no styling of its own.
