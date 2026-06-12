@@ -2482,7 +2482,8 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
   "kind": "feature",
   "tend_version": "0.4.0",
   "generated_at": "2026-06-12T08:34:09.487Z",
-  "project_name": "Petals"
+  "project_name": "Petals",
+  "dek_sha": "8cffc83151d012bc2e9e74f48287c07fd3c45ed3"
 }
 </script>
 
@@ -2580,7 +2581,9 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
         "Rendering from tokens.json alone — loses voice, identity, and extraction flags"
       ]
     }
-  ]
+  ],
+  "dek": "The brand's human face — /petal book renders .brand/ as one self-contained page the brand owner can review, correct, and share, with component exemplars agents copy verbatim.",
+  "narrative": "## Maria finally sees what the agent sees\n\nExtraction ran yesterday. Maria knows the agent read the deck and produced a directory of markdown — and she has never opened a markdown file in her life. She opens `.brand/book.html` instead. One page: the palette as swatches with names and measured contrast, the headline face actually set as a headline, the spacing scale drawn at true size, the components as they will really render, the voice rules with her own forbidden words listed. Twelve seconds in she points at the second swatch: \"that's not our green.\" That sentence is the whole point — she could not have said it about a markdown table.\n\n## One page, every value, nothing invented\n\nThe book is a view, not a second source of truth. Every section names the file it renders in its kicker — colors.md, typography.md, layout.md, components.md, voice.md, identity.md — and every value on the page comes from that file. Where extraction flagged a value instead of guessing it, the flag renders first, as a needs-an-answer card: the owner's review queue, before anything else. Regenerate with /petal book after any change; hand-editing the book is hand-editing a build artifact.\n\n## The exemplars are the shortcut\n\nThe components section is built purely from the brand tokens — buttons, a card, a terminal pane, each carrying the real radius, the real shadow recipe, the real ease. That makes the book double as the agent's copy source: view source, take the markup, and the result is on-brand by construction. Rules tell an agent what not to do; the exemplars show it what to do.\n\n## What the book refuses to be\n\nIt is not a builder, and not a place where values live. petals ships no build pipeline for it — the agent renders the book from the brand files on demand, following the structure contract in book-guide.md (the decision trail records the rejected generator binary). And the book must pass its own /petal check: palette-only hexes, exact families, sentence case, zero forbidden terms. A brand book that is off-brand would be a confession."
 }
 </script>
 <!-- OO:DATA:END -->

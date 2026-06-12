@@ -2483,7 +2483,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
   "tend_version": "0.4.0",
   "generated_at": "2026-06-04T12:41:55.706Z",
   "project_name": "Petals",
-  "dek_sha": "f1da52073fc658ee1acf97e78e867896628ce421"
+  "dek_sha": "6867cdcae5d62821cbc565ae36810aa717f33598"
 }
 </script>
 
@@ -2502,7 +2502,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
   "impact": "Six projects are connected. The central brand tags v1.3.0. Next agent session on each project detects the drift. Four update immediately. Two with campaign overrides update without losing their seasonal palette. Zero projects still silently using v1.2.0 two weeks later. A developer joining any project runs one command and their first agent session produces on-brand output.",
   "fit": "Distribution makes extraction useful beyond one project. Extraction creates the brand intelligence layer once. Distribution gets it everywhere. They share the .brand/ format contract — distribution works on any valid .brand/ regardless of how it was created.",
   "where": "petals/scripts/fetch-brand.sh (HTTPS fetch or shallow clone logic). petals/SKILL.md (init --from and update subcommand surfaces). .petalrc (generated per-project config: source, version, overrides).",
-  "how": "Two fetch strategies, auto-selected: HTTPS API fetch (uses GITHUB_TOKEN from env) or shallow git clone (when SSH access detected). Public repos use raw.githubusercontent.com. .brand/ is gitignored — a cache, not source code. .petalrc records source, version, and optional overrides. Drift detection compares local version against central's latest tag. Overrides merge: set values win, null inherits from central.",
+  "how": "Two fetch strategies, auto-selected: HTTPS API fetch (uses GITHUB_TOKEN from env) or shallow git clone (when SSH access detected). Public repos use raw.githubusercontent.com. .brand/ is gitignored — a cache, not source code. .petalrc records source, version, and optional overrides. Drift detection compares local version against central's latest tag. Overrides merge: set values win, null inherits from central. After applying an update: regenerate the derived machine views (tokens.css / tokens.json) and report the blast radius - files newly flagged under the new version, or an explicit clean line.",
   "progress": {
     "implementation": 100,
     "verification": 100
@@ -2615,6 +2615,14 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       "method": "synthetic-test",
       "integration_level": "unit",
       "verification_recipe": "Inspect fetch-brand.sh: all four strategies (local, git, github-api, raw-http) are file-based operations. Inspect .petalrc: YAML on disk, no server connection. Inspect check-brand-drift.sh: shell script, compares version strings, exits with status code. Assert zero references to databases, SaaS endpoints, or persistent servers."
+    },
+    {
+      "id": "c013",
+      "description": "The /petal update workflow instructs the agent, after applying a new version, to regenerate the derived machine views and report the blast radius - newly-flagged files under the new brand version, or an explicit clean line.",
+      "validates": "how",
+      "method": "code-review",
+      "integration_level": "unit",
+      "verification_recipe": "Inspect SKILL.md /petal update steps 9-12: assert a regenerate-machine-views step, a blast-radius step with report format and clean case, and the summary line carrying the blast radius. Full behavioral exercise (version-bumped fixture run) is the follow-up synthetic check."
     }
   ],
   "smoke": {
@@ -2649,7 +2657,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
     "agent-off-brand"
   ],
   "journey_phase": "author",
-  "narrative": "Maria pushes the new brand to the central repo. Tags `v1.3.0`. Done.\n\nThree days later, she opens a session on the dashboard project. Before she types a word, the agent reports: *Brand drift detected. Local: v1.2.0. Central: v1.3.0.* The dashboard has a seasonal campaign override — a gold palette for the holiday push. She runs `/petal update`. The primary color updates to the new teal. The gold palette stays. The heading font updates. Nothing breaks.\n\nThis is distribution: the brand travels, not a Slack message.\n\n## One command wires a project to the brand\n\n`/petal init --from github.com/org/brand` pulls `.brand/` into the project. The agent reads it without being told. No hex codes in the prompt. No brand context pasted into the message. A developer joining the project — someone who has never heard of petals — opens a session, types \"build a contact page,\" and the agent produces output in the correct palette, the correct font, the correct voice. They don't know why. They don't need to.\n\nUnder the hood, the fetch strategy selects itself. If git and SSH are available, a shallow clone grabs `.brand/` and nothing else — fast, authenticated, no token to manage. If only `GITHUB_TOKEN` is set, the API fetches the directory contents over HTTPS. If neither, and the repo is public, raw.githubusercontent.com delivers the files. Three strategies, zero configuration. Petals reads the environment and picks the one that works.\n\nThe result lands in `.brand/` — a cache, not source code. It is immediately gitignored. The project never commits the brand; it commits `.petalrc`, which records the source URL, the version tag, and the override map. The brand lives in the central repo. The project knows where to find it.\n\n## Drift is detected, not announced\n\nWhen the central brand tags a new version, nobody Slacks anyone. Nobody files a ticket. Nobody pastes the hex codes into a shared document and hopes.\n\nThe next agent session on each connected project runs `/petal check` — a comparison of `.petalrc`'s `version` field against the central repo's latest tag. The comparison costs one API call. If they match, nothing happens. If they differ, the agent reports the gap: both version numbers, the tag date, a summary of what changed. No noise when there is no drift. No silence when there is.\n\nThe brand operator never has to remember which projects are connected or what version they are on. The infrastructure remembers. The agent surfaces drift at the moment it matters — when someone is about to do work that should use the current brand.\n\n## Overrides survive. Everything else updates.\n\nSome projects need to diverge. A campaign page uses a seasonal palette for six weeks. An experimental feature tests a new type scale. A regional variant swaps the primary typeface for a CJK font.\n\n`.petalrc` records overrides as a flat map: `colors.primary: '#GOLD'`, `typography.heading: null`. When `/petal update` runs, explicitly set values survive — the gold stays gold. Null-inherited values update to the central's current — the heading font moves forward with the brand. The merge is deterministic, visible in `.petalrc`, and reversible by clearing an override.\n\nThis is the critical distinction. Without it, overrides create frozen projects — the campaign page never gets the new primary color because updating would destroy the gold. With it, the project moves with the brand on everything it hasn't intentionally changed. The override map is the contract between what the project controls and what the brand controls.\n\n## The loop closes\n\n[Brand Extraction](brand-extraction.tend.html) creates the intelligence layer once — a `.brand/` directory from a PDF, a Figma export, a folder of assets. [Brand Check](brand-check.tend.html) catches what slips through — hardcoded colors, wrong fonts, off-brand voice — before it reaches review.\n\nDistribution sits between them. Extraction without distribution is a beautiful artifact that lives in one repo. Check without distribution catches drift on one project and leaves the other five oblivious. Distribution makes extraction useful beyond its birthplace and gives check something to verify against — a canonical source, kept current across every project where agents do work.\n\nThe central brand repo is just a git repository. `.brand/` at the root. Semantic version tags. Any project, any developer, any agent session — one command connects them to the same brand truth. No server. No database. No login page. Just files, git, and the skill that wires them together.",
+  "narrative": "Maria pushes the new brand to the central repo. Tags `v1.3.0`. Done.\n\nThree days later, she opens a session on the dashboard project. Before she types a word, the agent reports: *Brand drift detected. Local: v1.2.0. Central: v1.3.0.* The dashboard has a seasonal campaign override — a gold palette for the holiday push. She runs `/petal update`. The primary color updates to the new teal. The gold palette stays. The heading font updates. Nothing breaks.\n\nThis is distribution: the brand travels, not a Slack message.\n\n## One command wires a project to the brand\n\n`/petal init --from github.com/org/brand` pulls `.brand/` into the project. The agent reads it without being told. No hex codes in the prompt. No brand context pasted into the message. A developer joining the project — someone who has never heard of petals — opens a session, types \"build a contact page,\" and the agent produces output in the correct palette, the correct font, the correct voice. They don't know why. They don't need to.\n\nUnder the hood, the fetch strategy selects itself. If git and SSH are available, a shallow clone grabs `.brand/` and nothing else — fast, authenticated, no token to manage. If only `GITHUB_TOKEN` is set, the API fetches the directory contents over HTTPS. If neither, and the repo is public, raw.githubusercontent.com delivers the files. Three strategies, zero configuration. Petals reads the environment and picks the one that works.\n\nThe result lands in `.brand/` — a cache, not source code. It is immediately gitignored. The project never commits the brand; it commits `.petalrc`, which records the source URL, the version tag, and the override map. The brand lives in the central repo. The project knows where to find it.\n\n## Drift is detected, not announced\n\nWhen the central brand tags a new version, nobody Slacks anyone. Nobody files a ticket. Nobody pastes the hex codes into a shared document and hopes.\n\nThe next agent session on each connected project runs `/petal check` — a comparison of `.petalrc`'s `version` field against the central repo's latest tag. The comparison costs one API call. If they match, nothing happens. If they differ, the agent reports the gap: both version numbers, the tag date, a summary of what changed. No noise when there is no drift. No silence when there is.\n\nThe brand operator never has to remember which projects are connected or what version they are on. The infrastructure remembers. The agent surfaces drift at the moment it matters — when someone is about to do work that should use the current brand.\n\n## Overrides survive. Everything else updates.\n\nSome projects need to diverge. A campaign page uses a seasonal palette for six weeks. An experimental feature tests a new type scale. A regional variant swaps the primary typeface for a CJK font.\n\n`.petalrc` records overrides as a flat map: `colors.primary: '#GOLD'`, `typography.heading: null`. When `/petal update` runs, explicitly set values survive — the gold stays gold. Null-inherited values update to the central's current — the heading font moves forward with the brand. The merge is deterministic, visible in `.petalrc`, and reversible by clearing an override.\n\nThis is the critical distinction. Without it, overrides create frozen projects — the campaign page never gets the new primary color because updating would destroy the gold. With it, the project moves with the brand on everything it hasn't intentionally changed. The override map is the contract between what the project controls and what the brand controls.\n\n## What an update owes you\n\nAn update that lands silently is half an update. After the merge applies and the version bumps, the workflow regenerates the machine views — tokens.css and tokens.json are derived artifacts, so they move with the markdown — and then reports the blast radius: every file the new brand version flags that the old one did not. \"Updated to v1.3.0, three files now carry violations introduced by this update\" is actionable; a silent sync that leaves the campaign page in last year's palette is how drift started in the first place. A clean update says so in one line.\n\n## The loop closes\n\n[Brand Extraction](brand-extraction.tend.html) creates the intelligence layer once — a `.brand/` directory from a PDF, a Figma export, a folder of assets. [Brand Check](brand-check.tend.html) catches what slips through — hardcoded colors, wrong fonts, off-brand voice — before it reaches review.\n\nDistribution sits between them. Extraction without distribution is a beautiful artifact that lives in one repo. Check without distribution catches drift on one project and leaves the other five oblivious. Distribution makes extraction useful beyond its birthplace and gives check something to verify against — a canonical source, kept current across every project where agents do work.\n\nThe central brand repo is just a git repository. `.brand/` at the root. Semantic version tags. Any project, any developer, any agent session — one command connects them to the same brand truth. No server. No database. No login page. Just files, git, and the skill that wires them together.",
   "media": {
     "thumbnail": {
       "kind": "svg",
@@ -2949,6 +2957,15 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
         "c012"
       ],
       "verification_profile": "light"
+    },
+    {
+      "id": "i010",
+      "title": "Blast radius + machine-view regeneration on update",
+      "description": "Test: inspect SKILL.md /petal update; assert step 9 regenerates tokens.css/tokens.json (and book.html when present), step 10 reports blast radius with report format and the clean case, and step 12's summary carries it. Implement: update workflow steps 9-12.",
+      "status": "done",
+      "traces_to": [
+        "c013"
+      ]
     }
   ],
   "coverage_files": [
@@ -3030,6 +3047,12 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
         "verdict": "pass",
         "evidence_path": "petals/scripts/fetch-brand.sh",
         "evidence_sha": "3f15db6395acbb46ed1cad4ea529f4a6f717cd3b"
+      },
+      {
+        "check_id": "c013",
+        "verdict": "pass",
+        "evidence_path": "petals/SKILL.md /petal update steps 9-12 verified by inspection 2026-06-12: step 9 regenerates tokens.css + tokens.json (+book.html if present); step 10 defines the blast-radius report with format and 'Blast radius: clean.' case; step 12 summary includes it. Behavioral fixture run remains the named follow-up.",
+        "evidence_sha": "a2fd6e9e7ed734b486809216643f5b553d656f1b"
       }
     ],
     "result": "pass",
@@ -3066,8 +3089,8 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       "question_id": "one_bet",
       "target": "feature",
       "verdict": "pass",
-      "rationale": "One bet — 'get the brand into a project and keep it current.' Fetch (c001/c004-c007), drift-detect (c002/c010), and override-preserving update (c003/c011) are the three moments of one distribution lifecycle, not three features. The seam worth naming: drift detection (check-brand-drift.sh) could stand alone as a read-only capability, but it has no value without a fetch to make current — so it stays inside this bet rather than splitting out.",
-      "judged_sha": "3813cfd26ce589a7d576f758d9a92050dd0cdf21"
+      "rationale": "Still one bet with the blast-radius step: get the brand into every project and keep them honestly in sync. Regenerating derived views and reporting what an update broke are completions of the sync loop, not a new bet — an update that lands silently was the original drift mechanism this feature exists to close.",
+      "judged_sha": "a3bf5167ee48368a8338337c14a6c5ca7b2484e6"
     },
     {
       "question_id": "impact_measurable",
