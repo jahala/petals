@@ -1,0 +1,8 @@
+:root { --pp-primary: #3F7A33; --pp-bg: #F8F5EC; }
+.btn { color: #F8F5EC; background: #3F7A33; padding: 16px 32px; border-radius: 6px; }
+.card { border-radius: 10px; box-shadow: 0 2px 4px rgba(32, 36, 27, 0.05); margin: 24px; }
+.move { transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
+/* strengthen the brand guidelines with petals */
+@media (max-width: 880px) { .stack { gap: 16px; } }
+.icon { width: 18px; height: 18px; border-radius: 8px; border: 1px solid #D6D2C2; }
+/* <div class="ba bad">Supercharge everything</div> — quoted bad example */

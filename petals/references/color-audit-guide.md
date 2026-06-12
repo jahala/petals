@@ -104,4 +104,4 @@ ERROR [color] line 18: #C9923C on #F0EDE1 is 2.34:1 — below the labels minimum
 ### Reference
 
 - Canonical color source: `.brand/colors.md` (palette + Contrast Pairings + Data Visualization)
-- This guide is used by: `/petal check <file>` (color audit dimension)
+- This guide is used by: `/petals check <file>` (color audit dimension)

@@ -1,7 +1,7 @@
 #!/bin/bash
-# apply-overrides.sh — Merge .petalrc overrides into .brand/ files.
+# apply-overrides.sh — Merge .petalsrc overrides into .brand/ files.
 #
-# Reads the overrides map from .petalrc and applies each non-null override
+# Reads the overrides map from .petalsrc and applies each non-null override
 # to the corresponding .brand/ file. Null overrides are tracked but do not
 # modify the file (they inherit from the central brand).
 #
@@ -19,7 +19,7 @@ set -euo pipefail
 # Allow empty arrays for the JSON output helper (APPLIED_KEYS/SKIPPED_KEYS may be empty)
 shopt -s nullglob 2>/dev/null || true
 
-PETALRC=".petalrc"
+PETALRC=".petalsrc"
 BRAND_DIR=".brand"
 APPLIED_COUNT=0
 SKIPPED_COUNT=0
@@ -64,12 +64,12 @@ json_out() {
     "$APPLIED_COUNT" "$SKIPPED_COUNT" "$applied_json" "$skipped_json"
 }
 
-# ── Parse overrides from .petalrc ────────────────────────────────────────────
+# ── Parse overrides from .petalsrc ────────────────────────────────────────────
 
 parse_overrides() {
   local file="$1"
   if [[ ! -f "$file" ]]; then
-    log "No .petalrc found at $file"
+    log "No .petalsrc found at $file"
     return 1
   fi
 
@@ -263,7 +263,7 @@ main() {
   overrides=$(parse_overrides "$PETALRC" 2>/dev/null || true)
 
   if [[ -z "$overrides" ]]; then
-    log "No overrides found in .petalrc"
+    log "No overrides found in .petalsrc"
     json_out
     exit 0
   fi

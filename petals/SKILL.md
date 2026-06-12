@@ -40,15 +40,15 @@ These are non-negotiable. Violating any is a brand error.
 
 | Command | Description |
 |---------|-------------|
-| `/petal init <folder>` | Scan folder for brand assets and create `.brand/` directory |
-| `/petal init --from <repo-url>` | Fetch `.brand/` from a central brand repository |
-| `/petal check [file]` | Audit file against brand rules; if no file, check for brand drift |
-| `/petal voice <text>` | Check copy against `.brand/voice.md`; return score and suggestions |
-| `/petal color <name>` | Look up a specific color from `.brand/colors.md` |
-| `/petal token <format>` | Export design tokens in specified format (css, tailwind, dtcg) |
-| `/petal update` | Sync `.brand/` with latest from central, preserving project overrides |
-| `/petal logo [variant]` | Return the correct logo asset path for the requested variant |
-| `/petal book` | Render `.brand/` as a single self-contained brand-book HTML for human review and sharing |
+| `/petals init <folder>` | Scan folder for brand assets and create `.brand/` directory |
+| `/petals init --from <repo-url>` | Fetch `.brand/` from a central brand repository |
+| `/petals check [file]` | Audit file against brand rules; if no file, check for brand drift |
+| `/petals voice <text>` | Check copy against `.brand/voice.md`; return score and suggestions |
+| `/petals color <name>` | Look up a specific color from `.brand/colors.md` |
+| `/petals token <format>` | Export design tokens in specified format (css, tailwind, dtcg) |
+| `/petals update` | Sync `.brand/` with latest from central, preserving project overrides |
+| `/petals logo [variant]` | Return the correct logo asset path for the requested variant |
+| `/petals book` | Render `.brand/` as a single self-contained brand-book HTML for human review and sharing |
 
 ## Reference Workflow
 
@@ -68,9 +68,9 @@ Load reference files on demand based on the task:
 | Generating UI | `.brand/DESIGN.md`, `.brand/colors.md`, `.brand/typography.md`, `.brand/components.md` |
 | Writing copy | `.brand/voice.md`, `.brand/identity.md` |
 
-## /petal init Workflow
+## /petals init Workflow
 
-When `/petal init <folder>` is invoked, follow the extraction process documented in `references/extraction-guide.md`. Core principles:
+When `/petals init <folder>` is invoked, follow the extraction process documented in `references/extraction-guide.md`. Core principles:
 
 1. **Explicit only** — only write values explicitly stated in source. Never infer hex from color names, weights from font names, or examples from tone descriptions.
 2. **Flag ambiguity** — when a value is missing or unclear, flag it in the output with a clear question.
@@ -78,13 +78,13 @@ When `/petal init <folder>` is invoked, follow the extraction process documented
 4. **Use templates** — populate `templates/*.md` with extracted values to produce `.brand/*.md`.
 5. **No external tools** — use only native agent capabilities: file reading, vision, parsing, Bash for file operations.
 
-## /petal init --from Workflow (Distribution)
+## /petals init --from Workflow (Distribution)
 
-When `/petal init --from <repo-url>` is invoked, the agent connects the project to a central brand repository and fetches `.brand/` into the local project.
+When `/petals init --from <repo-url>` is invoked, the agent connects the project to a central brand repository and fetches `.brand/` into the local project.
 
 ### Distribution model
 
-The central brand repository is a git repository with `.brand/` at its root. Projects pull `.brand/` from it — they do not commit `.brand/` themselves. `.brand/` is a cache. `.petalrc` at the project root records where the brand came from and which version is in use.
+The central brand repository is a git repository with `.brand/` at its root. Projects pull `.brand/` from it — they do not commit `.brand/` themselves. `.brand/` is a cache. `.petalsrc` at the project root records where the brand came from and which version is in use.
 
 ```
 Central brand repo (github.com/company/brand, tagged v1.2.0)
@@ -92,7 +92,7 @@ Central brand repo (github.com/company/brand, tagged v1.2.0)
         |  fetch-brand.sh
         v
 Project .brand/  (gitignored — cache, not source)
-Project .petalrc  (committed — source, version, overrides)
+Project .petalsrc  (committed — source, version, overrides)
 ```
 
 ### Step-by-step process
@@ -104,9 +104,9 @@ Project .petalrc  (committed — source, version, overrides)
    ```
    Wait for confirmation. If denied, exit without changes. If `.brand/` does not exist, proceed.
 
-2. **Check for existing .petalrc** — If `.petalrc` already exists, do NOT modify it without confirmation. Warn:
+2. **Check for existing .petalsrc** — If `.petalsrc` already exists, do NOT modify it without confirmation. Warn:
    ```
-   .petalrc already exists with source: github.com/other/repo.
+   .petalsrc already exists with source: github.com/other/repo.
    Overwriting will change the brand source. Continue? (y/N)
    ```
    Wait for confirmation.
@@ -117,7 +117,7 @@ Project .petalrc  (committed — source, version, overrides)
    ```
    The script auto-selects the best strategy (local path, git clone, GitHub API, raw HTTP). If the script exits non-zero, report the error to the user and STOP. Do not create or modify any files.
 
-4. **Record source and version in .petalrc** — Parse the JSON output from fetch-brand.sh to get the version. Create or update `.petalrc`:
+4. **Record source and version in .petalsrc** — Parse the JSON output from fetch-brand.sh to get the version. Create or update `.petalsrc`:
    ```yaml
    brand:
      source: <repo-url>
@@ -133,7 +133,7 @@ Project .petalrc  (committed — source, version, overrides)
 
 6. **Verify output** — Confirm the output is correct:
    - `.brand/` directory exists and contains files
-   - `.petalrc` exists with `source`, `version`, and `overrides` fields
+   - `.petalsrc` exists with `source`, `version`, and `overrides` fields
    - `.gitignore` contains `.brand/`
    - `git status` does not show `.brand/` as untracked (if in a git repo)
 
@@ -145,16 +145,16 @@ Project .petalrc  (committed — source, version, overrides)
    .brand/ is gitignored (cache, not source code)
    ```
 
-## /petal update Workflow (Sync)
+## /petals update Workflow (Sync)
 
-When `/petal update` is invoked, the agent syncs the local `.brand/` with the latest version from the central repository while preserving project-level overrides.
+When `/petals update` is invoked, the agent syncs the local `.brand/` with the latest version from the central repository while preserving project-level overrides.
 
 ### Step-by-step process
 
-1. **Verify the project is connected** — Read `.petalrc`. If it does not exist or has no `brand.source` field:
+1. **Verify the project is connected** — Read `.petalsrc`. If it does not exist or has no `brand.source` field:
    ```
    This project is not connected to a brand source.
-   Run /petal init --from <repo-url> first.
+   Run /petals init --from <repo-url> first.
    ```
    Stop.
 
@@ -164,7 +164,7 @@ When `/petal update` is invoked, the agent syncs the local `.brand/` with the la
    ```
    This ensures the current state is preserved if anything fails.
 
-3. **Read current overrides** — Parse `.petalrc` to extract the `overrides` map. Each override is a flattened key with a dot-separated path:
+3. **Read current overrides** — Parse `.petalsrc` to extract the `overrides` map. Each override is a flattened key with a dot-separated path:
    ```yaml
    overrides:
      colors.primary: "#custom-hex"    # non-null: preserve this value
@@ -178,13 +178,13 @@ When `/petal update` is invoked, the agent syncs the local `.brand/` with the la
    ```
    Fetch into a temporary directory `.brand.incoming`, NOT directly into `.brand/`. If the script exits non-zero, restore from backup and report the error.
 
-5. **Detect version from incoming** — Read the version from the fetched `.brand.incoming/identity.md` or from the fetch script output. Compare with `.petalrc` version. If they are the same:
+5. **Detect version from incoming** — Read the version from the fetched `.brand.incoming/identity.md` or from the fetch script output. Compare with `.petalsrc` version. If they are the same:
    ```
    Brand is already at the latest version (<version>). Nothing to update.
    ```
    Clean up `.brand.incoming` and `.brand.backup`. Stop.
 
-6. **Merge overrides** — For each override in `.petalrc`:
+6. **Merge overrides** — For each override in `.petalsrc`:
    - **Non-null value** (e.g., `colors.primary: "#OVERRIDE"`): Find and replace the corresponding value in `.brand.incoming/` files. The exact replacement strategy depends on the file format:
      - For `.brand/colors.md`: Replace the hex value in the table row and CSS custom property.
      - For `.brand/typography.md`: Replace the font family, weight, or size in the table row.
@@ -197,11 +197,11 @@ When `/petal update` is invoked, the agent syncs the local `.brand/` with the la
    mv .brand.incoming .brand
    ```
 
-8. **Update .petalrc version** — Update the `version` field in `.petalrc` to the new version tag.
+8. **Update .petalsrc version** — Update the `version` field in `.petalsrc` to the new version tag.
 
 9. **Regenerate the machine views** — `.brand/tokens.css` and `.brand/tokens.json` are derived from the markdown files (see `references/extraction-guide.md` §5a); regenerate both. If `.brand/book.html` exists, regenerate it too.
 
-10. **Report the blast radius** — an update is not done until the project knows what it broke. Run `/petal check` against the project's primary UI entry points (or the files checked most recently). Report anything that the NEW brand version flags which the old one did not:
+10. **Report the blast radius** — an update is not done until the project knows what it broke. Run `/petals check` against the project's primary UI entry points (or the files checked most recently). Report anything that the NEW brand version flags which the old one did not:
     ```
     Blast radius: 3 files have violations introduced by this update.
       src/components/Hero.tsx — 2 color errors (old primary #4C5E3C)
@@ -221,15 +221,15 @@ When `/petal update` is invoked, the agent syncs the local `.brand/` with the la
     Updated <M> inherited values. Blast radius: <clean | N files to fix>.
     ```
 
-## /petal check (Drift Detection)
+## /petals check (Drift Detection)
 
-When `/petal check` is invoked without a file argument, it checks for brand drift — whether the central repository has a newer version than what is cached locally.
+When `/petals check` is invoked without a file argument, it checks for brand drift — whether the central repository has a newer version than what is cached locally.
 
 ### Step-by-step process
 
-1. **Read .petalrc** — Get the `source` and `version` fields. If `.petalrc` does not exist:
+1. **Read .petalsrc** — Get the `source` and `version` fields. If `.petalsrc` does not exist:
    ```
-   No brand source configured. Run /petal init --from <repo-url> first.
+   No brand source configured. Run /petals init --from <repo-url> first.
    ```
    Stop.
 
@@ -247,14 +247,14 @@ When `/petal check` is invoked without a file argument, it checks for brand drif
    ```
    Do not modify any local files. Exit gracefully.
 
-3. **Compare versions** — Compare the local version (from `.petalrc`) with the central version:
+3. **Compare versions** — Compare the local version (from `.petalsrc`) with the central version:
    - If **local == central**: No output. Nothing to report. (No noise when current.)
    - If **local < central**: Report the drift:
      ```
      Brand drift detected.
      Local:  <local-version>
      Central: <central-version>
-     Run /petal update to sync.
+     Run /petals update to sync.
      ```
    - If **local > central**: This is unusual (local ahead of central). Report:
      ```
@@ -262,9 +262,9 @@ When `/petal check` is invoked without a file argument, it checks for brand drif
      This may indicate the central repo was rolled back. Review before updating.
      ```
 
-## /petal check `<file>` (File Audit)
+## /petals check `<file>` (File Audit)
 
-When `/petal check <file>` is invoked with a file argument, the agent audits the file against `.brand/` rules across up to five dimensions: color, typography, layout, surface, and voice. The audit follows progressive disclosure: each dimension only loads the `.brand/` file it needs.
+When `/petals check <file>` is invoked with a file argument, the agent audits the file against `.brand/` rules across up to five dimensions: color, typography, layout, surface, and voice. The audit follows progressive disclosure: each dimension only loads the `.brand/` file it needs.
 
 ### Guard clause
 
@@ -272,7 +272,7 @@ Before any audit, verify the project is configured:
 
 1. Check if `.brand/` directory exists. If not:
    ```
-   No brand configured. Run /petal init --from <url> to connect to a central brand repo.
+   No brand configured. Run /petals init --from <url> to connect to a central brand repo.
    ```
    Exit non-zero. Do not proceed.
 
@@ -400,7 +400,7 @@ PASS [surface] Radius, borders, shadows, and motion match the surface tokens.
 
 ### Dimension 5: Voice Audit (within check)
 
-If the target file contains text content (copy strings, comments with user-facing text, JSX text nodes), also run the voice audit. See `/petal voice` workflow below for the detailed process.
+If the target file contains text content (copy strings, comments with user-facing text, JSX text nodes), also run the voice audit. See `/petals voice` workflow below for the detailed process.
 
 **Load**: `.brand/voice.md` (only if text content is detected — progressive disclosure: skip loading voice.md if the file has no text content).
 
@@ -421,15 +421,15 @@ Result: <PASS (all dimensions clean) | FAIL (<X> error(s) to fix, <Y> warning(s)
 
 Exit 0 if zero errors (warnings alone do not fail the check). Exit non-zero if any errors exist.
 
-## /petal voice `<text-or-file>`
+## /petals voice `<text-or-file>`
 
-When `/petal voice <text-or-file>` is invoked, the agent audits the provided text or file content against `.brand/voice.md` rules. This can be used standalone or as part of `/petal check <file>`.
+When `/petals voice <text-or-file>` is invoked, the agent audits the provided text or file content against `.brand/voice.md` rules. This can be used standalone or as part of `/petals check <file>`.
 
 ### Guard clause
 
 1. Check if `.brand/` directory exists. If not:
    ```
-   No brand configured. Run /petal init --from <url> to connect to a central brand repo.
+   No brand configured. Run /petals init --from <url> to connect to a central brand repo.
    ```
    Exit non-zero. Do not proceed.
 
@@ -509,9 +509,9 @@ Result: <PASS | FAIL (<X> error(s) to fix, <Y> warning(s) to review)>
 
 Exit 0 if zero errors (warnings alone do not fail). Exit non-zero if any forbidden term violations exist.
 
-## /petal book
+## /petals book
 
-When `/petal book` is invoked, the agent renders `.brand/` as one self-contained HTML page — the brand's human face. The markdown files are for agents; the book is for the person who owns the brand: review the extraction, spot what is wrong, share it with the team.
+When `/petals book` is invoked, the agent renders `.brand/` as one self-contained HTML page — the brand's human face. The markdown files are for agents; the book is for the person who owns the brand: review the extraction, spot what is wrong, share it with the team.
 
 The book is set in the **project's own brand**, chrome included — its fonts, its palette, its casing, its spacing. petals has no visual identity inside your project; everything it produces there (book, tokens, exemplars) carries yours.
 
@@ -522,9 +522,9 @@ The book is set in the **project's own brand**, chrome included — its fonts, i
 5. **The book must pass its own check**: palette-only hexes, exact font families, and the project's own casing, terminology, and voice rules. Self-demonstration is the contract.
 6. Report: `Brand book rendered: .brand/book.html (open in any browser).`
 
-## /petal logo `[variant]`
+## /petals logo `[variant]`
 
-When `/petal logo` is invoked, the agent hands out the logo *with its rules* — the asset alone invites redrawing.
+When `/petals logo` is invoked, the agent hands out the logo *with its rules* — the asset alone invites redrawing.
 
 1. **Guard**: if `.brand/` does not exist, report the standard "No brand configured" message and stop.
 2. **Resolve the variant**:
@@ -544,7 +544,7 @@ The SKILL auto-trigger covers generation time. Two more lines of defense, both o
   "hooks": {
     "PostToolUse": [{
       "matcher": "Edit|Write",
-      "hooks": [{ "type": "command", "command": "sh .claude/hooks/petal-hex-guard.sh" }]
+      "hooks": [{ "type": "command", "command": "sh .claude/hooks/petals-hex-guard.sh" }]
     }]
   }
 }
@@ -556,17 +556,17 @@ where the guard script greps the edited file for hex literals and compares them 
 
 ```yaml
 - name: brand check
-  run: claude -p "/petal check $(git diff --name-only origin/main -- '*.tsx' '*.css' '*.html' | tr '\n' ' ')"
+  run: claude -p "/petals check $(git diff --name-only origin/main -- '*.tsx' '*.css' '*.html' | tr '\n' ' ')"
 ```
 
 The deterministic dimensions (hex, radius, scale, terminology) are exact; the agent-judgment ones (tone) advise. A failing check fails the job.
 
-## .petalrc Format
+## .petalsrc Format
 
-`.petalrc` is a YAML file at the project root. It records the brand source, current version, and project-level overrides.
+`.petalsrc` is a YAML file at the project root. It records the brand source, current version, and project-level overrides.
 
 ```yaml
-# .petalrc — Project brand configuration
+# .petalsrc — Project brand configuration
 brand:
   # The URL or path to the central brand repository
   source: github.com/company/brand
@@ -574,7 +574,7 @@ brand:
   # The version tag currently fetched (e.g., v1.2.0)
   version: v1.2.0
 
-  # Project-level overrides. Non-null values are preserved during /petal update.
+  # Project-level overrides. Non-null values are preserved during /petals update.
   # Null values inherit from the central brand on each update.
   # Keys are flattened dot-separated paths into .brand/ files.
   overrides:

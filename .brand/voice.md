@@ -1,8 +1,8 @@
-# Voice & Tone — Plotplot
+# Voice & Tone — plotplot
 
 ## Brand Voice
 
-Plotplot speaks with **calm** **precise** **literate**.
+plotplot speaks with **calm** **precise** **literate**.
 
 ## Personality Traits
 
@@ -24,7 +24,7 @@ Plotplot speaks with **calm** **precise** **literate**.
 
 ## Forbidden Terms
 
-Never use these words in Plotplot copy:
+Never use these words in plotplot copy:
 
 | Term | Reason | Use Instead |
 |------|--------|------------|
@@ -55,10 +55,11 @@ Canonical nouns — the product has names; use them:
 | check | lint, validate, scan | The product's own verb for auditing. |
 | agent | AI, copilot, assistant | Who reads the brand. |
 | extract | scrape, ingest, import | Explicit-only reading of stated values. |
-| brand guidelines | brand bible, brand book | Plain and accurate. |
+| brand guidelines | brand bible | Plain and accurate. ("Brand book" is the /petals book artifact, not a synonym for the guidelines.) |
 
 Product names are lowercase, always: petals, tend, tilth, plotplot — even at
-the start of a sentence. Capitalizing them is off-brand.
+the start of a sentence. Capitalizing them is off-brand. Commands are plural
+like the product: /petals init, /petals check — never /petal.
 
 ## Capitalization & Microcopy
 
@@ -76,7 +77,7 @@ the start of a sentence. Capitalizing them is off-brand.
 | Context | Before (bad) | After (good) |
 |---------|-------------|---------------|
 | Marketing headline | Supercharge your product strategy with AI. | Grow a clearer product strategy from the signals you already have. |
-| Feature description | Unlock next-gen brand consistency across every touchpoint. | Petal checks copy, claims, naming, and tone against the brand rules your team has agreed on. |
+| Feature description | Unlock next-gen brand consistency across every touchpoint. | petals checks copy, claims, naming, and tone against the brand rules your team has agreed on. |
 | Error message | Oops! Something magical broke. Try again later. | The source could not be read. Check the connection or retry the import. |
 | Dashboard label | Growth engine health score | Company coherence |
 | Notification | You just 10x’d your roadmap clarity. | Three roadmap items now map cleanly to the current strategy. |

@@ -1,6 +1,6 @@
 # Brand Book Guide
 
-How `/petal book` renders `.brand/` as one self-contained HTML page. The
+How `/petals book` renders `.brand/` as one self-contained HTML page. The
 markdown files are for agents; the book is for the human who owns the brand —
 a review surface, a shareable artifact, and (through its component exemplars)
 a copy-source for agents.
@@ -12,7 +12,7 @@ a copy-source for agents.
 - **Every value rendered comes from a `.brand/` file** — the book is a view,
   never a second source of truth. Name the source file in each section's
   kicker (`colors.md`, `typography.md`, …).
-- **The book passes `/petal check`**: palette-only hexes, exact font
+- **The book passes `/petals check`**: palette-only hexes, exact font
   families, brand spacing and surface tokens, and the brand's own voice
   rules (casing, terminology, forbidden terms). Self-demonstration is the
   contract.

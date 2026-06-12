@@ -49,4 +49,4 @@
 ## Notes
 
 - Fields marked "not specified" were not found in the source materials.
-- To update these values, edit the source brand assets and re-run `/petal init`.
+- To update these values, edit the source brand assets and re-run `/petals init`.

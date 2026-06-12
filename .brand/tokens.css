@@ -1,5 +1,5 @@
 /* .brand/tokens.css — machine view of the brand, generated from .brand/*.md.
-   The markdown files are canonical; regenerate this file via /petal update.
+   The markdown files are canonical; regenerate this file via /petals update.
    Import it and reference the variables — never hard-code brand values. */
 :root {
   /* color — colors.md */
@@ -47,6 +47,7 @@
   --container-gutter: 32px;
 
   /* surface — components.md */
+  --radius-tail: 2px;
   --radius-xs: 3px;
   --radius-sm: 6px;
   --radius-md: 8px;

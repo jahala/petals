@@ -101,4 +101,4 @@ If `.brand/voice.md` does not exist:
 ### Reference
 
 - Canonical voice source: `.brand/voice.md`
-- This guide is used by: `/petal voice <text>` and `/petal check <file>` (voice audit dimension)
+- This guide is used by: `/petals voice <text>` and `/petals check <file>` (voice audit dimension)

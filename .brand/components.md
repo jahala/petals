@@ -2,7 +2,7 @@
 
 Machine-readable tokens for how surfaces are finished and how things move.
 `DESIGN.md` §6–§9 carries the prose principles; this file carries the values
-an agent (or `/petal check`) can verify against. Color values live in
+an agent (or `/petals check`) can verify against. Color values live in
 `colors.md`; type and spacing live in `typography.md`.
 
 ## Radius Scale
@@ -11,6 +11,7 @@ Corners come from a fixed scale. Anything else is off-brand.
 
 | Token | Value | Usage |
 |-------|-------|-------|
+| radius-tail | 2px | The sharp "tail" corner on comment bubbles and pinned artifacts |
 | radius-xs | 3px | Focus rings, tiny chips, inline code |
 | radius-sm | 6px | Buttons, inputs, nav actions |
 | radius-md | 8px | Terminal panes, ledgers, icon tiles, swatches |

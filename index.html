@@ -209,7 +209,7 @@
     background: var(--pp-bg-artifact);
     border: 1px solid var(--pp-border);
     border-radius: 12px; border-bottom-left-radius: 2px;
-    padding: 7px 14px;
+    padding: 8px 16px;
     box-shadow: 0 2px 5px rgba(32, 36, 27, 0.06), 0 10px 24px rgba(32, 36, 27, 0.08);
   }
   .note-pin .bubble .src { color: var(--pp-accent); }
@@ -236,11 +236,12 @@
     margin-bottom: var(--space-lg); max-width: 44ch;
   }
   .quiet-link {
-    font-weight: 600; color: var(--pp-primary); text-decoration: none;
-    border-bottom: 1.5px solid rgba(63, 122, 51, 0.35);
-    padding-bottom: 2px; transition: border-color 0.18s ease;
+    font-weight: 600; color: var(--pp-primary);
+    text-decoration: underline; text-decoration-color: rgba(63, 122, 51, 0.35);
+    text-decoration-thickness: 1.5px; text-underline-offset: 5px;
+    transition: text-decoration-color 0.18s ease;
   }
-  .quiet-link:hover { border-color: var(--pp-primary); }
+  .quiet-link:hover { text-decoration-color: var(--pp-primary); }
   .cta-group { display: flex; flex-wrap: wrap; gap: var(--space-sm); align-items: center; }
   .btn {
     display: inline-flex; align-items: center; gap: var(--space-3xs);
@@ -424,7 +425,7 @@
   }
   .scope-col li:last-child { border-bottom: none; }
   /* the dash sits on the first text line's optical center, heavy enough to read */
-  .scope-col li::before { content: ""; position: absolute; left: 0; top: 23px; width: 12px; height: 2px; border-radius: 1px; }
+  .scope-col li::before { content: ""; position: absolute; left: 0; top: 23px; width: 12px; height: 2px; border-radius: 2px; }
   .scope-col.for li::before { background: var(--pp-healthy); }
   .scope-col.notfor li::before { background: var(--pp-muted); }
 
@@ -614,7 +615,7 @@
     content: ''; position: absolute; top: 6px; right: -44px;
     width: 36px; border-top: 2px dotted var(--pp-petal);
   }
-  .specimen-swatches { display: flex; gap: 6px; }
+  .specimen-swatches { display: flex; gap: 8px; }
   .specimen-swatches .sw { width: 30px; height: 30px; border-radius: 8px; display: block; }
   .specimen-type { display: flex; gap: var(--space-xs); align-items: baseline; }
   .spec-serif { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 560; color: var(--pp-text); }
@@ -689,7 +690,7 @@
       <div class="dot"></div><div class="dot"></div><div class="dot"></div>
       <span class="title">project · 9:47am</span>
     </div>
-    <pre><span class="prompt">$</span> <span class="cmd">/petal init</span> <span class="arg">brand-assets/</span>
+    <pre><span class="prompt">$</span> <span class="cmd">/petals init</span> <span class="arg">brand-assets/</span>
 
 <span class="dim">reading  brand guide · palette.json · README</span>
 
@@ -825,7 +826,7 @@
           <line x1="15" y1="26" x2="22" y2="26" stroke="#3F7A33" stroke-width="2" stroke-linecap="round"/>
           <path d="M31 43 C26.5 41.6 24.3 37.5 25.2 33.5 C26.1 29.4 29.3 26.8 33.3 26.8 C36.4 26.8 37.8 28.6 37.4 31.3 C37 34.4 35.3 38 33 40.7 C32.4 41.5 31.7 42.3 31 43 Z" fill="#E8917F"/>
         </svg>
-        <span class="cmd">/petal init</span>
+        <span class="cmd">/petals init</span>
         <h3>Extract</h3>
         <p>
           Point petals at a folder of brand assets. The agent reads PDFs, markdown,
@@ -846,7 +847,7 @@
           <circle cx="41.5" cy="24.5" r="3" fill="#3F7A33"/>
           <circle cx="39" cy="40" r="3" fill="#3F7A33"/>
         </svg>
-        <span class="cmd">/petal init --from</span>
+        <span class="cmd">/petals init --from</span>
         <h3>Distribute</h3>
         <p>
           Connect projects to one central brand repo. Drift detection warns when the
@@ -865,7 +866,7 @@
           <circle cx="33" cy="33" r="10" fill="#46913C"/>
           <path d="M28.5 33l3 3 6.5-6.5" stroke="#F8F5EC" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        <span class="cmd">/petal check</span>
+        <span class="cmd">/petals check</span>
         <h3>Check</h3>
         <p>
           The agent audits its own output against the rules before a human reviews it.
@@ -931,7 +932,7 @@
         <div class="term">
           <div class="titlebar">
             <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-            <span class="title">/petal check src/components/Hero.tsx</span>
+            <span class="title">/petals check src/components/Hero.tsx</span>
           </div>
           <pre><span class="rule">── color ──────────────────────────────────</span>
 <span class="fail">ERROR</span> <span class="dim">line 14:</span> framework-default blue, not in palette.
@@ -957,7 +958,7 @@
 <span class="fail">Result: FAIL</span> <span class="dim">— 4 errors to fix, 2 warnings to review.</span></pre>
         </div>
         <p class="repr-note">
-          Representative output — the documented <code>/petal check</code> format, line for line.
+          Representative output — the documented <code>/petals check</code> format, line for line.
         </p>
       </div>
     </div>
@@ -1027,7 +1028,7 @@
       <div class="arch-points">
         <div class="arch-point">
           <h4>.brand/ is a cache, not source.</h4>
-          <p>Gitignored. The project commits .petalrc instead — a small config recording the source repo, version, and any overrides.</p>
+          <p>Gitignored. The project commits .petalsrc instead — a small config recording the source repo, version, and any overrides.</p>
         </div>
         <div class="arch-point">
           <h4>Read on demand.</h4>
@@ -1055,13 +1056,13 @@
       <div class="titlebar">
         <div class="dot"></div><div class="dot"></div><div class="dot"></div>
       </div>
-      <pre><span class="prompt">$</span> <span class="cmd">/petal init</span> <span class="arg">brand-assets/</span>
+      <pre><span class="prompt">$</span> <span class="cmd">/petals init</span> <span class="arg">brand-assets/</span>
 <span class="dim"># .brand/ produced. Next session reads it.</span></pre>
     </div>
     <p class="note">No hex codes pasted. No prompt to remember. The brand arrives before the first line of code.</p>
 
     <div class="badge" title="Verified — see the final message for hex / type / voice counts">
-      <span class="tick">✓</span> this page passes <code>/petal check</code>
+      <span class="tick">✓</span> this page passes <code>/petals check</code>
     </div>
   </div>
 </section>
@@ -1086,12 +1087,12 @@
   </div>
   <div class="col-cmds">
     <h4>Commands</h4>
-    <span class="mono">/petal init</span>
-    <span class="mono">/petal init --from</span>
-    <span class="mono">/petal update</span>
-    <span class="mono">/petal check</span>
-    <span class="mono">/petal voice</span>
-    <span class="mono">/petal book</span>
+    <span class="mono">/petals init</span>
+    <span class="mono">/petals init --from</span>
+    <span class="mono">/petals update</span>
+    <span class="mono">/petals check</span>
+    <span class="mono">/petals voice</span>
+    <span class="mono">/petals book</span>
   </div>
   <div class="col-links">
     <h4>Links</h4>

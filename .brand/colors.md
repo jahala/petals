@@ -39,19 +39,19 @@ Each product in the plotplot portfolio has its own accent. The primary palette i
 
 | Product | Accent Hex | Role |
 |---------|-----------|------|
-| Root | #4B3A2A | Foundation |
-| Soil | #735A43 | Memory |
-| Seed | #A6A15F | Ideas |
-| Tend | #D97757 | Roadmap |
-| Stem | #4E6A4A | Strategy |
-| Petal | #E8917F | Brand |
-| Prune | #5B5A52 | Clarity |
-| Graft | #5F8A7A | Integration |
-| Cultivate | #5E7F8D | Signals |
-| Weather | #7D8790 | Risk |
-| Bloom | #D8745F | Launch |
-| Harvest | #B89448 | Outcomes |
-| Canopy | #3F5F46 | Leadership |
+| root | #4B3A2A | Foundation |
+| soil | #735A43 | Memory |
+| seed | #A6A15F | Ideas |
+| tend | #D97757 | Roadmap |
+| stem | #4E6A4A | Strategy |
+| petals | #E8917F | Brand |
+| prune | #5B5A52 | Clarity |
+| graft | #5F8A7A | Integration |
+| cultivate | #5E7F8D | Signals |
+| weather | #7D8790 | Risk |
+| bloom | #D8745F | Launch |
+| harvest | #B89448 | Outcomes |
+| canopy | #3F5F46 | Leadership |
 
 ## Contrast Pairings
 
