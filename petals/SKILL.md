@@ -30,11 +30,21 @@ When activated, read the relevant `.brand/` file(s) BEFORE generating output:
 
 These are non-negotiable. Violating any is a brand error.
 
-1. **Colors from palette only** — Every hex value in generated output must match a value defined in `.brand/colors.md`. Never use arbitrary colors, even if they "look similar."
+1. **Colors from palette only** — Every hex value in generated output must match a value defined in `.brand/colors.md`. Never use arbitrary colors, even if they "look similar." In a product context, another product's accent is a warning — accents mark products.
 2. **Typography hierarchy** — Heading and body fonts must match `.brand/typography.md` exactly (family, weight, size). No font substitutions.
 3. **Logo from assets** — Never invent, approximate, or text-describe a logo. Use files from `.brand/assets/` or skip the logo.
 4. **Voice rules** — Generated copy must not contain forbidden terms listed in `.brand/voice.md`. Follow tone, grammar, and vocabulary rules.
 5. **Conflict: brand wins** — When brand rules conflict with framework defaults, the brand rules win. Override Tailwind config, CSS resets, and component library defaults to match `.brand/`.
+
+## Brand Architecture (umbrella + product layers)
+
+A brand may be one entity (a flat `.brand/` — the zero-config default) or a family: an umbrella brand whose products each carry their own layer.
+
+- **Umbrella**: the shared truth — palette, typography, layout, surface, voice, the organization's identity. Lives at `.brand/*.md`.
+- **Product layers**: `.brand/products/<product>/` — deltas only (the product's accent claim, mark, tagline, product terminology). An absent file inherits the umbrella entirely. Never copy umbrella values down.
+- **Resolution**: every read resolves umbrella ⊕ product. Product context comes from `--product`, else `.petalsrc`'s `product:` field, else the single directory under `products/`, else flat. Progressive disclosure holds: at most two files per dimension.
+- **Cross-product accents**: each product's accent (umbrella Product Accents table) marks THAT product. Literal use of another product's accent in your product's UI is a warning, by name. Off-palette colors near a product accent are suggested with the owner named.
+- The book, tokens, and check all operate on the RESOLVED brand; the book names each value's owning layer.
 
 ## Subcommand Dispatch
 
@@ -520,7 +530,7 @@ The book is set in the **project's own brand**, chrome included — its fonts, i
 
 1. **Guard**: if `.brand/` does not exist, report the standard "No brand configured" message and stop.
 2. **Read all of `.brand/`** (the one workflow that loads everything — this is a rendering job, not an audit).
-3. **Generate `.brand/book.html`** following `references/book-guide.md`: masthead with the mark and version; one section per brand file (palette with contrast pairings, type specimens, layout ruler, surface tokens with live hover demos, component exemplars built purely from the tokens, voice traits + forbidden terms + before/after, logo with usage rules).
+3. **Generate `.brand/book.html`** following `references/book-guide.md` — the RESOLVED product brand (umbrella ⊕ product layer), masthead "<product> brand book · a <umbrella> brand", each section kicker naming the owning layer: masthead with the mark and version; one section per brand file (palette with contrast pairings, type specimens, layout ruler, surface tokens with live hover demos, component exemplars built purely from the tokens, voice traits + forbidden terms + before/after, logo with usage rules).
 4. **Surface flags**: every `[FLAG: …]` found in the brand files renders as a "needs an answer" card at the top of the book — the owner's review queue.
 5. **The book must pass its own check**: palette-only hexes, exact font families, and the project's own casing, terminology, and voice rules. Self-demonstration is the contract.
 6. Report: `Brand book rendered: .brand/book.html (open in any browser).`

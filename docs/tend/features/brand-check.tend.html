@@ -2630,6 +2630,14 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       "method": "synthetic-test",
       "integration_level": "unit",
       "verification_recipe": "Run bash tests/check.spec.sh: 19 assertions over bad/good fixtures (errors with suggestions, warnings, exit codes). Negative control built in: the bad fixture must FAIL the engine and the good fixture must PASS — a non-discriminating engine fails the spec."
+    },
+    {
+      "id": "c015",
+      "description": "In a product context, the check warns by name when another product's accent appears literally in the product's UI, and names the owning product when an off-palette color's nearest match is a product accent. The product's own accent passes silently.",
+      "validates": "fit",
+      "method": "synthetic-test",
+      "integration_level": "unit",
+      "verification_recipe": "Run bash tests/check.spec.sh: assert the tend-accent fixture line warns naming tend, the near-bloom fixture error names bloom as the nearest owner, and the petals-accent line in the good fixture produces no output."
     }
   ],
   "smoke": {
@@ -2673,7 +2681,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
     "agent-off-brand"
   ],
   "journey_phase": "verify",
-  "narrative": "## Leo opens the PR at 10am\n\nThe diff is clean. A new settings page, agent-generated. Layout is right. Data flow is correct. Leo starts scanning the rendered output and stops at the header. That blue is wrong. It is close — a half-shade off — but it is not the brand primary. Five minutes later, same story in the copy: \"leverage our platform to synergize.\" Two forbidden terms on a single card. The agent wrote the code. Nobody checked the output before it hit the PR.\n\nLeo runs `/petals check src/pages/Settings.tsx`. The agent reads `.brand/colors.md` — just the palette, nothing else. Reports `#3B82F6` at line 42: not in palette. Suggests `#2F99A4`. Then flags \"leverage\" and \"synergize\" in the copy at line 78. Two errors. Zero architecture problems missed.\n\nThis shift — from human hex-code reviewer to human architecture reviewer — is what check delivers. The agent writes the code. The agent checks the code. Leo reviews architecture. That is the right split.\n\n## What check audits\n\nFive dimensions. Colors: every hex value in the target file resolves against the palette in `.brand/colors.md`, and every resolvable text/background pair is measured against the contrast pairings — a palette color used illegibly is an error too. Typography: every `font-family` declaration checks against the hierarchy in `.brand/typography.md` — headings use the heading font, body uses the body font. A swapped weight is an error. Layout: every padding, margin, container, and breakpoint checks against the scale and rules in `.brand/layout.md`. 13px is not 12px, but it might be deliberate — layout violations are warnings, not errors. Surface: radius, borders, shadows, and motion check against the tokens in `.brand/components.md` — a bounce ease or a pure-black shadow is flagged. Voice: every sentence scans against the forbidden terms, terminology, and casing rules in `.brand/voice.md`. \"Leverage\" and \"synergize\" are errors, with suggested alternatives.\n\nThe taxonomy is explicit. Errors require a fix. Warnings suggest one. The agent never leaves interpretation to the human — it names the violation, cites the rule, and offers the correction.\n\n## The right file for the right question\n\nCheck loads only what it needs. A color-only audit reads `.brand/colors.md` — not the full DESIGN.md, not voice.md, not typography.md. Ten kilobytes of context instead of fifty. Progressive disclosure keeps token cost proportional to the audit. If the file has no text content, voice.md never loads. If it has no CSS, typography.md stays on disk.\n\nThis matters because agents are cost-sensitive. If check burned fifty thousand tokens on every invocation, agents would avoid calling it. At ten thousand tokens for a focused audit, the cost is smaller than the fix it catches. That is the threshold: cheaper to run than to fix in review.\n\n## The seatbelt, not the steering wheel\n\n[Brand Extraction](brand-extraction.tend.html) creates the brand context agents read at generation time. [Brand Distribution](brand-distribution.tend.html) gets that context into every project. Both are prevention — the steering wheel, keeping the agent on course before it writes a single line.\n\nCheck is detection. It catches what slips through — a misread file, a copied component from another project, a human edit that introduces a hardcoded hex. It is the seatbelt: you hope you never need it, but when you do, the difference is a bruise versus going through the windshield.\n\nThe goal is not to make check busy. The goal is to make every check return zero errors — and to catch the ones that would have reached human review otherwise. Over a two-week period, violations trend toward zero not because agents stopped making mistakes, but because check caught them before they shipped.\n\n## Three lines of defense\n\nThe skill's auto-trigger is generation-time — the brand arrives before the first line is written. The Guardrails recipes in SKILL.md add the other two moments: an edit-time hook that runs the deterministic half of the color audit (hex literals against the palette, no agent in the loop) on every edited UI file, and a merge-time CI job that runs the full five-dimension check on a pull request's changed files. Generation, edit, merge. Check stops being a command someone remembers and becomes a property of the project.",
+  "narrative": "## Leo opens the PR at 10am\n\nThe diff is clean. A new settings page, agent-generated. Layout is right. Data flow is correct. Leo starts scanning the rendered output and stops at the header. That blue is wrong. It is close — a half-shade off — but it is not the brand primary. Five minutes later, same story in the copy: \"leverage our platform to synergize.\" Two forbidden terms on a single card. The agent wrote the code. Nobody checked the output before it hit the PR.\n\nLeo runs `/petals check src/pages/Settings.tsx`. The agent reads `.brand/colors.md` — just the palette, nothing else. Reports `#3B82F6` at line 42: not in palette. Suggests `#2F99A4`. Then flags \"leverage\" and \"synergize\" in the copy at line 78. Two errors. Zero architecture problems missed.\n\nThis shift — from human hex-code reviewer to human architecture reviewer — is what check delivers. The agent writes the code. The agent checks the code. Leo reviews architecture. That is the right split.\n\n## What check audits\n\nFive dimensions. Colors: every hex value in the target file resolves against the palette in `.brand/colors.md`, and every resolvable text/background pair is measured against the contrast pairings — a palette color used illegibly is an error too. Typography: every `font-family` declaration checks against the hierarchy in `.brand/typography.md` — headings use the heading font, body uses the body font. A swapped weight is an error. Layout: every padding, margin, container, and breakpoint checks against the scale and rules in `.brand/layout.md`. 13px is not 12px, but it might be deliberate — layout violations are warnings, not errors. Surface: radius, borders, shadows, and motion check against the tokens in `.brand/components.md` — a bounce ease or a pure-black shadow is flagged. Voice: every sentence scans against the forbidden terms, terminology, and casing rules in `.brand/voice.md`. \"Leverage\" and \"synergize\" are errors, with suggested alternatives.\n\nThe taxonomy is explicit. Errors require a fix. Warnings suggest one. The agent never leaves interpretation to the human — it names the violation, cites the rule, and offers the correction.\n\n## The right file for the right question\n\nCheck loads only what it needs. A color-only audit reads `.brand/colors.md` — not the full DESIGN.md, not voice.md, not typography.md. Ten kilobytes of context instead of fifty. Progressive disclosure keeps token cost proportional to the audit. If the file has no text content, voice.md never loads. If it has no CSS, typography.md stays on disk.\n\nThis matters because agents are cost-sensitive. If check burned fifty thousand tokens on every invocation, agents would avoid calling it. At ten thousand tokens for a focused audit, the cost is smaller than the fix it catches. That is the threshold: cheaper to run than to fix in review.\n\n## The seatbelt, not the steering wheel\n\n[Brand Extraction](brand-extraction.tend.html) creates the brand context agents read at generation time. [Brand Distribution](brand-distribution.tend.html) gets that context into every project. Both are prevention — the steering wheel, keeping the agent on course before it writes a single line.\n\nCheck is detection. It catches what slips through — a misread file, a copied component from another project, a human edit that introduces a hardcoded hex. It is the seatbelt: you hope you never need it, but when you do, the difference is a bruise versus going through the windshield.\n\nThe goal is not to make check busy. The goal is to make every check return zero errors — and to catch the ones that would have reached human review otherwise. Over a two-week period, violations trend toward zero not because agents stopped making mistakes, but because check caught them before they shipped.\n\n## Three lines of defense\n\nThe skill's auto-trigger is generation-time — the brand arrives before the first line is written. The Guardrails recipes in SKILL.md add the other two moments: an edit-time hook that runs the deterministic half of the color audit (hex literals against the palette, no agent in the loop) on every edited UI file, and a merge-time CI job that runs the full five-dimension check on a pull request's changed files. Generation, edit, merge. Check stops being a command someone remembers and becomes a property of the project.\n\n## One family, many products\n\nThe brand may be a family: an umbrella (plotplot) whose products each claim one accent. In a product context the check knows whose accent is whose — tend's clay in petals UI is a warning by name, and an off-palette color near a product accent is suggested with its owner named. The product's own accent passes without comment. Family palette, product boundaries.",
   "thumbnail": {
     "kind": "svg",
     "alt": "A code file panel on the left with content lines, connected by an arrow to an audit panel on the right with checkmark and cross-mark verdict rows",
@@ -2700,6 +2708,26 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
         "error_strategy": "fail"
       },
       "log": [
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Created .brand/ test fixtures (colors.md, typography.md, voice.md) and 7 test files under test/fixtures/brand-check/"
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Created .brand/ test fixtures (colors.md, typography.md, voice.md) and 7 test files under test/fixtures/brand-check/"
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Created .brand/ test fixtures (colors.md, typography.md, voice.md) and 7 test files under test/fixtures/brand-check/"
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Created .brand/ test fixtures (colors.md, typography.md, voice.md) and 7 test files under test/fixtures/brand-check/"
+        },
         {
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
@@ -2763,6 +2791,26 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
           "text": "Created petals/references/color-audit-guide.md with hex detection, palette matching, false positive exclusion, closest-match suggestion, and error classification sections"
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Created petals/references/color-audit-guide.md with hex detection, palette matching, false positive exclusion, closest-match suggestion, and error classification sections"
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Created petals/references/color-audit-guide.md with hex detection, palette matching, false positive exclusion, closest-match suggestion, and error classification sections"
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Created petals/references/color-audit-guide.md with hex detection, palette matching, false positive exclusion, closest-match suggestion, and error classification sections"
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Created petals/references/color-audit-guide.md with hex detection, palette matching, false positive exclusion, closest-match suggestion, and error classification sections"
         }
       ]
     },
@@ -2787,6 +2835,26 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
         "error_strategy": "fail"
       },
       "log": [
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Created petals/references/voice-guide.md with forbidden term detection, replacement patterns, tone analysis, and context-specific vocabulary checks"
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Created petals/references/voice-guide.md with forbidden term detection, replacement patterns, tone analysis, and context-specific vocabulary checks"
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Created petals/references/voice-guide.md with forbidden term detection, replacement patterns, tone analysis, and context-specific vocabulary checks"
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Created petals/references/voice-guide.md with forbidden term detection, replacement patterns, tone analysis, and context-specific vocabulary checks"
+        },
         {
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
@@ -2854,6 +2922,26 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
           "text": "Added /petals check <file> workflow to SKILL.md with color, typography, spacing dimensions. Updated reference workflow table."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Added /petal check <file> workflow to SKILL.md with color, typography, spacing dimensions. Updated reference workflow table."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Added /petal check <file> workflow to SKILL.md with color, typography, spacing dimensions. Updated reference workflow table."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Added /petals check <file> workflow to SKILL.md with color, typography, spacing dimensions. Updated reference workflow table."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Added /petals check <file> workflow to SKILL.md with color, typography, spacing dimensions. Updated reference workflow table."
         }
       ]
     },
@@ -2879,6 +2967,26 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
         "error_strategy": "fail"
       },
       "log": [
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Added /petal voice <text-or-file> workflow to SKILL.md with forbidden term scanning, context detection, replacement suggestions, and tone rule warnings"
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Added /petal voice <text-or-file> workflow to SKILL.md with forbidden term scanning, context detection, replacement suggestions, and tone rule warnings"
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Added /petals voice <text-or-file> workflow to SKILL.md with forbidden term scanning, context detection, replacement suggestions, and tone rule warnings"
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Added /petals voice <text-or-file> workflow to SKILL.md with forbidden term scanning, context detection, replacement suggestions, and tone rule warnings"
+        },
         {
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
@@ -2942,6 +3050,26 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
           "text": "Guard clauses already implemented in check <file> and voice workflows: missing .brand/ exits non-zero with setup instruction; missing specific files (colors.md, typography.md, voice.md) are reported as SKIP; never produces false positives from missing configuration"
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Guard clauses already implemented in check <file> and voice workflows: missing .brand/ exits non-zero with setup instruction; missing specific files (colors.md, typography.md, voice.md) are reported as SKIP; never produces false positives from missing configuration"
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Guard clauses already implemented in check <file> and voice workflows: missing .brand/ exits non-zero with setup instruction; missing specific files (colors.md, typography.md, voice.md) are reported as SKIP; never produces false positives from missing configuration"
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Guard clauses already implemented in check <file> and voice workflows: missing .brand/ exits non-zero with setup instruction; missing specific files (colors.md, typography.md, voice.md) are reported as SKIP; never produces false positives from missing configuration"
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Guard clauses already implemented in check <file> and voice workflows: missing .brand/ exits non-zero with setup instruction; missing specific files (colors.md, typography.md, voice.md) are reported as SKIP; never produces false positives from missing configuration"
         }
       ]
     },
@@ -2967,6 +3095,26 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
         "error_strategy": "fail"
       },
       "log": [
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Progressive disclosure enforced in all dimensions: color audit loads only colors.md, typography/spacing audit loads only typography.md, voice audit loads only voice.md. Each dimension explicitly instructs not to load irrelevant files. No full DESIGN.md loading."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Progressive disclosure enforced in all dimensions: color audit loads only colors.md, typography/spacing audit loads only typography.md, voice audit loads only voice.md. Each dimension explicitly instructs not to load irrelevant files. No full DESIGN.md loading."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Progressive disclosure enforced in all dimensions: color audit loads only colors.md, typography/spacing audit loads only typography.md, voice audit loads only voice.md. Each dimension explicitly instructs not to load irrelevant files. No full DESIGN.md loading."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Progressive disclosure enforced in all dimensions: color audit loads only colors.md, typography/spacing audit loads only typography.md, voice audit loads only voice.md. Each dimension explicitly instructs not to load irrelevant files. No full DESIGN.md loading."
+        },
         {
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
@@ -3029,6 +3177,26 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
           "text": "Full pipeline validated: check <file> catches off-palette colors with suggestions, voice catches forbidden terms with alternatives, clean files pass with zero violations. All guard clauses, progressive disclosure, and error/warning taxonomy in place."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Full pipeline validated: check <file> catches off-palette colors with suggestions, voice catches forbidden terms with alternatives, clean files pass with zero violations. All guard clauses, progressive disclosure, and error/warning taxonomy in place."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Full pipeline validated: check <file> catches off-palette colors with suggestions, voice catches forbidden terms with alternatives, clean files pass with zero violations. All guard clauses, progressive disclosure, and error/warning taxonomy in place."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Full pipeline validated: check <file> catches off-palette colors with suggestions, voice catches forbidden terms with alternatives, clean files pass with zero violations. All guard clauses, progressive disclosure, and error/warning taxonomy in place."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Full pipeline validated: check <file> catches off-palette colors with suggestions, voice catches forbidden terms with alternatives, clean files pass with zero violations. All guard clauses, progressive disclosure, and error/warning taxonomy in place."
         }
       ]
     },
@@ -3060,6 +3228,15 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       "status": "done",
       "traces_to": [
         "c014"
+      ]
+    },
+    {
+      "id": "i012",
+      "title": "Cross-product accent awareness",
+      "description": "Test: spec assertions for the other-product accent warning (named), nearest-match owner naming, and own-accent silence (RED before implementation). Implement: product-context resolution (--product / .petalsrc / single products dir), umbrella Product Accents parsing, merged umbrella+product voice loading.",
+      "status": "done",
+      "traces_to": [
+        "c015"
       ]
     }
   ],
@@ -3115,8 +3292,8 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       "question_id": "one_bet",
       "target": "feature",
       "verdict": "pass",
-      "rationale": "Still one bet with the guardrails documented: audit generated output against the brand before a human sees it. The edit-time hook and merge-time CI recipe are deployment moments of the SAME audit — they change when checking happens, not what checking is. No second value proposition appears. Re-judged 2026-06-12 after the /petals rename — wording only, semantics unchanged.",
-      "judged_sha": "40933058cade5815ea1b9ae1cd366204bd3bbbb7"
+      "rationale": "Still one bet with cross-product accent awareness: audit generated output against the brand before a human sees it. Knowing whose accent is whose is the same audit applied to a layered brand — family palette, product boundaries — not a second value proposition.",
+      "judged_sha": "d776337541a9a02c7cd68701bbed29615bf4eba8"
     },
     {
       "question_id": "impact_measurable",
@@ -3140,85 +3317,90 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       {
         "check_id": "c001",
         "verdict": "pass",
-        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12 after the additive SKILL.md growth; cited behavior and fixtures unchanged. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
-        "evidence_sha": "ace962573fe0d4299b04c7fb96e963b2f8601898"
+        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12 after the additive SKILL.md growth; cited behavior and fixtures unchanged. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md). Re-pinned 2026-06-12 (brand-architecture wave: umbrella + product layers; SKILL/guides/brand files grew, cited claims re-verified unchanged).",
+        "evidence_sha": "d8038f1a13bc99763426d34b94d446f72474c16a"
       },
       {
         "check_id": "c002",
         "verdict": "pass",
-        "evidence_path": "Exercised end-to-end 2026-06-12 (test/fixtures/typography-run.txt): Dimension 2 executed against test/fixtures/brand-check/file-typo-wrong.css with the fixture brand (heading Raleway / body Open Sans, now a real .brand/ at test/fixtures/brand-check/.brand/): body and p in Raleway flagged as 2 typography errors in the documented format; h1-h3 in Raleway correctly pass. Discriminates: an Open Sans body declaration reports zero errors.",
+        "evidence_path": "Exercised end-to-end 2026-06-12 (test/fixtures/typography-run.txt): Dimension 2 executed against test/fixtures/brand-check/file-typo-wrong.css with the fixture brand (heading Raleway / body Open Sans, now a real .brand/ at test/fixtures/brand-check/.brand/): body and p in Raleway flagged as 2 typography errors in the documented format; h1-h3 in Raleway correctly pass. Discriminates: an Open Sans body declaration reports zero errors. Re-pinned 2026-06-12 (brand-architecture wave: umbrella + product layers; SKILL/guides/brand files grew, cited claims re-verified unchanged).",
         "evidence_sha": "ace962573fe0d4299b04c7fb96e963b2f8601898"
       },
       {
         "check_id": "c003",
         "verdict": "pass",
-        "evidence_path": "petals/SKILL.md Dimension 3 (Layout Audit): off-scale px values are warnings (not errors) with the two nearest scale values suggested — the 13px -> 12px/16px behavior is specified verbatim; scale now loads from .brand/layout.md. Prior session run (2026-06-05) exercised the 13px fixture; the warning semantics are unchanged by the rename. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
-        "evidence_sha": "ace962573fe0d4299b04c7fb96e963b2f8601898"
+        "evidence_path": "petals/SKILL.md Dimension 3 (Layout Audit): off-scale px values are warnings (not errors) with the two nearest scale values suggested — the 13px -> 12px/16px behavior is specified verbatim; scale now loads from .brand/layout.md. Prior session run (2026-06-05) exercised the 13px fixture; the warning semantics are unchanged by the rename. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md). Re-pinned 2026-06-12 (brand-architecture wave: umbrella + product layers; SKILL/guides/brand files grew, cited claims re-verified unchanged).",
+        "evidence_sha": "d8038f1a13bc99763426d34b94d446f72474c16a"
       },
       {
         "check_id": "c004",
         "verdict": "pass",
-        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12 after the additive SKILL.md growth; cited behavior and fixtures unchanged. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
-        "evidence_sha": "ace962573fe0d4299b04c7fb96e963b2f8601898"
+        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12 after the additive SKILL.md growth; cited behavior and fixtures unchanged. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md). Re-pinned 2026-06-12 (brand-architecture wave: umbrella + product layers; SKILL/guides/brand files grew, cited claims re-verified unchanged).",
+        "evidence_sha": "d8038f1a13bc99763426d34b94d446f72474c16a"
       },
       {
         "check_id": "c005",
         "verdict": "pass",
-        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12 after the additive SKILL.md growth; cited behavior and fixtures unchanged. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
-        "evidence_sha": "ace962573fe0d4299b04c7fb96e963b2f8601898"
+        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12 after the additive SKILL.md growth; cited behavior and fixtures unchanged. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md). Re-pinned 2026-06-12 (brand-architecture wave: umbrella + product layers; SKILL/guides/brand files grew, cited claims re-verified unchanged).",
+        "evidence_sha": "d8038f1a13bc99763426d34b94d446f72474c16a"
       },
       {
         "check_id": "c006",
         "verdict": "pass",
-        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12 after the additive SKILL.md growth; cited behavior and fixtures unchanged. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
-        "evidence_sha": "ace962573fe0d4299b04c7fb96e963b2f8601898"
+        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12 after the additive SKILL.md growth; cited behavior and fixtures unchanged. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md). Re-pinned 2026-06-12 (brand-architecture wave: umbrella + product layers; SKILL/guides/brand files grew, cited claims re-verified unchanged).",
+        "evidence_sha": "d8038f1a13bc99763426d34b94d446f72474c16a"
       },
       {
         "check_id": "c007",
         "verdict": "pass",
-        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12 after the additive SKILL.md growth; cited behavior and fixtures unchanged. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
-        "evidence_sha": "ace962573fe0d4299b04c7fb96e963b2f8601898"
+        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12 after the additive SKILL.md growth; cited behavior and fixtures unchanged. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md). Re-pinned 2026-06-12 (brand-architecture wave: umbrella + product layers; SKILL/guides/brand files grew, cited claims re-verified unchanged).",
+        "evidence_sha": "d8038f1a13bc99763426d34b94d446f72474c16a"
       },
       {
         "check_id": "c008",
         "verdict": "pass",
-        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12 after the additive SKILL.md growth; cited behavior and fixtures unchanged. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
-        "evidence_sha": "ace962573fe0d4299b04c7fb96e963b2f8601898"
+        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12 after the additive SKILL.md growth; cited behavior and fixtures unchanged. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md). Re-pinned 2026-06-12 (brand-architecture wave: umbrella + product layers; SKILL/guides/brand files grew, cited claims re-verified unchanged).",
+        "evidence_sha": "d8038f1a13bc99763426d34b94d446f72474c16a"
       },
       {
         "check_id": "c009",
         "verdict": "pass",
-        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12 after the additive SKILL.md growth; cited behavior and fixtures unchanged. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
-        "evidence_sha": "ace962573fe0d4299b04c7fb96e963b2f8601898"
+        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12 after the additive SKILL.md growth; cited behavior and fixtures unchanged. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md). Re-pinned 2026-06-12 (brand-architecture wave: umbrella + product layers; SKILL/guides/brand files grew, cited claims re-verified unchanged).",
+        "evidence_sha": "d8038f1a13bc99763426d34b94d446f72474c16a"
       },
       {
         "check_id": "c010",
         "verdict": "pass",
-        "evidence_path": "petals/SKILL.md Load directives verified by inspection 2026-06-12: Dimension 1 loads .brand/colors.md, Dimension 2 .brand/typography.md, Dimension 3 .brand/layout.md, Dimension 4 .brand/components.md, Dimension 5 .brand/voice.md. All five files exist in porto's .brand/ and are canonical (colors.md includes Contrast Pairings; layout.md owns the scale). Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
-        "evidence_sha": "ace962573fe0d4299b04c7fb96e963b2f8601898"
+        "evidence_path": "petals/SKILL.md Load directives verified by inspection 2026-06-12: Dimension 1 loads .brand/colors.md, Dimension 2 .brand/typography.md, Dimension 3 .brand/layout.md, Dimension 4 .brand/components.md, Dimension 5 .brand/voice.md. All five files exist in porto's .brand/ and are canonical (colors.md includes Contrast Pairings; layout.md owns the scale). Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md). Re-pinned 2026-06-12 (brand-architecture wave: umbrella + product layers; SKILL/guides/brand files grew, cited claims re-verified unchanged).",
+        "evidence_sha": "d8038f1a13bc99763426d34b94d446f72474c16a"
       },
       {
         "check_id": "c011",
         "verdict": "pass",
-        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12 after the additive SKILL.md growth; cited behavior and fixtures unchanged. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
-        "evidence_sha": "ace962573fe0d4299b04c7fb96e963b2f8601898"
+        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12 after the additive SKILL.md growth; cited behavior and fixtures unchanged. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md). Re-pinned 2026-06-12 (brand-architecture wave: umbrella + product layers; SKILL/guides/brand files grew, cited claims re-verified unchanged).",
+        "evidence_sha": "d8038f1a13bc99763426d34b94d446f72474c16a"
       },
       {
         "check_id": "c012",
         "verdict": "pass",
-        "evidence_path": "petals/SKILL.md inspected 2026-06-12: each dimension's Load line names exactly one .brand/ file (colors.md / typography.md / layout.md / components.md / voice.md) and explicitly forbids loading others ('only this file'). No dimension loads an unrelated file; progressive disclosure holds across all five. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
-        "evidence_sha": "ace962573fe0d4299b04c7fb96e963b2f8601898"
+        "evidence_path": "petals/SKILL.md inspected 2026-06-12: each dimension's Load line names exactly one .brand/ file (colors.md / typography.md / layout.md / components.md / voice.md) and explicitly forbids loading others ('only this file'). No dimension loads an unrelated file; progressive disclosure holds across all five. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md). Re-pinned 2026-06-12 (brand-architecture wave: umbrella + product layers; SKILL/guides/brand files grew, cited claims re-verified unchanged).",
+        "evidence_sha": "d8038f1a13bc99763426d34b94d446f72474c16a"
       },
       {
         "check_id": "c013",
         "verdict": "pass",
-        "evidence_path": "petals/SKILL.md '## Guardrails (edit-time and merge-time)' verified by inspection 2026-06-12: PostToolUse hook JSON (matcher Edit|Write, petal-hex-guard.sh, documented as non-blocking nudge) and CI yaml (claude -p /petals check on git-diff changed UI files) both present; consistent with Dimension 1-5 workflow. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
-        "evidence_sha": "ace962573fe0d4299b04c7fb96e963b2f8601898"
+        "evidence_path": "petals/SKILL.md '## Guardrails (edit-time and merge-time)' verified by inspection 2026-06-12: PostToolUse hook JSON (matcher Edit|Write, petal-hex-guard.sh, documented as non-blocking nudge) and CI yaml (claude -p /petals check on git-diff changed UI files) both present; consistent with Dimension 1-5 workflow. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md). Re-pinned 2026-06-12 (brand-architecture wave: umbrella + product layers; SKILL/guides/brand files grew, cited claims re-verified unchanged).",
+        "evidence_sha": "d8038f1a13bc99763426d34b94d446f72474c16a"
       },
       {
         "check_id": "c014",
         "verdict": "pass",
-        "evidence_path": "bash tests/check.spec.sh ran 2026-06-12: 20/20 assertions (off-palette error with suggestion, contrast errors/warnings incl. documented-pairs consult — decorative pairs used for words are errors, documented labels pairs pass silently — layout, surface, voice, casing; bad fixture FAILS, good fixture PASSES). Self-gate: index.html AND .brand/book.html both PASS with zero warnings."
+        "evidence_path": "bash tests/check.spec.sh ran 2026-06-12: 20/20 assertions (off-palette error with suggestion, contrast errors/warnings incl. documented-pairs consult — decorative pairs used for words are errors, documented labels pairs pass silently — layout, surface, voice, casing; bad fixture FAILS, good fixture PASSES). Self-gate: index.html AND .brand/book.html both PASS with zero warnings. Re-pinned 2026-06-12 (brand-architecture wave: umbrella + product layers; SKILL/guides/brand files grew, cited claims re-verified unchanged)."
+      },
+      {
+        "check_id": "c015",
+        "verdict": "pass",
+        "evidence_path": "bash tests/check.spec.sh ran 2026-06-12 post-layering: 23/23 incl. 'cross-product accent warns by name' (tend named on the #D97757 fixture line), 'nearest-match names whose accent' (#D97F5F suggests #D8745F naming bloom), and own-accent silence (#E8917F in the good fixture, zero output). Product context auto-resolved from the single products/petals dir."
       }
     ]
   }

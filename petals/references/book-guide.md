@@ -9,6 +9,10 @@ a copy-source for agents.
 
 - **One file, no dependencies** beyond the brand's own font imports.
   `.brand/book.html` opens in any browser, offline, forever.
+- **The book renders the RESOLVED product brand** — umbrella ⊕ the product
+  layer. The masthead reads "<product> brand book · a <umbrella> brand";
+  each section kicker names the owning layer (e.g. `colors.md · umbrella`,
+  `products/petals/identity.md`). A flat brand renders exactly as before.
 - **Every value rendered comes from a `.brand/` file** — the book is a view,
   never a second source of truth. Name the source file in each section's
   kicker (`colors.md`, `typography.md`, …).

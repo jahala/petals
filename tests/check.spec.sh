@@ -25,6 +25,9 @@ t "pure-black shadow is a warning"                 'WARNING \[surface\] line 6: 
 t "forbidden term is an error with replacement"    'ERROR \[voice\] line 9: "[Ss]upercharge" is a forbidden term\. Use "strengthen' "$OUT_BAD"
 t "banned terminology synonym is a warning"        'WARNING \[voice\] line 9: "brand folder"' "$OUT_BAD"
 t "capitalized product name is a warning"          'WARNING \[voice\] line 9: "Petals" — product names are lowercase' "$OUT_BAD"
+t "cross-product accent warns by name"             'WARNING \[color\] line 11: #D97757 is tend.s product accent' "$OUT_BAD"
+t "nearest-match names whose accent"               'line 12: #D97F5F is not in the palette\. Did you mean #D8745F \(bloom.s product accent\)' "$OUT_BAD"
+if echo "$OUT_GOOD" | grep -q 'E8917F'; then echo "FAIL own product accent passes silently"; fails=$((fails+1)); else echo "PASS own product accent passes silently"; fi
 t "summary block present"                          '--- petals check \(deterministic\) ---' "$OUT_BAD"
 t "typography stays agent-side, stated"            'Typography: agent dimension' "$OUT_BAD"
 t "bad file fails"                                 '^Result: FAIL' "$OUT_BAD"
