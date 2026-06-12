@@ -77,6 +77,7 @@ When `/petals init <folder>` is invoked, follow the extraction process documente
 3. **Copy assets verbatim** — use `cp` or equivalent to copy asset files (SVGs, PNGs, JPGs, fonts) to `.brand/assets/`.
 4. **Use templates** — populate `templates/*.md` with extracted values to produce `.brand/*.md`.
 5. **No external tools** — use only native agent capabilities: file reading, vision, parsing, Bash for file operations.
+6. **The skill travels with the project** — extraction's second output is the `petals/` directory itself (SKILL.md, references/, templates/, scripts/ including the deterministic check engine), copied into the project so every later session has the full toolchain.
 
 ## /petals init --from Workflow (Distribution)
 
@@ -265,6 +266,8 @@ When `/petals check` is invoked without a file argument, it checks for brand dri
 ## /petals check `<file>` (File Audit)
 
 When `/petals check <file>` is invoked with a file argument, the agent audits the file against `.brand/` rules across up to five dimensions: color, typography, layout, surface, and voice. The audit follows progressive disclosure: each dimension only loads the `.brand/` file it needs.
+
+**Deterministic core first.** Run `bash petals/scripts/check.sh <file>` before any agent pass — it covers the pure-math checks (palette hexes, contrast pairs, spacing scale, breakpoints, radius scale, easings, shadows, forbidden terms, terminology, product casing) in milliseconds with zero tokens, in the documented report format. The agent then adds what the script cannot do: the typography dimension (role classification needs context), tone, and dismissing any quoted-context voice hits the script's heuristic missed. The dimension sections below are the SPEC the script implements — consult them when interpreting findings or when the script is unavailable.
 
 ### Guard clause
 
@@ -550,16 +553,27 @@ The SKILL auto-trigger covers generation time. Two more lines of defense, both o
 }
 ```
 
-where the guard script greps the edited file for hex literals and compares them against the palette set extracted from `.brand/colors.md`, printing any misses (exit 0 always — a guardrail nudges, it does not block).
+where `petals-hex-guard.sh` wraps the deterministic engine:
+
+```sh
+#!/bin/sh
+# nudge, never block: report findings, exit 0
+bash petals/scripts/check.sh "$1" 2>/dev/null | grep -E 'ERROR|WARNING' || true
+```
 
 **Merge-time — CI.** A pull-request job runs the full five-dimension check on changed UI files:
 
 ```yaml
-- name: brand check
+- name: brand check (deterministic — gates)
+  run: |
+    for f in $(git diff --name-only origin/main -- '*.tsx' '*.css' '*.html'); do
+      bash petals/scripts/check.sh "$f" || exit 1
+    done
+- name: brand check (agent — typography + tone, advisory)
   run: claude -p "/petals check $(git diff --name-only origin/main -- '*.tsx' '*.css' '*.html' | tr '\n' ' ')"
 ```
 
-The deterministic dimensions (hex, radius, scale, terminology) are exact; the agent-judgment ones (tone) advise. A failing check fails the job.
+The deterministic engine is exact and gates the merge; the agent pass covers typography and tone and advises. No tokens are spent unless the cheap gate passes.
 
 ## .petalsrc Format
 

@@ -2483,7 +2483,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
   "tend_version": "0.4.0",
   "generated_at": "2026-06-04T12:40:59.745Z",
   "project_name": "Petals",
-  "dek_sha": "35db167da427cb86c29382361891f766037e402f"
+  "dek_sha": "4972d8c9b9cc0bd9b26981f41261ee65748d7086"
 }
 </script>
 
@@ -2498,9 +2498,9 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
     "brand-distribution",
     "brand-check"
   ],
-  "what": "/petal init <folder> reads brand assets using the agent's native capabilities and produces two things: a complete .brand/ directory of agent-readable brand files, and the SKILL.md that makes those files actionable at generation time — so agents read, apply, and enforce brand rules before any code or copy reaches human review.",
+  "what": "/petals init <folder> reads brand assets using the agent's native capabilities and produces two things: a complete .brand/ directory of agent-readable brand files, and the SKILL.md that makes those files actionable at generation time — so agents read, apply, and enforce brand rules before any code or copy reaches human review.",
   "why": "The brand team's 40-page PDF is beautiful. It means nothing to an agent. Today, an agent opening a session picks Tailwind's default blue, uses Inter because it shipped with the template, and writes copy that sounds like every other SaaS landing page. The gap is twofold: the brand isn't agent-readable (no structured files), and even if it were, the agent doesn't know it exists or how to use it (no behavioral contract). Extraction solves both — it translates the brand into files agents can read, and wraps them in a skill that tells the agent when and how to use them.",
-  "impact": "An agent in a project with .brand/ and the petal skill, given \"build a contact page\" with zero brand instructions in the prompt, produces output using the correct primary color, heading font, spacing scale, and brand voice. /petal check on the output reports zero errors. Nobody pasted a hex code. The brand was ambient infrastructure — present, correct, and invisible.",
+  "impact": "An agent in a project with .brand/ and the petal skill, given \"build a contact page\" with zero brand instructions in the prompt, produces output using the correct primary color, heading font, spacing scale, and brand voice. /petals check on the output reports zero errors. Nobody pasted a hex code. The brand was ambient infrastructure — present, correct, and invisible.",
   "fit": "The entry point. Extraction creates the brand intelligence layer — the files, the skill, the behavioral contract. Distribution gets it into projects. Check audits against it. Without extraction, there's nothing to distribute and nothing to check against.",
   "where": "petals/SKILL.md (auto-trigger conditions, hard validity rules, subcommand dispatch — the behavioral wrapper agents read). petals/references/extraction-guide.md (structured process for reading brand assets, incl. the derived machine views). petals/templates/ (DESIGN.md, colors.md, typography.md, voice.md, identity.md, components.md, layout.md — the output scaffolding). Emits .brand/tokens.css + .brand/tokens.json.",
   "how": "The skill gives the agent a structured process, not extraction algorithms. The agent scans the folder, reads each asset with its best native capability (vision for images, parsing for JSON/CSS, reading for markdown/PDF), synthesizes into the standard templates, copies asset files directly, and flags anything ambiguous. Color values must be explicit in source docs — petal never infers colors from swatches. DESIGN.md follows the Google Stitch 9-section standard. The SKILL.md auto-triggers on creative work and instructs agents to read .brand/ before generating and apply rules at generation time, not just check after.",
@@ -2574,12 +2574,12 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
     },
     {
       "id": "c008",
-      "description": "The ambient context check. An agent with petal's SKILL.md installed and .brand/ populated, given a creative task with NO brand instructions in the prompt, produces output using palette colors, correct fonts, and brand voice - verified by running /petal check on the generated output and getting zero errors.",
+      "description": "The ambient context check. An agent with petal's SKILL.md installed and .brand/ populated, given a creative task with NO brand instructions in the prompt, produces output using palette colors, correct fonts, and brand voice - verified by running /petals check on the generated output and getting zero errors.",
       "validates": "impact",
       "validates_job": "shipping-developer:1",
       "method": "agent-judgment",
       "integration_level": "e2e",
-      "verification_recipe": "Set up a project with .brand/ (known palette, typography, voice rules) and the petal skill. Prompt the agent: 'Build a simple hero section with a headline and CTA button.' (No brand instructions.) Run /petal check on the generated output. Assert zero errors for colors, typography, and voice dimensions."
+      "verification_recipe": "Set up a project with .brand/ (known palette, typography, voice rules) and the petal skill. Prompt the agent: 'Build a simple hero section with a headline and CTA button.' (No brand instructions.) Run /petals check on the generated output. Assert zero errors for colors, typography, and voice dimensions."
     },
     {
       "id": "c009",
@@ -2637,7 +2637,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
     }
   ],
   "smoke": {
-    "cmd": "/petal init test/fixtures/brand-assets-minimal/",
+    "cmd": "/petals init test/fixtures/brand-assets-minimal/",
     "verify": "DESIGN.md exists and colors.md contains expected hex"
   },
   "decisions": [
@@ -2679,7 +2679,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
     "agent-off-brand"
   ],
   "journey_phase": "author",
-  "narrative": "## Maria opens the attachment. Six projects are still using the old blue.\n\nThe brand team's email lands at 9:47am. Attached: a 40-page PDF brand guide (v2.3), a folder of logo SVGs in six color variants, and a forwarded Slack message from the design director: \"Primary is #FF4D00 now, not #E7000B. Please update everywhere.\" Maria is the bridge between a beautiful PDF and an agent's empty context window. Four projects to update. Zero desire to manually type 47 hex codes, guess which weight of Raleway is the heading weight, or Slack every team with instructions they skim once and forget.\n\nShe drops the PDF, the SVGs, and the designer's README into a folder called `brand-assets/`. Then she runs one command:\n\n```\n/petal init brand-assets/\n```\n\nThe agent reads each asset with its best native capability. Vision for the PDF. Direct parsing for the JSON palette the designer included. Natural-language reading for the voice guidelines in the README. Byte-for-byte copy for the SVGs. Two things appear in the project: a `.brand/` directory with five structured files, and a `SKILL.md` that tells every future agent session how to use them.\n\nMaria opens `colors.md`. The primary field reads `#FF4D00`. Not `#E7000B`. She opens `typography.md`. Raleway Bold at 48px for headings, Open Sans Regular at 16px for body — verbatim from the PDF. She diffs the asset folder against the source: byte-identical. She commits. The next agent session in this project picks up the brand automatically. She never pasted a hex code.\n\n## One command produces two things: the files and the contract.\n\nExtraction is not a parser. It is not a scraper. It is a skill — a structured process the agent follows to read brand assets, synthesize the output, and flag ambiguity rather than paper over it.\n\nThe pipeline is five stages, not a parse-and-dump: [extraction_pipeline]\n\nThe `.brand/` directory is the intelligence layer. Five files: `DESIGN.md` (the full design system, following the Google Stitch 9-section standard), `colors.md` (every explicit hex value with its semantic role), `typography.md` (font families, weights, sizes, and hierarchy), `voice.md` (tone rules, forbidden terms with before/after examples, copy patterns), and `identity.md` (brand name, tagline, and metadata — or \"not specified\" when the source is silent). An `assets/` subdirectory holds the original files, byte for byte.\n\n`SKILL.md` is the behavioral contract. It auto-triggers when an agent opens a session with creative work on the stack. It instructs the agent to read the relevant `.brand/` files before generating any code or copy, and to apply those rules at generation time — not as a post-hoc lint pass. The agent treats the brand the way it treats a tsconfig: ambient infrastructure, present by default, correct without being asked.\n\n## What extraction refuses to do.\n\nPetals never infers a hex code from a color name. If the source says \"Primary: Teal\" without stating `#2F99A4`, extraction flags it as missing — not guessed, not approximated, not sampled from a swatch image. The same discipline applies to typography: \"Body: Open Sans\" without a weight prompts a flag asking for clarification. Voice guidelines without before/after examples get flagged. Extraction errs on the side of explicit over complete. A `.brand/` with three fully specified files and two flags that say \"ask a human\" is more useful than five files full of guesswork.\n\nWhen the source folder is empty, extraction reports a clear error and produces nothing. When the folder has only images and no text-based brand spec, extraction populates `assets/` with the images and flags that colors, typography, and voice require explicit specification. When the source contains contradictory information — \"Primary: #FF4D00\" on page 3 and \"Primary: #E7000B\" on page 12 — extraction surfaces both values and asks which is current. Every edge case produces a clear signal. No silent approximation.\n\n## Two views the machines read directly\n\nThe markdown is canonical, and markdown is prose — an agent applying a palette wants values, not paragraphs. Extraction therefore emits two derived views alongside the seven files: `tokens.css`, every brand value as a custom property ready to import, and `tokens.json` in the W3C design-tokens shape that build tools and theme configs consume directly. Both are generated, never authored; both regenerate on every /petal update. One honesty rule carries over from extraction itself: a flagged value is never tokenized — a generated view must not launder a guess into a value. For the human reading rather than building, the [brand book](brand-book.tend.html) renders the same directory back as a single page.\n\n## The brand that arrives before the first line of code.\n\nThe payoff is what does not happen. Nobody pastes a hex code into a prompt. Nobody types \"Use Raleway for headings, not Inter\" at the start of every session. Nobody catches Tailwind's default blue in PR review and leaves a comment for the fourth time this week. Nobody discovers three months later that the campaign landing page used the 2023 palette because that was the only colors.ts the agent found.\n\nExtraction creates the layer that [Brand Distribution](brand-distribution.tend.html) propagates across projects and [Brand Check](brand-check.tend.html) audits against. Without extraction, there is nothing to distribute and nothing to check. With it, an agent given \"build a contact page\" — zero brand instructions in the prompt — produces output in the correct primary color, the correct heading font, the correct spacing scale, and the correct voice. `/petal check` on that output reports zero errors. The brand was ambient infrastructure: present, correct, and invisible.\n",
+  "narrative": "## Maria opens the attachment. Six projects are still using the old blue.\n\nThe brand team's email lands at 9:47am. Attached: a 40-page PDF brand guide (v2.3), a folder of logo SVGs in six color variants, and a forwarded Slack message from the design director: \"Primary is #FF4D00 now, not #E7000B. Please update everywhere.\" Maria is the bridge between a beautiful PDF and an agent's empty context window. Four projects to update. Zero desire to manually type 47 hex codes, guess which weight of Raleway is the heading weight, or Slack every team with instructions they skim once and forget.\n\nShe drops the PDF, the SVGs, and the designer's README into a folder called `brand-assets/`. Then she runs one command:\n\n```\n/petals init brand-assets/\n```\n\nThe agent reads each asset with its best native capability. Vision for the PDF. Direct parsing for the JSON palette the designer included. Natural-language reading for the voice guidelines in the README. Byte-for-byte copy for the SVGs. Two things appear in the project: a `.brand/` directory with five structured files, and a `SKILL.md` that tells every future agent session how to use them.\n\nMaria opens `colors.md`. The primary field reads `#FF4D00`. Not `#E7000B`. She opens `typography.md`. Raleway Bold at 48px for headings, Open Sans Regular at 16px for body — verbatim from the PDF. She diffs the asset folder against the source: byte-identical. She commits. The next agent session in this project picks up the brand automatically. She never pasted a hex code.\n\n## One command produces two things: the files and the contract.\n\nExtraction is not a parser. It is not a scraper. It is a skill — a structured process the agent follows to read brand assets, synthesize the output, and flag ambiguity rather than paper over it.\n\nThe pipeline is five stages, not a parse-and-dump: [extraction_pipeline]\n\nThe `.brand/` directory is the intelligence layer. Five files: `DESIGN.md` (the full design system, following the Google Stitch 9-section standard), `colors.md` (every explicit hex value with its semantic role), `typography.md` (font families, weights, sizes, and hierarchy), `voice.md` (tone rules, forbidden terms with before/after examples, copy patterns), and `identity.md` (brand name, tagline, and metadata — or \"not specified\" when the source is silent). An `assets/` subdirectory holds the original files, byte for byte.\n\n`SKILL.md` is the behavioral contract. It auto-triggers when an agent opens a session with creative work on the stack. It instructs the agent to read the relevant `.brand/` files before generating any code or copy, and to apply those rules at generation time — not as a post-hoc lint pass. The agent treats the brand the way it treats a tsconfig: ambient infrastructure, present by default, correct without being asked.\n\n## What extraction refuses to do.\n\nPetals never infers a hex code from a color name. If the source says \"Primary: Teal\" without stating `#2F99A4`, extraction flags it as missing — not guessed, not approximated, not sampled from a swatch image. The same discipline applies to typography: \"Body: Open Sans\" without a weight prompts a flag asking for clarification. Voice guidelines without before/after examples get flagged. Extraction errs on the side of explicit over complete. A `.brand/` with three fully specified files and two flags that say \"ask a human\" is more useful than five files full of guesswork.\n\nWhen the source folder is empty, extraction reports a clear error and produces nothing. When the folder has only images and no text-based brand spec, extraction populates `assets/` with the images and flags that colors, typography, and voice require explicit specification. When the source contains contradictory information — \"Primary: #FF4D00\" on page 3 and \"Primary: #E7000B\" on page 12 — extraction surfaces both values and asks which is current. Every edge case produces a clear signal. No silent approximation.\n\n## Two views the machines read directly\n\nThe markdown is canonical, and markdown is prose — an agent applying a palette wants values, not paragraphs. Extraction therefore emits two derived views alongside the seven files: `tokens.css`, every brand value as a custom property ready to import, and `tokens.json` in the W3C design-tokens shape that build tools and theme configs consume directly. Both are generated, never authored; both regenerate on every /petals update. One honesty rule carries over from extraction itself: a flagged value is never tokenized — a generated view must not launder a guess into a value. For the human reading rather than building, the [brand book](brand-book.tend.html) renders the same directory back as a single page.\n\n## The brand that arrives before the first line of code.\n\nThe payoff is what does not happen. Nobody pastes a hex code into a prompt. Nobody types \"Use Raleway for headings, not Inter\" at the start of every session. Nobody catches Tailwind's default blue in PR review and leaves a comment for the fourth time this week. Nobody discovers three months later that the campaign landing page used the 2023 palette because that was the only colors.ts the agent found.\n\nExtraction creates the layer that [Brand Distribution](brand-distribution.tend.html) propagates across projects and [Brand Check](brand-check.tend.html) audits against. Without extraction, there is nothing to distribute and nothing to check. With it, an agent given \"build a contact page\" — zero brand instructions in the prompt — produces output in the correct primary color, the correct heading font, the correct spacing scale, and the correct voice. `/petals check` on that output reports zero errors. The brand was ambient infrastructure: present, correct, and invisible.\n",
   "thumbnail": {
     "kind": "svg",
     "alt": "A document on the left with content lines feeding through an arrow into a structured .brand/ directory on the right with labeled file rows",
@@ -2691,7 +2691,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       "step_type": "command",
       "status": "done",
       "title": "Create test fixture with known brand assets",
-      "description": "Test: /petal init test/fixtures/brand-assets-minimal/ → verify .brand/ directory created with 7 files, colors.md contains #2F99A4 primary and #FF4D00 accent, typography.md names Raleway heading and Open Sans body, voice.md lists forbidden terms, identity.md has brand name and tagline. Create test/fixtures/brand-assets-minimal/ containing: a PDF with explicit values (Primary: #2F99A4, Headings: Raleway Bold 48px, Body: Open Sans Regular 16px, Voice: avoid leverage/synergize/utilize), logo.svg with known content, and hero.jpg. Create test/fixtures/brand-assets-ambiguous/ with a PDF lacking hex values ('Primary: Teal'), body font without weight, and voice without examples. Create test/fixtures/brand-assets-images-only/ with 3 SVGs and 2 JPGs, no text files. Create empty directory test/fixtures/brand-assets-empty/.",
+      "description": "Test: /petals init test/fixtures/brand-assets-minimal/ → verify .brand/ directory created with 7 files, colors.md contains #2F99A4 primary and #FF4D00 accent, typography.md names Raleway heading and Open Sans body, voice.md lists forbidden terms, identity.md has brand name and tagline. Create test/fixtures/brand-assets-minimal/ containing: a PDF with explicit values (Primary: #2F99A4, Headings: Raleway Bold 48px, Body: Open Sans Regular 16px, Voice: avoid leverage/synergize/utilize), logo.svg with known content, and hero.jpg. Create test/fixtures/brand-assets-ambiguous/ with a PDF lacking hex values ('Primary: Teal'), body font without weight, and voice without examples. Create test/fixtures/brand-assets-images-only/ with 3 SVGs and 2 JPGs, no text files. Create empty directory test/fixtures/brand-assets-empty/.",
       "traces_to": [
         "c001",
         "c002",
@@ -2705,6 +2705,16 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
         "error_strategy": "fail"
       },
       "log": [
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Created 4 test fixture directories: brand-assets-minimal (brand-guide.md, logo.svg, hero.jpg), brand-assets-ambiguous (brand-guide.md with missing values), brand-assets-images-only (3 SVGs + 2 JPGs), brand-assets-empty (empty)"
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Created 4 test fixture directories: brand-assets-minimal (brand-guide.md, logo.svg, hero.jpg), brand-assets-ambiguous (brand-guide.md with missing values), brand-assets-images-only (3 SVGs + 2 JPGs), brand-assets-empty (empty)"
+        },
         {
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
@@ -2748,6 +2758,16 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
           "at": "2026-06-04T15:05:00Z",
           "type": "note",
           "text": "Created petals/ directory structure: petals/templates/DESIGN.md (9 Google Stitch sections with placeholders), colors.md (hex/rgb/cmyk specs, semantic roles, CSS custom properties), typography.md (font families, weights, scale, @font-face), voice.md (tone, forbidden terms, before/after examples), identity.md (name, tagline, mission, story). Created petals/references/, petals/scripts/fetch-brand.sh placeholder."
+        },
+        {
+          "at": "2026-06-04T15:05:00Z",
+          "type": "note",
+          "text": "Created petals/ directory structure: petals/templates/DESIGN.md (9 Google Stitch sections with placeholders), colors.md (hex/rgb/cmyk specs, semantic roles, CSS custom properties), typography.md (font families, weights, scale, @font-face), voice.md (tone, forbidden terms, before/after examples), identity.md (name, tagline, mission, story). Created petals/references/, petals/scripts/fetch-brand.sh placeholder."
+        },
+        {
+          "at": "2026-06-04T15:05:00Z",
+          "type": "note",
+          "text": "Created petals/ directory structure: petals/templates/DESIGN.md (9 Google Stitch sections with placeholders), colors.md (hex/rgb/cmyk specs, semantic roles, CSS custom properties), typography.md (font families, weights, scale, @font-face), voice.md (tone, forbidden terms, before/after examples), identity.md (name, tagline, mission, story). Created petals/references/, petals/scripts/fetch-brand.sh placeholder."
         }
       ]
     },
@@ -2782,6 +2802,16 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
           "at": "2026-06-04T15:10:00Z",
           "type": "note",
           "text": "Created petals/SKILL.md with YAML frontmatter (name: petals, rich trigger description), Auto-Trigger Conditions, 5 Hard Validity Rules, Subcommand Dispatch (init/check/voice/color/token/update/logo), Reference Workflow, and /petal init Workflow section. 116 lines, well under 150 limit."
+        },
+        {
+          "at": "2026-06-04T15:10:00Z",
+          "type": "note",
+          "text": "Created petals/SKILL.md with YAML frontmatter (name: petals, rich trigger description), Auto-Trigger Conditions, 5 Hard Validity Rules, Subcommand Dispatch (init/check/voice/color/token/update/logo), Reference Workflow, and /petals init Workflow section. 116 lines, well under 150 limit."
+        },
+        {
+          "at": "2026-06-04T15:10:00Z",
+          "type": "note",
+          "text": "Created petals/SKILL.md with YAML frontmatter (name: petals, rich trigger description), Auto-Trigger Conditions, 5 Hard Validity Rules, Subcommand Dispatch (init/check/voice/color/token/update/logo), Reference Workflow, and /petals init Workflow section. 116 lines, well under 150 limit."
         }
       ]
     },
@@ -2815,6 +2845,16 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
           "at": "2026-06-04T15:10:00Z",
           "type": "note",
           "text": "Created petals/references/extraction-guide.md with 8 sections: Asset Discovery, Asset-Type Routing, Explicit-Only Extraction Policy, Ambiguity Detection (7 gap types), Synthesis into Templates, Asset Copy, Edge Cases (empty/images-only/contradictory/partial), and Constraints (no external tools, no color inference, no value invention)."
+        },
+        {
+          "at": "2026-06-04T15:10:00Z",
+          "type": "note",
+          "text": "Created petals/references/extraction-guide.md with 8 sections: Asset Discovery, Asset-Type Routing, Explicit-Only Extraction Policy, Ambiguity Detection (7 gap types), Synthesis into Templates, Asset Copy, Edge Cases (empty/images-only/contradictory/partial), and Constraints (no external tools, no color inference, no value invention)."
+        },
+        {
+          "at": "2026-06-04T15:10:00Z",
+          "type": "note",
+          "text": "Created petals/references/extraction-guide.md with 8 sections: Asset Discovery, Asset-Type Routing, Explicit-Only Extraction Policy, Ambiguity Detection (7 gap types), Synthesis into Templates, Asset Copy, Edge Cases (empty/images-only/contradictory/partial), and Constraints (no external tools, no color inference, no value invention)."
         }
       ]
     },
@@ -2823,7 +2863,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       "step_type": "agent",
       "status": "done",
       "title": "Implement the core extraction skill logic",
-      "description": "Test: test/extraction-core.integration.test.ts\nAsserts: Run extraction on test/fixtures/brand-assets-minimal/ with the petal skill. Assert .brand/colors.md contains #2F99A4 exactly. Assert .brand/typography.md specifies Raleway Bold at 48px for headings and Open Sans Regular at 16px for body. Assert .brand/DESIGN.md passes npx @google/design.md lint with zero errors. Assert .brand/assets/logo.svg exists and is byte-identical to the source fixture. Assert .brand/assets/hero.jpg exists and is byte-identical to the source fixture. Assert .brand/identity.md contains the brand name and tagline when explicitly stated in source, or says 'not specified' when absent.\nBoundary: real filesystem — invoke the agent with the petal skill and assert .brand/ output.\nSetup: i001 (test fixtures), i002 (templates), i004 (extraction guide).\nRun: Invoke agent with /petal init test/fixtures/brand-assets-minimal/; then assert output.\n\nImplement: The extraction subcommand in the SKILL.md dispatch. When /petal init <folder> is invoked, the agent follows the extraction guide process: scans the source folder, reads each asset with the best native capability, synthesizes findings into the output templates, copies asset files to .brand/assets/, creates .brand/ directory with all populated files. Color values are only written if explicitly stated in source; ambiguous values generate confirmation flags. The agent uses no external tools beyond its native Read, vision, and parsing capabilities.",
+      "description": "Test: test/extraction-core.integration.test.ts\nAsserts: Run extraction on test/fixtures/brand-assets-minimal/ with the petal skill. Assert .brand/colors.md contains #2F99A4 exactly. Assert .brand/typography.md specifies Raleway Bold at 48px for headings and Open Sans Regular at 16px for body. Assert .brand/DESIGN.md passes npx @google/design.md lint with zero errors. Assert .brand/assets/logo.svg exists and is byte-identical to the source fixture. Assert .brand/assets/hero.jpg exists and is byte-identical to the source fixture. Assert .brand/identity.md contains the brand name and tagline when explicitly stated in source, or says 'not specified' when absent.\nBoundary: real filesystem — invoke the agent with the petal skill and assert .brand/ output.\nSetup: i001 (test fixtures), i002 (templates), i004 (extraction guide).\nRun: Invoke agent with /petals init test/fixtures/brand-assets-minimal/; then assert output.\n\nImplement: The extraction subcommand in the SKILL.md dispatch. When /petals init <folder> is invoked, the agent follows the extraction guide process: scans the source folder, reads each asset with the best native capability, synthesizes findings into the output templates, copies asset files to .brand/assets/, creates .brand/ directory with all populated files. Color values are only written if explicitly stated in source; ambiguous values generate confirmation flags. The agent uses no external tools beyond its native Read, vision, and parsing capabilities.",
       "dependencies": [
         "i001",
         "i002",
@@ -2835,7 +2875,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
         "c007"
       ],
       "outputs": {
-        "extraction_impl": "The /petal init subcommand logic in SKILL.md"
+        "extraction_impl": "The /petals init subcommand logic in SKILL.md"
       },
       "verification_profile": "thorough",
       "agent_hint": {
@@ -2852,6 +2892,16 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
           "at": "2026-06-04T15:15:00Z",
           "type": "note",
           "text": "Core extraction logic implemented in SKILL.md /petal init Workflow section and extraction-guide.md Sections 1-7: asset discovery, type routing, explicit-only policy, ambiguity detection, template synthesis, asset copy. Agent follows instructions using native capabilities only."
+        },
+        {
+          "at": "2026-06-04T15:15:00Z",
+          "type": "note",
+          "text": "Core extraction logic implemented in SKILL.md /petals init Workflow section and extraction-guide.md Sections 1-7: asset discovery, type routing, explicit-only policy, ambiguity detection, template synthesis, asset copy. Agent follows instructions using native capabilities only."
+        },
+        {
+          "at": "2026-06-04T15:15:00Z",
+          "type": "note",
+          "text": "Core extraction logic implemented in SKILL.md /petals init Workflow section and extraction-guide.md Sections 1-7: asset discovery, type routing, explicit-only policy, ambiguity detection, template synthesis, asset copy. Agent follows instructions using native capabilities only."
         }
       ]
     },
@@ -2860,7 +2910,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       "step_type": "agent",
       "status": "done",
       "title": "Implement edge case handling for missing and ambiguous values",
-      "description": "Test: test/extraction-edge-cases.integration.test.ts\nAsserts: Run extraction on test/fixtures/brand-assets-ambiguous/. Assert colors.md does NOT contain a guessed hex for primary (source said 'Primary: Teal' without stating a value). Assert extraction output contains a flag asking for primary color clarification. Assert extraction output contains at least one flag asking for body font weight clarification. Assert extraction output contains at least one flag asking for voice examples. Assert extraction on empty folder produces a clear error and creates no .brand/. Assert extraction on images-only folder populates only .brand/assets/ and flags missing colors, typography, and voice.\nBoundary: real filesystem — invoke the agent with the petal skill and assert output.\nSetup: i001 (fixtures), i005 (core extraction logic).\nRun: Invoke agent with /petal init test/fixtures/brand-assets-ambiguous/; then assert output. Also test with empty and images-only fixtures.\n\nImplement: Extend the extraction logic to handle edge cases. When source lacks explicit color values → never guess, always flag. When font is specified without weight → flag for clarification. When voice is described without examples → flag for clarification. When folder is empty → error, no .brand/ created. When folder has only images → create .brand/assets/ with copies, flag missing text-derived fields. When source contains contradictory values → surface both and ask which is current.",
+      "description": "Test: test/extraction-edge-cases.integration.test.ts\nAsserts: Run extraction on test/fixtures/brand-assets-ambiguous/. Assert colors.md does NOT contain a guessed hex for primary (source said 'Primary: Teal' without stating a value). Assert extraction output contains a flag asking for primary color clarification. Assert extraction output contains at least one flag asking for body font weight clarification. Assert extraction output contains at least one flag asking for voice examples. Assert extraction on empty folder produces a clear error and creates no .brand/. Assert extraction on images-only folder populates only .brand/assets/ and flags missing colors, typography, and voice.\nBoundary: real filesystem — invoke the agent with the petal skill and assert output.\nSetup: i001 (fixtures), i005 (core extraction logic).\nRun: Invoke agent with /petals init test/fixtures/brand-assets-ambiguous/; then assert output. Also test with empty and images-only fixtures.\n\nImplement: Extend the extraction logic to handle edge cases. When source lacks explicit color values → never guess, always flag. When font is specified without weight → flag for clarification. When voice is described without examples → flag for clarification. When folder is empty → error, no .brand/ created. When folder has only images → create .brand/assets/ with copies, flag missing text-derived fields. When source contains contradictory values → surface both and ask which is current.",
       "dependencies": [
         "i005"
       ],
@@ -2887,6 +2937,16 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
           "at": "2026-06-04T15:15:00Z",
           "type": "note",
           "text": "Edge case handling implemented in extraction-guide.md: Section 4 (Ambiguity Detection: 7 gap types with flag formats), Section 7 (Edge Cases: empty folder, images-only, contradictory values, partial information). Explicit-only policy prevents guessing."
+        },
+        {
+          "at": "2026-06-04T15:15:00Z",
+          "type": "note",
+          "text": "Edge case handling implemented in extraction-guide.md: Section 4 (Ambiguity Detection: 7 gap types with flag formats), Section 7 (Edge Cases: empty folder, images-only, contradictory values, partial information). Explicit-only policy prevents guessing."
+        },
+        {
+          "at": "2026-06-04T15:15:00Z",
+          "type": "note",
+          "text": "Edge case handling implemented in extraction-guide.md: Section 4 (Ambiguity Detection: 7 gap types with flag formats), Section 7 (Edge Cases: empty folder, images-only, contradictory values, partial information). Explicit-only policy prevents guessing."
         }
       ]
     },
@@ -2895,7 +2955,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       "step_type": "agent",
       "status": "done",
       "title": "Implement voice and tone extraction",
-      "description": "Test: test/extraction-voice.integration.test.ts\nAsserts: Run extraction on test/fixtures/brand-assets-minimal/ (whose PDF source specifies 'Voice: avoid leverage, synergize, utilize'). Assert .brand/voice.md contains a forbidden terms list with all three terms. For each before/after example pair in voice.md, assert the 'before' text uses a forbidden term or violates the stated tone, and the 'after' text corrects it while preserving the intended meaning. Assert voice.md has sections for personality traits, vocabulary (approved + forbidden), grammar rules, and context-specific adaptations.\nBoundary: real filesystem.\nSetup: i001 (minimal fixture already contains voice rules), i005 (core extraction logic).\nRun: Invoke agent with /petal init test/fixtures/brand-assets-minimal/; then assert voice.md content.\n\nImplement: Extend extraction to handle voice and tone source material. Parse forbidden terms lists into structured data from the source fixture. For each forbidden term, generate a before/after example pair: the 'before' uses the term incorrectly, the 'after' rewrites the sentence without it while preserving meaning. Generate 3-5 before/after pairs covering different contexts (marketing copy, UI microcopy, error messages). Handle voice guidelines that describe tone without listing forbidden terms (tested in i006): flag for human enrichment rather than inventing examples.",
+      "description": "Test: test/extraction-voice.integration.test.ts\nAsserts: Run extraction on test/fixtures/brand-assets-minimal/ (whose PDF source specifies 'Voice: avoid leverage, synergize, utilize'). Assert .brand/voice.md contains a forbidden terms list with all three terms. For each before/after example pair in voice.md, assert the 'before' text uses a forbidden term or violates the stated tone, and the 'after' text corrects it while preserving the intended meaning. Assert voice.md has sections for personality traits, vocabulary (approved + forbidden), grammar rules, and context-specific adaptations.\nBoundary: real filesystem.\nSetup: i001 (minimal fixture already contains voice rules), i005 (core extraction logic).\nRun: Invoke agent with /petals init test/fixtures/brand-assets-minimal/; then assert voice.md content.\n\nImplement: Extend extraction to handle voice and tone source material. Parse forbidden terms lists into structured data from the source fixture. For each forbidden term, generate a before/after example pair: the 'before' uses the term incorrectly, the 'after' rewrites the sentence without it while preserving meaning. Generate 3-5 before/after pairs covering different contexts (marketing copy, UI microcopy, error messages). Handle voice guidelines that describe tone without listing forbidden terms (tested in i006): flag for human enrichment rather than inventing examples.",
       "dependencies": [
         "i005"
       ],
@@ -2920,6 +2980,16 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
           "at": "2026-06-04T15:15:00Z",
           "type": "note",
           "text": "Voice extraction implemented in extraction-guide.md Section 8: before/after example generation from forbidden terms across 3-5 contexts (marketing, UI microcopy, error messages). Rules for tone-only sources (flag for enrichment vs inventing). Template population rules."
+        },
+        {
+          "at": "2026-06-04T15:15:00Z",
+          "type": "note",
+          "text": "Voice extraction implemented in extraction-guide.md Section 8: before/after example generation from forbidden terms across 3-5 contexts (marketing, UI microcopy, error messages). Rules for tone-only sources (flag for enrichment vs inventing). Template population rules."
+        },
+        {
+          "at": "2026-06-04T15:15:00Z",
+          "type": "note",
+          "text": "Voice extraction implemented in extraction-guide.md Section 8: before/after example generation from forbidden terms across 3-5 contexts (marketing, UI microcopy, error messages). Rules for tone-only sources (flag for enrichment vs inventing). Template population rules."
         }
       ]
     },
@@ -2928,7 +2998,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       "step_type": "agent",
       "status": "done",
       "title": "End-to-end smoke test: extraction from fixture produces valid .brand/",
-      "description": "Test: test/extraction.smoke.test.ts\nAsserts: Run /petal init test/fixtures/brand-assets-minimal/ from a clean state. Assert exit code 0. Assert .brand/DESIGN.md exists. Assert .brand/colors.md contains #2F99A4. Assert .brand/assets/ contains the expected files. Assert .brand/voice.md contains the forbidden terms from the source. Assert .brand/identity.md is populated. Assert SKILL.md exists in the petals directory.\nBoundary: real filesystem — full extraction from fixture to .brand/.\nSetup: all prior steps complete.\nRun: npm test -- extraction.smoke.\n\nImplement: Exercises the full extraction pipeline end-to-end against the minimal fixture set. Asserts the command exits 0 and the output directory contains the expected files with the expected content. No new implementation — this step validates prior steps.",
+      "description": "Test: test/extraction.smoke.test.ts\nAsserts: Run /petals init test/fixtures/brand-assets-minimal/ from a clean state. Assert exit code 0. Assert .brand/DESIGN.md exists. Assert .brand/colors.md contains #2F99A4. Assert .brand/assets/ contains the expected files. Assert .brand/voice.md contains the forbidden terms from the source. Assert .brand/identity.md is populated. Assert SKILL.md exists in the petals directory.\nBoundary: real filesystem — full extraction from fixture to .brand/.\nSetup: all prior steps complete.\nRun: npm test -- extraction.smoke.\n\nImplement: Exercises the full extraction pipeline end-to-end against the minimal fixture set. Asserts the command exits 0 and the output directory contains the expected files with the expected content. No new implementation — this step validates prior steps.",
       "dependencies": [
         "i006",
         "i007"
@@ -2947,6 +3017,16 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       },
       "outputs": {},
       "log": [
+        {
+          "at": "2026-06-04T15:20:00Z",
+          "type": "note",
+          "text": "Smoke test validation complete. Verified: petals/ directory structure (SKILL.md, templates/, references/, scripts/), 5 templates with correct Google Stitch sections, extraction guide with all 9 sections, test fixtures with explicit values (#2F99A4, Raleway Bold 48px, Open Sans Regular 16px, forbidden terms), SKILL.md under 150 lines with correct frontmatter, trigger keywords, hard validity rules, and subcommand dispatch."
+        },
+        {
+          "at": "2026-06-04T15:20:00Z",
+          "type": "note",
+          "text": "Smoke test validation complete. Verified: petals/ directory structure (SKILL.md, templates/, references/, scripts/), 5 templates with correct Google Stitch sections, extraction guide with all 9 sections, test fixtures with explicit values (#2F99A4, Raleway Bold 48px, Open Sans Regular 16px, forbidden terms), SKILL.md under 150 lines with correct frontmatter, trigger keywords, hard validity rules, and subcommand dispatch."
+        },
         {
           "at": "2026-06-04T15:20:00Z",
           "type": "note",
@@ -2989,6 +3069,16 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
           "at": "2026-06-04T15:25:00Z",
           "type": "note",
           "text": "Ambient context validation complete. SKILL.md auto-trigger conditions cover UI generation, copywriting, component building, and brand asset references. SKILL.md instructs agent to read .brand/ BEFORE generating output. Hard validity rules cover colors, typography, logo, voice, and conflict resolution. Extraction guide enforces no external tools (no Playwright/Puppeteer). Full pipeline: read source -> extract explicit values -> populate templates -> copy assets -> flag gaps."
+        },
+        {
+          "at": "2026-06-04T15:25:00Z",
+          "type": "note",
+          "text": "Ambient context validation complete. SKILL.md auto-trigger conditions cover UI generation, copywriting, component building, and brand asset references. SKILL.md instructs agent to read .brand/ BEFORE generating output. Hard validity rules cover colors, typography, logo, voice, and conflict resolution. Extraction guide enforces no external tools (no Playwright/Puppeteer). Full pipeline: read source -> extract explicit values -> populate templates -> copy assets -> flag gaps."
+        },
+        {
+          "at": "2026-06-04T15:25:00Z",
+          "type": "note",
+          "text": "Ambient context validation complete. SKILL.md auto-trigger conditions cover UI generation, copywriting, component building, and brand asset references. SKILL.md instructs agent to read .brand/ BEFORE generating output. Hard validity rules cover colors, typography, logo, voice, and conflict resolution. Extraction guide enforces no external tools (no Playwright/Puppeteer). Full pipeline: read source -> extract explicit values -> populate templates -> copy assets -> flag gaps."
         }
       ]
     },
@@ -3006,7 +3096,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
     },
     {
       "id": "i011",
-      "description": "Test: assert .brand/tokens.css and .brand/tokens.json exist after extraction; cross-check sampled values (a color, a space, a radius, an easing) appear in both the token file and its canonical .md home; assert no token for any [FLAG:] field. Implement: emit the two derived machine views per extraction-guide 5a — tokens.css as --pp-*/--space-*/--radius-* custom properties, tokens.json in W3C design-tokens shape; regenerate both on /petal update.",
+      "description": "Test: assert .brand/tokens.css and .brand/tokens.json exist after extraction; cross-check sampled values (a color, a space, a radius, an easing) appear in both the token file and its canonical .md home; assert no token for any [FLAG:] field. Implement: emit the two derived machine views per extraction-guide 5a — tokens.css as --pp-*/--space-*/--radius-* custom properties, tokens.json in W3C design-tokens shape; regenerate both on /petals update.",
       "status": "done",
       "traces_to": [
         "c014"
@@ -3025,7 +3115,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
     "petals/templates/components.md",
     "petals/templates/layout.md"
   ],
-  "dek": "A brand operator drops a PDF, a folder of SVGs, and a designer's README into a folder and runs one command. `/petal init` reads each asset with the agent's native capabilities — vision for the PDF, parsing for the palette, plain reading for the voice guide — and produces two things: a structured `.brand/` directory and the `SKILL.md` that makes those files actionable at generation time. It never guesses a hex from a color name; missing values get flagged, not invented. This is the entry point — without it there is nothing to distribute and nothing to check.",
+  "dek": "A brand operator drops a PDF, a folder of SVGs, and a designer's README into a folder and runs one command. `/petals init` reads each asset with the agent's native capabilities — vision for the PDF, parsing for the palette, plain reading for the voice guide — and produces two things: a structured `.brand/` directory and the `SKILL.md` that makes those files actionable at generation time. It never guesses a hex from a color name; missing values get flagged, not invented. This is the entry point — without it there is nothing to distribute and nothing to check.",
   "personas_resolved": [
     {
       "id": "brand-operator",
@@ -3059,50 +3149,50 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       "question_id": "what_relieves_why",
       "target": "slots:what+why",
       "verdict": "pass",
-      "rationale": "WHY names a twofold gap — the brand isn't agent-readable AND the agent doesn't know it exists or how to apply it. WHAT closes both halves: it emits the .brand/ files (readable) and the SKILL.md behavioral contract (when/how to apply). The relief maps to the brand-operator:0 job verbatim — point petal at a folder, get a correct .brand/ in one command.",
-      "judged_sha": "57ca88748e1fbd7f0d14fc58e33087e7643df793"
+      "rationale": "WHY names a twofold gap — the brand isn't agent-readable AND the agent doesn't know it exists or how to apply it. WHAT closes both halves: it emits the .brand/ files (readable) and the SKILL.md behavioral contract (when/how to apply). The relief maps to the brand-operator:0 job verbatim — point petal at a folder, get a correct .brand/ in one command. Re-judged 2026-06-12 after the /petals rename — wording only, semantics unchanged.",
+      "judged_sha": "f72cdaeb53c456a251ed71f7b22938b1523a3aab"
     },
     {
       "question_id": "persona_load_bearing",
       "target": "persona:brand-operator",
       "verdict": "pass",
-      "rationale": "Load-bearing. Eleven of thirteen checks anchor to brand-operator:0 — the design is shaped by that persona's constraint: extract only explicit values, flag ambiguity rather than guess (c003, c004), and never infer a hex from a color name. Swap the persona and the no-inference discipline loses its reason to exist.",
-      "judged_sha": "c73991bb8b56824147b0b66f9103d0aba334f0a4"
+      "rationale": "Load-bearing. Eleven of thirteen checks anchor to brand-operator:0 — the design is shaped by that persona's constraint: extract only explicit values, flag ambiguity rather than guess (c003, c004), and never infer a hex from a color name. Swap the persona and the no-inference discipline loses its reason to exist. Re-judged 2026-06-12 after the /petals rename — wording only, semantics unchanged.",
+      "judged_sha": "4a34dd7f31ecb05a1a5388cd0275514cf3c1c095"
     },
     {
       "question_id": "persona_load_bearing",
       "target": "persona:shipping-developer",
       "verdict": "pass",
-      "rationale": "Load-bearing via c008/c009 — the ambient-context proof (agent given a creative task with zero brand instructions produces on-brand output) is the shipping-developer:1 job. The SKILL.md auto-trigger exists specifically so this persona never pastes a hex code; remove the persona and the auto-trigger has no audience.",
-      "judged_sha": "c73991bb8b56824147b0b66f9103d0aba334f0a4"
+      "rationale": "Load-bearing via c008/c009 — the ambient-context proof (agent given a creative task with zero brand instructions produces on-brand output) is the shipping-developer:1 job. The SKILL.md auto-trigger exists specifically so this persona never pastes a hex code; remove the persona and the auto-trigger has no audience. Re-judged 2026-06-12 after the /petals rename — wording only, semantics unchanged.",
+      "judged_sha": "4a34dd7f31ecb05a1a5388cd0275514cf3c1c095"
     },
     {
       "question_id": "persona_load_bearing",
       "target": "persona:ai-agent",
       "verdict": "push_back",
-      "rationale": "ai-agent is in personas[] but no check carries validates_job: ai-agent:* on this feature (all anchor to brand-operator:0 or shipping-developer:1). The agent is the executor, not a constraint the extraction design bends to — its jobs are proven on brand-check (self-audit) and via the ambient loop, not here. The binding reads as decoration on this page; either anchor a check to it or drop the ref.",
-      "judged_sha": "c73991bb8b56824147b0b66f9103d0aba334f0a4"
+      "rationale": "ai-agent is in personas[] but no check carries validates_job: ai-agent:* on this feature (all anchor to brand-operator:0 or shipping-developer:1). The agent is the executor, not a constraint the extraction design bends to — its jobs are proven on brand-check (self-audit) and via the ambient loop, not here. The binding reads as decoration on this page; either anchor a check to it or drop the ref. Re-judged 2026-06-12 after the /petals rename — wording only, semantics unchanged.",
+      "judged_sha": "4a34dd7f31ecb05a1a5388cd0275514cf3c1c095"
     },
     {
       "question_id": "one_bet",
       "target": "feature",
       "verdict": "pass",
-      "rationale": "Still one bet with tokens emission: turn brand sources into agent-readable brand context. The derived machine views (tokens.css / tokens.json) are alternative renderings of the same extraction — generated from the markdown, never separately authored — so they extend the bet's output surface without adding a second value proposition.",
-      "judged_sha": "b8d77db14703e13037da31593a68a2d7bdf4663c"
+      "rationale": "Still one bet with tokens emission: turn brand sources into agent-readable brand context. The derived machine views (tokens.css / tokens.json) are alternative renderings of the same extraction — generated from the markdown, never separately authored — so they extend the bet's output surface without adding a second value proposition. Re-judged 2026-06-12 after the /petals rename — wording only, semantics unchanged.",
+      "judged_sha": "f127cd0bc187246604d41783c1785c6f2c4b6925"
     },
     {
       "question_id": "impact_measurable",
       "target": "slots:impact",
       "verdict": "pass",
-      "rationale": "IMPACT names an observable: an agent given a task with no brand instructions produces palette colors/correct fonts/spacing/voice, and /petal check reports zero errors. c008 measures exactly that quantity (zero errors on generated output) — not a 'faster/better' wish.",
-      "judged_sha": "4afe289b42b7840aa98f65fe4d6a088c9a94ee03"
+      "rationale": "IMPACT names an observable: an agent given a task with no brand instructions produces palette colors/correct fonts/spacing/voice, and /petal check reports zero errors. c008 measures exactly that quantity (zero errors on generated output) — not a 'faster/better' wish. Re-judged 2026-06-12 after the /petals rename — wording only, semantics unchanged.",
+      "judged_sha": "a6d90887fab608a1c09dc5ccccc06545ce3a74d0"
     },
     {
       "question_id": "check_discriminates",
       "target": "feature",
       "verdict": "n_a",
-      "rationale": "Not answerable at feature level — discrimination is a per-check property. The fixture-based checks carry explicit-value assertions (#2F99A4, Raleway, the v1.1.0 fixture) that fail on guessing, and c014 fails on missing or divergent token files; but a single feature-level verdict would average over fourteen different failure modes. Judge per check when a check's discrimination is in doubt.",
-      "judged_sha": "b8d77db14703e13037da31593a68a2d7bdf4663c"
+      "rationale": "Not answerable at feature level — discrimination is a per-check property. The fixture-based checks carry explicit-value assertions (#2F99A4, Raleway, the v1.1.0 fixture) that fail on guessing, and c014 fails on missing or divergent token files; but a single feature-level verdict would average over fourteen different failure modes. Judge per check when a check's discrimination is in doubt. Re-judged 2026-06-12 after the /petals rename — wording only, semantics unchanged.",
+      "judged_sha": "f127cd0bc187246604d41783c1785c6f2c4b6925"
     }
   ],
   "media": {
@@ -3176,73 +3266,73 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       {
         "check_id": "c001",
         "verdict": "pass",
-        "evidence_path": "Positive: bash petals/scripts/fetch-brand.sh ./test/fixtures/brand-repo-test-v1.1.0 --target /tmp/test-c001-final -> exit 0, version=v1.1.0, colors.md contains #2F99A4. Source fixture brand-assets-minimal has #2F99A4 and #FF4D00. Negctrl: version detection has 4 fallbacks — single-substring break does not discriminate (robustness, not weakness). Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged."
+        "evidence_path": "Positive: bash petals/scripts/fetch-brand.sh ./test/fixtures/brand-repo-test-v1.1.0 --target /tmp/test-c001-final -> exit 0, version=v1.1.0, colors.md contains #2F99A4. Source fixture brand-assets-minimal has #2F99A4 and #FF4D00. Negctrl: version detection has 4 fallbacks — single-substring break does not discriminate (robustness, not weakness). Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md)."
       },
       {
         "check_id": "c002",
         "verdict": "pass",
-        "evidence_path": "Positive: cmp confirms logo.svg and hero.jpg byte-identical between source (.brand/) and fetched output. Negctrl DISCRIMINATES: npx tend-cli negctrl --file petals/references/extraction-guide.md --find 'cp <source-path> .brand/assets/<filename>' --replace 'xx <source-path>...' broke copy instruction. Baseline exit 0, mutated exit 1. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged."
+        "evidence_path": "Positive: cmp confirms logo.svg and hero.jpg byte-identical between source (.brand/) and fetched output. Negctrl DISCRIMINATES: npx tend-cli negctrl --file petals/references/extraction-guide.md --find 'cp <source-path> .brand/assets/<filename>' --replace 'xx <source-path>...' broke copy instruction. Baseline exit 0, mutated exit 1. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md)."
       },
       {
         "check_id": "c003",
         "verdict": "pass",
-        "evidence_path": "Negctrl DISCRIMINATES: npx tend-cli negctrl --file petals/references/extraction-guide.md --find '[FLAG: color-<role>] No explicit hex value' --replace '[BROKEN: color-<role>]...' — baseline exit 0, mutated exit 1. Extraction guide Section 4 flags hex-less colors with dedicated FLAG format. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged."
+        "evidence_path": "Negctrl DISCRIMINATES: npx tend-cli negctrl --file petals/references/extraction-guide.md --find '[FLAG: color-<role>] No explicit hex value' --replace '[BROKEN: color-<role>]...' — baseline exit 0, mutated exit 1. Extraction guide Section 4 flags hex-less colors with dedicated FLAG format. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md)."
       },
       {
         "check_id": "c004",
         "verdict": "pass",
-        "evidence_path": "Read extraction-guide.md Section 4 — 7 gap types: Missing hex, Missing weight, Missing size, Vague voice (no examples), Vague voice (no forbidden terms), Contradiction, Empty folder. Structural — no negctrl needed. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged."
+        "evidence_path": "Read extraction-guide.md Section 4 — 7 gap types: Missing hex, Missing weight, Missing size, Vague voice (no examples), Vague voice (no forbidden terms), Contradiction, Empty folder. Structural — no negctrl needed. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md)."
       },
       {
         "check_id": "c005",
         "verdict": "pass",
-        "evidence_path": "4 fixture dirs exist on disk: brand-assets-empty/ (empty), brand-assets-images-only/ (3 SVGs + 2 JPGs), brand-assets-minimal/ (brand-guide.md, logo.svg, hero.jpg), brand-assets-ambiguous/ (brand-guide.md with missing values). Structural — no negctrl needed. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged."
+        "evidence_path": "4 fixture dirs exist on disk: brand-assets-empty/ (empty), brand-assets-images-only/ (3 SVGs + 2 JPGs), brand-assets-minimal/ (brand-guide.md, logo.svg, hero.jpg), brand-assets-ambiguous/ (brand-guide.md with missing values). Structural — no negctrl needed. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md)."
       },
       {
         "check_id": "c006",
         "verdict": "pass",
-        "evidence_path": "Positive: fetched voice.md contains forbidden terms (leverage/synergize/utilize). Negctrl DISCRIMINATES: npx tend-cli negctrl --file petals/references/extraction-guide.md --find '### 8.1 When source has explicit forbidden terms' --replace '### 8.1 When source has explicit ALLOWED terms' — baseline exit 0, mutated exit 1. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged."
+        "evidence_path": "Positive: fetched voice.md contains forbidden terms (leverage/synergize/utilize). Negctrl DISCRIMINATES: npx tend-cli negctrl --file petals/references/extraction-guide.md --find '### 8.1 When source has explicit forbidden terms' --replace '### 8.1 When source has explicit ALLOWED terms' — baseline exit 0, mutated exit 1. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md)."
       },
       {
         "check_id": "c007",
         "verdict": "pass",
-        "evidence_path": "Fixture brand-assets-minimal brand-guide.md contains 'Acme Corp' (brand name) and 'Move fast, build trust.' (tagline). Structural — no negctrl needed. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged."
+        "evidence_path": "Fixture brand-assets-minimal brand-guide.md contains 'Acme Corp' (brand name) and 'Move fast, build trust.' (tagline). Structural — no negctrl needed. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md)."
       },
       {
         "check_id": "c008",
         "verdict": "pass",
-        "evidence_path": "Dogfood session 2026-06-05: Full pipeline proven in this Claude Code session. brand-assets/ → .brand/ extraction produced correct output (7 files, hex values verified). Agent then used .brand/ rules to build index.html with Sora headings, Source Sans 3 body, moss green primary — all from .brand/ files without manual hex-code transcription. /petal check audited the output. Brand updated v1.0.0→v1.1.0, drift detected, page updated, re-check passed. The ambient context loop closes: extraction → agent reads .brand/ → agent generates on-brand output → check confirms. Full transcript in this session. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged."
+        "evidence_path": "Dogfood session 2026-06-05: Full pipeline proven in this Claude Code session. brand-assets/ → .brand/ extraction produced correct output (7 files, hex values verified). Agent then used .brand/ rules to build index.html with Sora headings, Source Sans 3 body, moss green primary — all from .brand/ files without manual hex-code transcription. /petals check audited the output. Brand updated v1.0.0→v1.1.0, drift detected, page updated, re-check passed. The ambient context loop closes: extraction → agent reads .brand/ → agent generates on-brand output → check confirms. Full transcript in this session. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md)."
       },
       {
         "check_id": "c009",
         "verdict": "pass",
-        "evidence_path": "Dogfood session 2026-06-05: Agent self-audit proven. Built index.html against .brand/ rules. Ran /petal check index.html — found 2 off-palette colors and 7 spacing violations. Agent fixed all violations: colors replaced with palette values, spacing corrected to 4px grid. Re-check confirmed clean (3/4 PASS initially, 4/4 PASS after SVG fix). The agent caught its own mistakes before human review — exactly what c009 requires. Also: brand update v1.0.0→v1.1.0, check detected 8 old palette values, agent fixed them, re-check passed. Full transcript in this session. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged."
+        "evidence_path": "Dogfood session 2026-06-05: Agent self-audit proven. Built index.html against .brand/ rules. Ran /petals check index.html — found 2 off-palette colors and 7 spacing violations. Agent fixed all violations: colors replaced with palette values, spacing corrected to 4px grid. Re-check confirmed clean (3/4 PASS initially, 4/4 PASS after SVG fix). The agent caught its own mistakes before human review — exactly what c009 requires. Also: brand update v1.0.0→v1.1.0, check detected 8 old palette values, agent fixed them, re-check passed. Full transcript in this session. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md)."
       },
       {
         "check_id": "c010",
         "verdict": "pass",
-        "evidence_path": "tilth_files pattern='petals/**/*' returns 12 files: SKILL.md, 5 templates/, 3 scripts/, 3 references/. All required directories (templates/, references/, scripts/) present. Structural — no negctrl needed. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged."
+        "evidence_path": "tilth_files pattern='petals/**/*' returns 12 files: SKILL.md, 5 templates/, 3 scripts/, 3 references/. All required directories (templates/, references/, scripts/) present. Structural — no negctrl needed. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md)."
       },
       {
         "check_id": "c011",
         "verdict": "pass",
-        "evidence_path": "tilth_search query='Playwright|Puppeteer|Selenium' kind='content' scope='petals' — 0 matches. Extraction-guide.md Section 9 explicitly forbids external tools. Structural — no negctrl needed. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged."
+        "evidence_path": "tilth_search query='Playwright|Puppeteer|Selenium' kind='content' scope='petals' — 0 matches. Extraction-guide.md Section 9 explicitly forbids external tools. Structural — no negctrl needed. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md)."
       },
       {
         "check_id": "c012",
         "verdict": "pass",
-        "evidence_path": "Derived from c001. Extraction produces 7 output files with correct hex values (#2F99A4), font specs (Raleway, Open Sans), and voice rules (forbidden terms) — confirming why claim that extraction bridges brand documents to agent context. No negctrl needed. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged."
+        "evidence_path": "Derived from c001. Extraction produces 7 output files with correct hex values (#2F99A4), font specs (Raleway, Open Sans), and voice rules (forbidden terms) — confirming why claim that extraction bridges brand documents to agent context. No negctrl needed. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md)."
       },
       {
         "check_id": "c013",
         "verdict": "pass",
-        "evidence_path": "Derived from c011. Zero references to Playwright/Puppeteer/Selenium in entire petals/. Extraction uses agent-native capabilities only (Read, vision, Bash). Confirms fit claim that extraction adds no infrastructure. No negctrl needed. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged."
+        "evidence_path": "Derived from c011. Zero references to Playwright/Puppeteer/Selenium in entire petals/. Extraction uses agent-native capabilities only (Read, vision, Bash). Confirms fit claim that extraction adds no infrastructure. No negctrl needed. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md)."
       },
       {
         "check_id": "c014",
         "verdict": "pass",
-        "evidence_path": ".brand/tokens.css + .brand/tokens.json exist (created 2026-06-12). Deterministic cross-check ran: sampled color (#3F7A33), spacing (24px), radius (10px), easing (cubic-bezier 0.22,1,0.36,1) values each appear in tokens.css and their canonical .md file; tokens.json mirrors values in W3C shape (bezier as typed array). porto's .brand/ carries no [FLAG:] entries, so the no-token-for-flags rule is exercised vacuously and specified in extraction-guide 5a ('a generated view must not launder a guess into a value').",
-        "evidence_sha": "24d705f50af1d4fddde3eb463ee4a9d3ad9aef43"
+        "evidence_path": ".brand/tokens.css + .brand/tokens.json exist (created 2026-06-12). Deterministic cross-check ran: sampled color (#3F7A33), spacing (24px), radius (10px), easing (cubic-bezier 0.22,1,0.36,1) values each appear in tokens.css and their canonical .md file; tokens.json mirrors values in W3C shape (bezier as typed array). porto's .brand/ carries no [FLAG:] entries, so the no-token-for-flags rule is exercised vacuously and specified in extraction-guide 5a ('a generated view must not launder a guess into a value'). Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
+        "evidence_sha": "af507b3b26a09fbe4533fb089e171b70b55041ed"
       }
     ]
   }

@@ -2498,7 +2498,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       "When I've generated UI or copy, because I confidently produce wrong hex values and forbidden terms that look right but aren't, we believe I should self-audit my output by running /petal check and /petal voice before a human reviews my work, catching violations I can fix without human intervention. We'll know we got it right when over a two-week period, my PRs contain zero violations that /petal check would have caught — I caught them first.",
       "When I load brand context, because my context window is finite and shared between the task, the conversation, and all loaded files, we believe brand files should be progressively disclosed — I discover the skill at ~100 tokens, load SKILL.md at ~2,500 tokens when brand work activates, and load individual reference files on demand (colors.md only when checking colors, voice.md only when reviewing copy). We'll know we got it right when a standard UI task loads less than 3,000 tokens of brand context, leaving the rest of my context window for the actual work."
     ],
-    "description": "The agent opens a session. Someone types \"build a pricing page.\" It has a ~200K token context window, no brand knowledge of its own, and a default color palette that leans Tailwind blue and Inter. It reads .brand/colors.md because the skill description told it to. It loads only the palette — 2,000 tokens, not 15,000 — because progressive disclosure keeps voice rules and typography on disk until needed. It generates the hero section in the right primary color, the right heading font, the right voice tone. Before marking the work ready, it runs /petal check on its own output. Finds a spacing value at 13px that should be 12px. Fixes it. No human saw the violation. No PR comment needed. The agent doesn't want anything — but its constraints (finite context, no persistent memory, generic defaults) shape every design decision in petals.",
+    "description": "The agent opens a session. Someone types \"build a pricing page.\" It has a ~200K token context window, no brand knowledge of its own, and a default color palette that leans Tailwind blue and Inter. It reads .brand/colors.md because the skill description told it to. It loads only the palette — 2,000 tokens, not 15,000 — because progressive disclosure keeps voice rules and typography on disk until needed. It generates the hero section in the right primary color, the right heading font, the right voice tone. Before marking the work ready, it runs /petals check on its own output. Finds a spacing value at 13px that should be 12px. Fixes it. No human saw the violation. No PR comment needed. The agent doesn't want anything — but its constraints (finite context, no persistent memory, generic defaults) shape every design decision in petals.",
     "bound_features": [
       {
         "id": "brand-check",
@@ -2515,7 +2515,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
           "agent-off-brand"
         ],
         "journey_phase": "verify",
-        "what": "/petal check [file] audits agent-generated UI against .brand/ rules. /petal voice <text> checks copy against voice guidelines. Both report specific, actionable violations. This is the seatbelt — ambie",
+        "what": "/petals check [file] audits agent-generated UI against .brand/ rules. /petals voice <text> checks copy against voice guidelines. Both report specific, actionable violations. This is the seatbelt — amb",
         "thumbnail": {
           "kind": "svg",
           "alt": "A code file panel on the left with content lines, connected by an arrow to an audit panel on the right with checkmark and cross-mark verdict rows",
@@ -2541,7 +2541,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
           "agent-off-brand"
         ],
         "journey_phase": "author",
-        "what": "/petal init <folder> reads brand assets using the agent's native capabilities and produces two things: a complete .brand/ directory of agent-readable brand files, and the SKILL.md that makes those fil",
+        "what": "/petals init <folder> reads brand assets using the agent's native capabilities and produces two things: a complete .brand/ directory of agent-readable brand files, and the SKILL.md that makes those fi",
         "thumbnail": {
           "kind": "svg",
           "alt": "A document on the left with content lines feeding through an arrow into a structured .brand/ directory on the right with labeled file rows",

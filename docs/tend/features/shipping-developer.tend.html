@@ -2497,12 +2497,12 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       "When I'm about to review 12 PRs and 8 of them contain agent-generated UI or copy, because I currently spend 40% of my review time catching brand violations — wrong blue, wrong font, 'leverage' when we said 'use', 13px padding when our scale is multiples of 4 — all things the agent could catch before I see them, we believe the agent should run /petal check on its own output before marking work ready for review, fixing or flagging violations without human intervention. We'll know we got it right when over a two-week period, PRs containing agent-generated UI or copy have zero violations that /petal check would have caught — color mismatches, font deviations, spacing outside scale, forbidden terms, and tone violations all trend to zero.",
       "When I open a new agent session and start building — new page, new component, new campaign — because I don't want to start every session by pasting 'Use Raleway for headings, Open Sans for body, primary is #2F99A4, accent is #FF4D00, voice is direct and warm, never say leverage' — that's 200 tokens I'm burning on setup instead of the task, we believe the agent should discover brand context from .brand/ files without me mentioning it, treating brand values as ambient infrastructure rather than per-task setup. We'll know we got it right when I can start a session with 'build a pricing page' — no brand context in the prompt — and the agent produces output using the correct colors, fonts, spacing scale, and voice, and can tell me where it got each value from .brand/ files."
     ],
-    "description": "Sam is reviewing 12 PRs before the sprint ends. Eight of them contain agent-generated UI or copy. Sam spends the first 40 minutes catching the same three things in every PR: a shade of blue that isn't the brand blue, a font that isn't the brand font, and the word 'leverage' which the voice guide explicitly bans. The agent wrote the code. The agent had access to .brand/. The agent didn't check its own work. Sam catches what the machine should have caught before anyone saw it. After petals is installed, Sam's review shifts. The agent reads .brand/ before generating, applies brand rules at generation time, and runs /petal check before marking work ready for review. Sam reviews architecture and abstractions — not hex codes and forbidden words.",
+    "description": "Sam is reviewing 12 PRs before the sprint ends. Eight of them contain agent-generated UI or copy. Sam spends the first 40 minutes catching the same three things in every PR: a shade of blue that isn't the brand blue, a font that isn't the brand font, and the word 'leverage' which the voice guide explicitly bans. The agent wrote the code. The agent had access to .brand/. The agent didn't check its own work. Sam catches what the machine should have caught before anyone saw it. After petals is installed, Sam's review shifts. The agent reads .brand/ before generating, applies brand rules at generation time, and runs /petals check before marking work ready for review. Sam reviews architecture and abstractions — not hex codes and forbidden words.",
     "bound_features": [
       {
         "id": "brand-book",
         "title": "Brand Book",
-        "status": "in-progress",
+        "status": "verified",
         "priority": "medium",
         "dependencies": [
           "brand-extraction"
@@ -2516,7 +2516,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
           "review-bottleneck"
         ],
         "journey_phase": "review",
-        "what": "/petal book renders the whole .brand/ directory as a single self-contained HTML page — palette with contrast pairings, type specimens, layout ruler, surface tokens, component exemplars, voice rules, a",
+        "what": "/petals book renders the whole .brand/ directory as a single self-contained HTML page — palette with contrast pairings, type specimens, layout ruler, surface tokens, component exemplars, voice rules, ",
         "thumbnail": {
           "kind": "svg",
           "alt": "An open book page with the three-petal mark on it — the brand rendered for human eyes",
@@ -2538,7 +2538,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
           "agent-off-brand"
         ],
         "journey_phase": "verify",
-        "what": "/petal check [file] audits agent-generated UI against .brand/ rules. /petal voice <text> checks copy against voice guidelines. Both report specific, actionable violations. This is the seatbelt — ambie",
+        "what": "/petals check [file] audits agent-generated UI against .brand/ rules. /petals voice <text> checks copy against voice guidelines. Both report specific, actionable violations. This is the seatbelt — amb",
         "thumbnail": {
           "kind": "svg",
           "alt": "A code file panel on the left with content lines, connected by an arrow to an audit panel on the right with checkmark and cross-mark verdict rows",
@@ -2564,7 +2564,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
           "agent-off-brand"
         ],
         "journey_phase": "author",
-        "what": "/petal init <folder> reads brand assets using the agent's native capabilities and produces two things: a complete .brand/ directory of agent-readable brand files, and the SKILL.md that makes those fil",
+        "what": "/petals init <folder> reads brand assets using the agent's native capabilities and produces two things: a complete .brand/ directory of agent-readable brand files, and the SKILL.md that makes those fi",
         "thumbnail": {
           "kind": "svg",
           "alt": "A document on the left with content lines feeding through an arrow into a structured .brand/ directory on the right with labeled file rows",
@@ -2626,6 +2626,11 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       {
         "feature_id": "brand-check",
         "check_id": "c011",
+        "job_index": 0
+      },
+      {
+        "feature_id": "brand-check",
+        "check_id": "c014",
         "job_index": 0
       },
       {

@@ -2483,7 +2483,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
   "tend_version": "0.4.0",
   "generated_at": "2026-06-12T08:34:09.487Z",
   "project_name": "Petals",
-  "dek_sha": "8cffc83151d012bc2e9e74f48287c07fd3c45ed3"
+  "dek_sha": "1ee68ed76c6a9ab1796e2119b6d8ccbc5d0315e0"
 }
 </script>
 
@@ -2491,7 +2491,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
 {
   "id": "brand-book",
   "title": "Brand Book",
-  "status": "in-progress",
+  "status": "verified",
   "priority": "medium",
   "dependencies": [
     "brand-extraction"
@@ -2506,15 +2506,15 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
     "pdf-to-agent-gap",
     "review-bottleneck"
   ],
-  "what": "/petal book renders the whole .brand/ directory as a single self-contained HTML page — palette with contrast pairings, type specimens, layout ruler, surface tokens, component exemplars, voice rules, and logo usage — plus a needs-an-answer card for every extraction flag.",
+  "what": "/petals book renders the whole .brand/ directory as a single self-contained HTML page — palette with contrast pairings, type specimens, layout ruler, surface tokens, component exemplars, voice rules, and logo usage — plus a needs-an-answer card for every extraction flag.",
   "why": "Everything in petals is markdown, CLI, and agent — the person who OWNS the brand has no surface at all. The brand operator cannot review what the agent reads, cannot spot a wrong green, and cannot share the brand with their team without sending raw markdown.",
   "impact": "The brand operator reviews an extraction in minutes by reading one page, catches wrong values before agents propagate them, and shares the book as the team's brand reference. Agents copy the exemplar components and are on-brand by construction.",
   "fit": "Closes the review loop that extraction opens: init produces .brand/, the book renders it back for human sign-off, check enforces it. The book is also the exemplar source — the show-don't-tell layer the rules alone can't carry.",
-  "where": "petals/SKILL.md (/petal book workflow). petals/references/book-guide.md (structure contract). .brand/book.html (the rendered artifact — porto's own is the living demo).",
-  "how": "Agent-rendered from all .brand/ files in one pass (a rendering job, not an audit — the one workflow that loads everything). One section per brand file, every value sourced from its file, true-size demonstrations over descriptions, flags float to the top. The book must pass its own /petal check.",
+  "where": "petals/SKILL.md (/petals book workflow). petals/references/book-guide.md (structure contract). .brand/book.html (the rendered artifact — porto's own is the living demo).",
+  "how": "Agent-rendered from all .brand/ files in one pass (a rendering job, not an audit — the one workflow that loads everything). One section per brand file, every value sourced from its file, true-size demonstrations over descriptions, flags float to the top. The book must pass its own /petals check.",
   "progress": {
-    "implementation": 0,
-    "verification": 75
+    "implementation": 100,
+    "verification": 100
   },
   "personas_resolved": [
     {
@@ -2537,28 +2537,28 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
   ],
   "audit": {
     "ran_at": "2026-06-12",
-    "result": "partial",
+    "result": "pass",
     "verdicts": [
       {
         "check_id": "c001",
         "verdict": "pass",
-        "evidence_path": ".brand/book.html created 2026-06-12; single file; section kickers verified by grep: colors.md, typography.md, layout.md, components.md (+exemplars), voice.md, identity.md+assets/logo.svg, plus masthead and footer. Only external requests are the brand's Google Fonts imports (fonts.googleapis.com / fonts.gstatic.com), per the book-guide contract.",
-        "evidence_sha": "5b3d65c91118b15b1e3f441572123f9fc4d6a2d8"
+        "evidence_path": ".brand/book.html created 2026-06-12; single file; section kickers verified by grep: colors.md, typography.md, layout.md, components.md (+exemplars), voice.md, identity.md+assets/logo.svg, plus masthead and footer. Only external requests are the brand's Google Fonts imports (fonts.googleapis.com / fonts.gstatic.com), per the book-guide contract. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
+        "evidence_sha": "c7a1be2a65ec9941c65f214a925c3d42efccf898"
       },
       {
         "check_id": "c002",
         "verdict": "pass",
-        "evidence_path": "Deterministic audits ran 2026-06-12: hex set of book.html is a strict subset of colors.md (comm -23 returned empty); font-family declarations are exactly the three brand stacks (Fraunces / Source Sans 3 / JetBrains Mono + var() references); forbidden-term scan found only 'unlock' and 'seamless' inside the voice section's never-column (lines 304-305) — quoting context by design, mirroring voice.md itself."
+        "evidence_path": "Deterministic audits ran 2026-06-12: hex set of book.html is a strict subset of colors.md (comm -23 returned empty); font-family declarations are exactly the three brand stacks (Fraunces / Source Sans 3 / JetBrains Mono + var() references); forbidden-term scan found only 'unlock' and 'seamless' inside the voice section's never-column (lines 304-305) — quoting context by design, mirroring voice.md itself. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md)."
       },
       {
         "check_id": "c003",
-        "verdict": "partial",
-        "evidence_path": "Spec verified: SKILL.md /petal book step 4 and book-guide.md's Flags row both specify flags render as needs-an-answer cards before all other sections, naming file and question. NOT yet exercised end-to-end: porto's .brand/ carries no [FLAG:] entries, so no book has rendered a real flag card. Honest gap — needs a flagged-fixture generation to close."
+        "verdict": "pass",
+        "evidence_path": "Exercised for real 2026-06-12: test/fixtures/brand-flagged/ carries [FLAG: color-primary] in colors.md; its rendered book (test/fixtures/brand-flagged/book.html, set in northwind's own Georgia/Helvetica/#1C355E brand per the boundary principle) renders the needs-an-answer card at line 11, before the first section at line 26 — asserted by grep. Spec basis: SKILL.md /petals book step 4 + book-guide.md Flags row."
       },
       {
         "check_id": "c004",
         "verdict": "pass",
-        "evidence_path": "Exemplar section inspected 2026-06-12: .btn/.exemplar-card/.term styles reference token custom properties (var(--pp-*), var(--radius-*), var(--shadow-lift), var(--ease-petal)); the terminal exemplar's three inline span colors (#C04B3C, #8FCB63, #8A8A86) are documented palette tokens. No off-token literal in the exemplar markup."
+        "evidence_path": "Exemplar section inspected 2026-06-12: .btn/.exemplar-card/.term styles reference token custom properties (var(--pp-*), var(--radius-*), var(--shadow-lift), var(--ease-petal)); the terminal exemplar's three inline span colors (#C04B3C, #8FCB63, #8A8A86) are documented palette tokens. No off-token literal in the exemplar markup. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md)."
       }
     ]
   },
@@ -2582,8 +2582,10 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       ]
     }
   ],
-  "dek": "The brand's human face — /petal book renders .brand/ as one self-contained page the brand owner can review, correct, and share, with component exemplars agents copy verbatim.",
-  "narrative": "## Maria finally sees what the agent sees\n\nExtraction ran yesterday. Maria knows the agent read the deck and produced a directory of markdown — and she has never opened a markdown file in her life. She opens `.brand/book.html` instead. One page: the palette as swatches with names and measured contrast, the headline face actually set as a headline, the spacing scale drawn at true size, the components as they will really render, the voice rules with her own forbidden words listed. Twelve seconds in she points at the second swatch: \"that's not our green.\" That sentence is the whole point — she could not have said it about a markdown table.\n\n## One page, every value, nothing invented\n\nThe book is a view, not a second source of truth. Every section names the file it renders in its kicker — colors.md, typography.md, layout.md, components.md, voice.md, identity.md — and every value on the page comes from that file. Where extraction flagged a value instead of guessing it, the flag renders first, as a needs-an-answer card: the owner's review queue, before anything else. Regenerate with /petal book after any change; hand-editing the book is hand-editing a build artifact.\n\n## The exemplars are the shortcut\n\nThe components section is built purely from the brand tokens — buttons, a card, a terminal pane, each carrying the real radius, the real shadow recipe, the real ease. That makes the book double as the agent's copy source: view source, take the markup, and the result is on-brand by construction. Rules tell an agent what not to do; the exemplars show it what to do.\n\n## What the book refuses to be\n\nIt is not a builder, and not a place where values live. petals ships no build pipeline for it — the agent renders the book from the brand files on demand, following the structure contract in book-guide.md (the decision trail records the rejected generator binary). And the book must pass its own /petal check — palette-only hexes, exact families, and whatever casing, terminology, and voice rules the brand itself declares. The book carries the project's brand, never petals' own: chrome included, a Title Case brand gets a Title Case book. A brand book that is off-brand would be a confession."
+  "dek": "The brand's human face — /petals book renders .brand/ as one self-contained page the brand owner can review, correct, and share, with component exemplars agents copy verbatim.",
+  "narrative": "## Maria finally sees what the agent sees\n\nExtraction ran yesterday. Maria knows the agent read the deck and produced a directory of markdown — and she has never opened a markdown file in her life. She opens `.brand/book.html` instead. One page: the palette as swatches with names and measured contrast, the headline face actually set as a headline, the spacing scale drawn at true size, the components as they will really render, the voice rules with her own forbidden words listed. Twelve seconds in she points at the second swatch: \"that's not our green.\" That sentence is the whole point — she could not have said it about a markdown table.\n\n## One page, every value, nothing invented\n\nThe book is a view, not a second source of truth. Every section names the file it renders in its kicker — colors.md, typography.md, layout.md, components.md, voice.md, identity.md — and every value on the page comes from that file. Where extraction flagged a value instead of guessing it, the flag renders first, as a needs-an-answer card: the owner's review queue, before anything else. Regenerate with /petals book after any change; hand-editing the book is hand-editing a build artifact.\n\n## The exemplars are the shortcut\n\nThe components section is built purely from the brand tokens — buttons, a card, a terminal pane, each carrying the real radius, the real shadow recipe, the real ease. That makes the book double as the agent's copy source: view source, take the markup, and the result is on-brand by construction. Rules tell an agent what not to do; the exemplars show it what to do.\n\n## What the book refuses to be\n\nIt is not a builder, and not a place where values live. petals ships no build pipeline for it — the agent renders the book from the brand files on demand, following the structure contract in book-guide.md (the decision trail records the rejected generator binary). And the book must pass its own /petals check — palette-only hexes, exact families, and whatever casing, terminology, and voice rules the brand itself declares. The book carries the project's brand, never petals' own: chrome included, a Title Case brand gets a Title Case book. A brand book that is off-brand would be a confession.",
+  "checks": [],
+  "steps": []
 }
 </script>
 <!-- OO:DATA:END -->

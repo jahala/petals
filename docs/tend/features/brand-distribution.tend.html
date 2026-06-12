@@ -2483,7 +2483,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
   "tend_version": "0.4.0",
   "generated_at": "2026-06-04T12:41:55.706Z",
   "project_name": "Petals",
-  "dek_sha": "6867cdcae5d62821cbc565ae36810aa717f33598"
+  "dek_sha": "55af25d637510cd7c339872935c7770e678709d7"
 }
 </script>
 
@@ -2497,12 +2497,12 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
   "enables": [
     "brand-check"
   ],
-  "what": "/petal init --from <repo-url> connects a project to a central brand repository. /petal update syncs with new versions. Automatic drift detection warns when the central brand has moved ahead. Project overrides survive updates.",
+  "what": "/petals init --from <repo-url> connects a project to a central brand repository. /petals update syncs with new versions. Automatic drift detection warns when the central brand has moved ahead. Project overrides survive updates.",
   "why": "When the brand changes, every project has a fossilized copy. Three different brand versions exist across the org within months. New projects start by copy-pasting a colors.ts from another repo and hoping it's current. Distribution makes the brand as easy to get as git pull — one command, always current, never drifts silently.",
   "impact": "Six projects are connected. The central brand tags v1.3.0. Next agent session on each project detects the drift. Four update immediately. Two with campaign overrides update without losing their seasonal palette. Zero projects still silently using v1.2.0 two weeks later. A developer joining any project runs one command and their first agent session produces on-brand output.",
   "fit": "Distribution makes extraction useful beyond one project. Extraction creates the brand intelligence layer once. Distribution gets it everywhere. They share the .brand/ format contract — distribution works on any valid .brand/ regardless of how it was created.",
-  "where": "petals/scripts/fetch-brand.sh (HTTPS fetch or shallow clone logic). petals/SKILL.md (init --from and update subcommand surfaces). .petalrc (generated per-project config: source, version, overrides).",
-  "how": "Two fetch strategies, auto-selected: HTTPS API fetch (uses GITHUB_TOKEN from env) or shallow git clone (when SSH access detected). Public repos use raw.githubusercontent.com. .brand/ is gitignored — a cache, not source code. .petalrc records source, version, and optional overrides. Drift detection compares local version against central's latest tag. Overrides merge: set values win, null inherits from central. After applying an update: regenerate the derived machine views (tokens.css / tokens.json) and report the blast radius - files newly flagged under the new version, or an explicit clean line.",
+  "where": "petals/scripts/fetch-brand.sh (HTTPS fetch or shallow clone logic). petals/SKILL.md (init --from and update subcommand surfaces). .petalsrc (generated per-project config: source, version, overrides).",
+  "how": "Two fetch strategies, auto-selected: HTTPS API fetch (uses GITHUB_TOKEN from env) or shallow git clone (when SSH access detected). Public repos use raw.githubusercontent.com. .brand/ is gitignored — a cache, not source code. .petalsrc records source, version, and optional overrides. Drift detection compares local version against central's latest tag. Overrides merge: set values win, null inherits from central. After applying an update: regenerate the derived machine views (tokens.css / tokens.json) and report the blast radius - files newly flagged under the new version, or an explicit clean line.",
   "progress": {
     "implementation": 100,
     "verification": 100
@@ -2510,7 +2510,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
   "checks": [
     {
       "id": "c001",
-      "description": "/petal init --from <repo-url> fetches .brand/ and populates it locally with all expected files matching the source.",
+      "description": "/petals init --from <repo-url> fetches .brand/ and populates it locally with all expected files matching the source.",
       "validates": "what",
       "validates_job": "brand-operator:1",
       "method": "synthetic-test",
@@ -2519,7 +2519,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
     },
     {
       "id": "c002",
-      "description": "When local .brand/ is behind the central repo's latest tag, /petal check (or a dedicated drift subcommand) reports the version gap with both version numbers.",
+      "description": "When local .brand/ is behind the central repo's latest tag, /petals check (or a dedicated drift subcommand) reports the version gap with both version numbers.",
       "validates": "what",
       "validates_job": "brand-operator:2",
       "method": "synthetic-test",
@@ -2528,16 +2528,16 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
     },
     {
       "id": "c003",
-      "description": "/petal update pulls the latest .brand/ while preserving project-level overrides. Values explicitly set in .petalrc survive; null-inherited values update to central's current.",
+      "description": "/petals update pulls the latest .brand/ while preserving project-level overrides. Values explicitly set in .petalsrc survive; null-inherited values update to central's current.",
       "validates": "what",
       "validates_job": "brand-operator:2",
       "method": "synthetic-test",
       "integration_level": "e2e",
-      "verification_recipe": "Local at v1.1.0 with .petalrc overriding colors.primary: '#OVERRIDE' and typography.body: null. Push v1.2.0 that changes both primary and body. Run update. Assert primary still #OVERRIDE. Assert body updated to v1.2.0."
+      "verification_recipe": "Local at v1.1.0 with .petalsrc overriding colors.primary: '#OVERRIDE' and typography.body: null. Push v1.2.0 that changes both primary and body. Run update. Assert primary still #OVERRIDE. Assert body updated to v1.2.0."
     },
     {
       "id": "c004",
-      "description": "/petal init --from when .brand/ already exists warns and asks for confirmation before overwriting.",
+      "description": "/petals init --from when .brand/ already exists warns and asks for confirmation before overwriting.",
       "validates": "what",
       "validates_job": "brand-operator:1",
       "method": "synthetic-test",
@@ -2582,12 +2582,12 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
     },
     {
       "id": "c009",
-      "description": "The .petalrc file is created with correct source URL, version, and overrides structure after init --from.",
+      "description": "The .petalsrc file is created with correct source URL, version, and overrides structure after init --from.",
       "validates": "where",
       "validates_job": "brand-operator:1",
       "method": "synthetic-test",
       "integration_level": "integration",
-      "verification_recipe": "Run init --from against a known repo. Assert .petalrc exists. Assert it contains source matching the repo URL. Assert version matches the fetched tag. Assert overrides section exists (empty)."
+      "verification_recipe": "Run init --from against a known repo. Assert .petalsrc exists. Assert it contains source matching the repo URL. Assert version matches the fetched tag. Assert overrides section exists (empty)."
     },
     {
       "id": "c010",
@@ -2605,7 +2605,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       "validates_job": "brand-operator:2",
       "method": "synthetic-test",
       "integration_level": "e2e",
-      "verification_recipe": "Full roundtrip: fetch v1.1.0 (primary=#2F99A4), fetch v1.2.0 to .brand.incoming (primary=#3DB8C4), apply overrides with colors.primary=#FF0000 and typography.body=null. Assert primary stays #FF0000 (override preserved). Assert body updates from central (null-inherited). Assert .petalrc version updates to v1.2.0."
+      "verification_recipe": "Full roundtrip: fetch v1.1.0 (primary=#2F99A4), fetch v1.2.0 to .brand.incoming (primary=#3DB8C4), apply overrides with colors.primary=#FF0000 and typography.body=null. Assert primary stays #FF0000 (override preserved). Assert body updates from central (null-inherited). Assert .petalsrc version updates to v1.2.0."
     },
     {
       "id": "c012",
@@ -2614,19 +2614,19 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       "validates_job": "brand-operator:1",
       "method": "synthetic-test",
       "integration_level": "unit",
-      "verification_recipe": "Inspect fetch-brand.sh: all four strategies (local, git, github-api, raw-http) are file-based operations. Inspect .petalrc: YAML on disk, no server connection. Inspect check-brand-drift.sh: shell script, compares version strings, exits with status code. Assert zero references to databases, SaaS endpoints, or persistent servers."
+      "verification_recipe": "Inspect fetch-brand.sh: all four strategies (local, git, github-api, raw-http) are file-based operations. Inspect .petalsrc: YAML on disk, no server connection. Inspect check-brand-drift.sh: shell script, compares version strings, exits with status code. Assert zero references to databases, SaaS endpoints, or persistent servers."
     },
     {
       "id": "c013",
-      "description": "The /petal update workflow instructs the agent, after applying a new version, to regenerate the derived machine views and report the blast radius - newly-flagged files under the new brand version, or an explicit clean line.",
+      "description": "The /petals update workflow instructs the agent, after applying a new version, to regenerate the derived machine views and report the blast radius - newly-flagged files under the new brand version, or an explicit clean line.",
       "validates": "how",
       "method": "code-review",
       "integration_level": "unit",
-      "verification_recipe": "Inspect SKILL.md /petal update steps 9-12: assert a regenerate-machine-views step, a blast-radius step with report format and clean case, and the summary line carrying the blast radius. Full behavioral exercise (version-bumped fixture run) is the follow-up synthetic check."
+      "verification_recipe": "Behavioral: fetch a brand fixture, check an on-brand sample file (PASS), update to a version with a changed palette, re-check (FAIL naming the file) — see test/fixtures/blast-radius-run.txt. Also inspect SKILL.md /petals update steps 9-12 (regenerate views, blast-radius report with clean case, summary line)."
     }
   ],
   "smoke": {
-    "cmd": "/petal init --from <test-brand-repo-url>",
+    "cmd": "/petals init --from <test-brand-repo-url>",
     "verify": ".brand/DESIGN.md exists and colors.md contains expected primary hex"
   },
   "decisions": [
@@ -2657,7 +2657,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
     "agent-off-brand"
   ],
   "journey_phase": "author",
-  "narrative": "Maria pushes the new brand to the central repo. Tags `v1.3.0`. Done.\n\nThree days later, she opens a session on the dashboard project. Before she types a word, the agent reports: *Brand drift detected. Local: v1.2.0. Central: v1.3.0.* The dashboard has a seasonal campaign override — a gold palette for the holiday push. She runs `/petal update`. The primary color updates to the new teal. The gold palette stays. The heading font updates. Nothing breaks.\n\nThis is distribution: the brand travels, not a Slack message.\n\n## One command wires a project to the brand\n\n`/petal init --from github.com/org/brand` pulls `.brand/` into the project. The agent reads it without being told. No hex codes in the prompt. No brand context pasted into the message. A developer joining the project — someone who has never heard of petals — opens a session, types \"build a contact page,\" and the agent produces output in the correct palette, the correct font, the correct voice. They don't know why. They don't need to.\n\nUnder the hood, the fetch strategy selects itself. If git and SSH are available, a shallow clone grabs `.brand/` and nothing else — fast, authenticated, no token to manage. If only `GITHUB_TOKEN` is set, the API fetches the directory contents over HTTPS. If neither, and the repo is public, raw.githubusercontent.com delivers the files. Three strategies, zero configuration. Petals reads the environment and picks the one that works.\n\nThe result lands in `.brand/` — a cache, not source code. It is immediately gitignored. The project never commits the brand; it commits `.petalrc`, which records the source URL, the version tag, and the override map. The brand lives in the central repo. The project knows where to find it.\n\n## Drift is detected, not announced\n\nWhen the central brand tags a new version, nobody Slacks anyone. Nobody files a ticket. Nobody pastes the hex codes into a shared document and hopes.\n\nThe next agent session on each connected project runs `/petal check` — a comparison of `.petalrc`'s `version` field against the central repo's latest tag. The comparison costs one API call. If they match, nothing happens. If they differ, the agent reports the gap: both version numbers, the tag date, a summary of what changed. No noise when there is no drift. No silence when there is.\n\nThe brand operator never has to remember which projects are connected or what version they are on. The infrastructure remembers. The agent surfaces drift at the moment it matters — when someone is about to do work that should use the current brand.\n\n## Overrides survive. Everything else updates.\n\nSome projects need to diverge. A campaign page uses a seasonal palette for six weeks. An experimental feature tests a new type scale. A regional variant swaps the primary typeface for a CJK font.\n\n`.petalrc` records overrides as a flat map: `colors.primary: '#GOLD'`, `typography.heading: null`. When `/petal update` runs, explicitly set values survive — the gold stays gold. Null-inherited values update to the central's current — the heading font moves forward with the brand. The merge is deterministic, visible in `.petalrc`, and reversible by clearing an override.\n\nThis is the critical distinction. Without it, overrides create frozen projects — the campaign page never gets the new primary color because updating would destroy the gold. With it, the project moves with the brand on everything it hasn't intentionally changed. The override map is the contract between what the project controls and what the brand controls.\n\n## What an update owes you\n\nAn update that lands silently is half an update. After the merge applies and the version bumps, the workflow regenerates the machine views — tokens.css and tokens.json are derived artifacts, so they move with the markdown — and then reports the blast radius: every file the new brand version flags that the old one did not. \"Updated to v1.3.0, three files now carry violations introduced by this update\" is actionable; a silent sync that leaves the campaign page in last year's palette is how drift started in the first place. A clean update says so in one line.\n\n## The loop closes\n\n[Brand Extraction](brand-extraction.tend.html) creates the intelligence layer once — a `.brand/` directory from a PDF, a Figma export, a folder of assets. [Brand Check](brand-check.tend.html) catches what slips through — hardcoded colors, wrong fonts, off-brand voice — before it reaches review.\n\nDistribution sits between them. Extraction without distribution is a beautiful artifact that lives in one repo. Check without distribution catches drift on one project and leaves the other five oblivious. Distribution makes extraction useful beyond its birthplace and gives check something to verify against — a canonical source, kept current across every project where agents do work.\n\nThe central brand repo is just a git repository. `.brand/` at the root. Semantic version tags. Any project, any developer, any agent session — one command connects them to the same brand truth. No server. No database. No login page. Just files, git, and the skill that wires them together.",
+  "narrative": "Maria pushes the new brand to the central repo. Tags `v1.3.0`. Done.\n\nThree days later, she opens a session on the dashboard project. Before she types a word, the agent reports: *Brand drift detected. Local: v1.2.0. Central: v1.3.0.* The dashboard has a seasonal campaign override — a gold palette for the holiday push. She runs `/petals update`. The primary color updates to the new teal. The gold palette stays. The heading font updates. Nothing breaks.\n\nThis is distribution: the brand travels, not a Slack message.\n\n## One command wires a project to the brand\n\n`/petals init --from github.com/org/brand` pulls `.brand/` into the project. The agent reads it without being told. No hex codes in the prompt. No brand context pasted into the message. A developer joining the project — someone who has never heard of petals — opens a session, types \"build a contact page,\" and the agent produces output in the correct palette, the correct font, the correct voice. They don't know why. They don't need to.\n\nUnder the hood, the fetch strategy selects itself. If git and SSH are available, a shallow clone grabs `.brand/` and nothing else — fast, authenticated, no token to manage. If only `GITHUB_TOKEN` is set, the API fetches the directory contents over HTTPS. If neither, and the repo is public, raw.githubusercontent.com delivers the files. Three strategies, zero configuration. Petals reads the environment and picks the one that works.\n\nThe result lands in `.brand/` — a cache, not source code. It is immediately gitignored. The project never commits the brand; it commits `.petalsrc`, which records the source URL, the version tag, and the override map. The brand lives in the central repo. The project knows where to find it.\n\n## Drift is detected, not announced\n\nWhen the central brand tags a new version, nobody Slacks anyone. Nobody files a ticket. Nobody pastes the hex codes into a shared document and hopes.\n\nThe next agent session on each connected project runs `/petals check` — a comparison of `.petalsrc`'s `version` field against the central repo's latest tag. The comparison costs one API call. If they match, nothing happens. If they differ, the agent reports the gap: both version numbers, the tag date, a summary of what changed. No noise when there is no drift. No silence when there is.\n\nThe brand operator never has to remember which projects are connected or what version they are on. The infrastructure remembers. The agent surfaces drift at the moment it matters — when someone is about to do work that should use the current brand.\n\n## Overrides survive. Everything else updates.\n\nSome projects need to diverge. A campaign page uses a seasonal palette for six weeks. An experimental feature tests a new type scale. A regional variant swaps the primary typeface for a CJK font.\n\n`.petalsrc` records overrides as a flat map: `colors.primary: '#GOLD'`, `typography.heading: null`. When `/petals update` runs, explicitly set values survive — the gold stays gold. Null-inherited values update to the central's current — the heading font moves forward with the brand. The merge is deterministic, visible in `.petalsrc`, and reversible by clearing an override.\n\nThis is the critical distinction. Without it, overrides create frozen projects — the campaign page never gets the new primary color because updating would destroy the gold. With it, the project moves with the brand on everything it hasn't intentionally changed. The override map is the contract between what the project controls and what the brand controls.\n\n## What an update owes you\n\nAn update that lands silently is half an update. After the merge applies and the version bumps, the workflow regenerates the machine views — tokens.css and tokens.json are derived artifacts, so they move with the markdown — and then reports the blast radius: every file the new brand version flags that the old one did not. \"Updated to v1.3.0, three files now carry violations introduced by this update\" is actionable; a silent sync that leaves the campaign page in last year's palette is how drift started in the first place. A clean update says so in one line.\n\n## The loop closes\n\n[Brand Extraction](brand-extraction.tend.html) creates the intelligence layer once — a `.brand/` directory from a PDF, a Figma export, a folder of assets. [Brand Check](brand-check.tend.html) catches what slips through — hardcoded colors, wrong fonts, off-brand voice — before it reaches review.\n\nDistribution sits between them. Extraction without distribution is a beautiful artifact that lives in one repo. Check without distribution catches drift on one project and leaves the other five oblivious. Distribution makes extraction useful beyond its birthplace and gives check something to verify against — a canonical source, kept current across every project where agents do work.\n\nThe central brand repo is just a git repository. `.brand/` at the root. Semantic version tags. Any project, any developer, any agent session — one command connects them to the same brand truth. No server. No database. No login page. Just files, git, and the skill that wires them together.",
   "media": {
     "thumbnail": {
       "kind": "svg",
@@ -2689,6 +2689,16 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
         "error_strategy": "fail"
       },
       "log": [
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Created test brand repository fixtures: brand-repo-test-v1.1.0 (primary #2F99A4), brand-repo-test-v1.2.0 (primary #3DB8C4, updated hero.jpg), and brand-repo-malformed (no .brand/ directory). Versioned as separate directories in test/fixtures/."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Created test brand repository fixtures: brand-repo-test-v1.1.0 (primary #2F99A4), brand-repo-test-v1.2.0 (primary #3DB8C4, updated hero.jpg), and brand-repo-malformed (no .brand/ directory). Versioned as separate directories in test/fixtures/."
+        },
         {
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
@@ -2732,6 +2742,16 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
           "text": "Implemented fetch-brand.sh with 3 auto-selecting strategies: (1) local directory copy for local paths, (2) git clone --depth 1 when git available, (3) GitHub API when GITHUB_TOKEN set, (4) raw.githubusercontent.com for public repos. JSON output with strategy, version, file count. Proper exit codes: 0=success, 1=no .brand/, 2=unreachable, 3=auth required, 4=no available strategy."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Implemented fetch-brand.sh with 3 auto-selecting strategies: (1) local directory copy for local paths, (2) git clone --depth 1 when git available, (3) GitHub API when GITHUB_TOKEN set, (4) raw.githubusercontent.com for public repos. JSON output with strategy, version, file count. Proper exit codes: 0=success, 1=no .brand/, 2=unreachable, 3=auth required, 4=no available strategy."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Implemented fetch-brand.sh with 3 auto-selecting strategies: (1) local directory copy for local paths, (2) git clone --depth 1 when git available, (3) GitHub API when GITHUB_TOKEN set, (4) raw.githubusercontent.com for public repos. JSON output with strategy, version, file count. Proper exit codes: 0=success, 1=no .brand/, 2=unreachable, 3=auth required, 4=no available strategy."
         }
       ]
     },
@@ -2740,7 +2760,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       "step_type": "agent",
       "status": "done",
       "title": "Add init --from and update subcommands to SKILL.md",
-      "description": "Test: test/init-from-subcommand.integration.test.ts\nAsserts: Invoke /petal init --from <test-repo-url>. Assert .brand/ directory exists with all expected files matching source. Assert .petalrc is created with source matching the repo URL, version matching the fetched tag, and an empty overrides section. Assert .gitignore contains .brand/. Run git status and assert .brand/ does not appear as untracked. Invoke /petal init --from <test-repo-url> a second time (existing .brand/) and assert the agent warns/prompts before overwriting.\nBoundary: real filesystem with test repo from i001.\nSetup: i001 (test fixtures), i002 (fetch script).\nRun: npm test -- init-from-subcommand.integration.\n\nImplement: Add init --from subcommand logic to SKILL.md dispatch. When invoked with a repo URL, the agent: (1) Runs fetch-brand.sh with the URL. (2) Reads the fetched version tag and records it in .petalrc. (3) Records the source URL in .petalrc. (4) Initializes an empty overrides map. (5) Appends .brand/ to .gitignore if not already present. (6) If .brand/ already exists, warns and asks for confirmation before overwriting. Do not modify existing .petalrc if it already exists without confirmation.",
+      "description": "Test: test/init-from-subcommand.integration.test.ts\nAsserts: Invoke /petals init --from <test-repo-url>. Assert .brand/ directory exists with all expected files matching source. Assert .petalsrc is created with source matching the repo URL, version matching the fetched tag, and an empty overrides section. Assert .gitignore contains .brand/. Run git status and assert .brand/ does not appear as untracked. Invoke /petals init --from <test-repo-url> a second time (existing .brand/) and assert the agent warns/prompts before overwriting.\nBoundary: real filesystem with test repo from i001.\nSetup: i001 (test fixtures), i002 (fetch script).\nRun: npm test -- init-from-subcommand.integration.\n\nImplement: Add init --from subcommand logic to SKILL.md dispatch. When invoked with a repo URL, the agent: (1) Runs fetch-brand.sh with the URL. (2) Reads the fetched version tag and records it in .petalsrc. (3) Records the source URL in .petalsrc. (4) Initializes an empty overrides map. (5) Appends .brand/ to .gitignore if not already present. (6) If .brand/ already exists, warns and asks for confirmation before overwriting. Do not modify existing .petalsrc if it already exists without confirmation.",
       "dependencies": [
         "i001",
         "i002"
@@ -2769,6 +2789,16 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
           "text": "Added init --from and update subcommands to SKILL.md. Includes: 7-step init --from workflow (existing .brand/ check, fetch-brand.sh execution, .petalrc creation, .gitignore update, output verification), 10-step /petal update workflow (backup, override parsing, fetch, version comparison, override merge, atomic replace, cleanup), full .petalrc format definition with override key conventions and value semantics."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Added init --from and update subcommands to SKILL.md. Includes: 7-step init --from workflow (existing .brand/ check, fetch-brand.sh execution, .petalsrc creation, .gitignore update, output verification), 10-step /petals update workflow (backup, override parsing, fetch, version comparison, override merge, atomic replace, cleanup), full .petalsrc format definition with override key conventions and value semantics."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Added init --from and update subcommands to SKILL.md. Includes: 7-step init --from workflow (existing .brand/ check, fetch-brand.sh execution, .petalsrc creation, .gitignore update, output verification), 10-step /petals update workflow (backup, override parsing, fetch, version comparison, override merge, atomic replace, cleanup), full .petalsrc format definition with override key conventions and value semantics."
         }
       ]
     },
@@ -2777,7 +2807,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       "step_type": "agent",
       "status": "done",
       "title": "Implement drift detection",
-      "description": "Test: test/drift-detection.integration.test.ts\nAsserts: Set up local .brand/ at v1.1.0 (from .petalrc version field). Push v1.2.0 tag to the central test repo. Run drift detection. Assert output contains both version numbers (v1.1.0 and v1.2.0) and indicates a version gap. Assert output does not indicate drift when local and central versions match. Assert error message when central repo is unreachable (nonexistent URL) and local .brand/ is preserved unchanged.\nBoundary: real filesystem + network (test brand repo).\nSetup: i001 (test fixtures), i003 (init --from).\nRun: npm test -- drift-detection.integration.\n\nImplement: Add drift detection subcommand to SKILL.md dispatch. When /petal check runs without a file argument (drift-only mode), read .petalrc version, fetch the central repo's latest tag (one API call / git ls-remote), compare. If local < central: report the gap with both version numbers. If match: no output (no noise when current). If central unreachable: report connection error, preserve local state.",
+      "description": "Test: test/drift-detection.integration.test.ts\nAsserts: Set up local .brand/ at v1.1.0 (from .petalsrc version field). Push v1.2.0 tag to the central test repo. Run drift detection. Assert output contains both version numbers (v1.1.0 and v1.2.0) and indicates a version gap. Assert output does not indicate drift when local and central versions match. Assert error message when central repo is unreachable (nonexistent URL) and local .brand/ is preserved unchanged.\nBoundary: real filesystem + network (test brand repo).\nSetup: i001 (test fixtures), i003 (init --from).\nRun: npm test -- drift-detection.integration.\n\nImplement: Add drift detection subcommand to SKILL.md dispatch. When /petals check runs without a file argument (drift-only mode), read .petalsrc version, fetch the central repo's latest tag (one API call / git ls-remote), compare. If local < central: report the gap with both version numbers. If match: no output (no noise when current). If central unreachable: report connection error, preserve local state.",
       "dependencies": [
         "i001",
         "i003"
@@ -2787,7 +2817,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
         "c006"
       ],
       "outputs": {
-        "drift_detection": "Drift detection logic comparing .petalrc version to central repo tags"
+        "drift_detection": "Drift detection logic comparing .petalsrc version to central repo tags"
       },
       "verification_profile": "standard",
       "agent_hint": {
@@ -2804,6 +2834,16 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
           "text": "Implemented drift detection: added /petal check (drift-only mode) to SKILL.md dispatch, created check-brand-drift.sh with automatic version source detection (local path, git ls-remote, GitHub API, raw HTTP), proper semver comparison, 4 exit codes (0=current, 1=drift, 2=unreachable, 3=no source), JSON output with local/central versions and status message."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Implemented drift detection: added /petals check (drift-only mode) to SKILL.md dispatch, created check-brand-drift.sh with automatic version source detection (local path, git ls-remote, GitHub API, raw HTTP), proper semver comparison, 4 exit codes (0=current, 1=drift, 2=unreachable, 3=no source), JSON output with local/central versions and status message."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Implemented drift detection: added /petals check (drift-only mode) to SKILL.md dispatch, created check-brand-drift.sh with automatic version source detection (local path, git ls-remote, GitHub API, raw HTTP), proper semver comparison, 4 exit codes (0=current, 1=drift, 2=unreachable, 3=no source), JSON output with local/central versions and status message."
         }
       ]
     },
@@ -2811,8 +2851,8 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       "id": "i005",
       "step_type": "agent",
       "status": "done",
-      "title": "Implement /petal update with override preservation",
-      "description": "Test: test/update-with-overrides.integration.test.ts\nAsserts: Set up local .brand/ at v1.1.0 with .petalrc overriding colors.primary: '#OVERRIDE' and typography.body: null. Push v1.2.0 changing both primary color and body font in central. Run /petal update. Assert colors.md still contains #OVERRIDE (overridden value preserved). Assert typography.md contains the NEW central body font (null-inherited value updated). Assert .petalrc version field updates to v1.2.0. Run /petal update when already at latest: assert no-op with reasonable message.\nBoundary: real filesystem + network (test brand repo).\nSetup: i001 (test fixtures), i002 (fetch script), i003 (init --from).\nRun: npm test -- update-with-overrides.integration.\n\nImplement: Add /petal update subcommand to SKILL.md dispatch. Runs fetch-brand.sh to get the latest .brand/. Before overwriting, reads .petalrc overrides. For each override with a non-null value, preserves the overridden value in the updated .brand/ file. For null values, uses the central's current value. After merge, updates .petalrc version field to the new tag. Logs which values were preserved and which were updated.",
+      "title": "Implement /petals update with override preservation",
+      "description": "Test: test/update-with-overrides.integration.test.ts\nAsserts: Set up local .brand/ at v1.1.0 with .petalsrc overriding colors.primary: '#OVERRIDE' and typography.body: null. Push v1.2.0 changing both primary color and body font in central. Run /petals update. Assert colors.md still contains #OVERRIDE (overridden value preserved). Assert typography.md contains the NEW central body font (null-inherited value updated). Assert .petalsrc version field updates to v1.2.0. Run /petals update when already at latest: assert no-op with reasonable message.\nBoundary: real filesystem + network (test brand repo).\nSetup: i001 (test fixtures), i002 (fetch script), i003 (init --from).\nRun: npm test -- update-with-overrides.integration.\n\nImplement: Add /petals update subcommand to SKILL.md dispatch. Runs fetch-brand.sh to get the latest .brand/. Before overwriting, reads .petalsrc overrides. For each override with a non-null value, preserves the overridden value in the updated .brand/ file. For null values, uses the central's current value. After merge, updates .petalsrc version field to the new tag. Logs which values were preserved and which were updated.",
       "dependencies": [
         "i001",
         "i002",
@@ -2822,7 +2862,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
         "c003"
       ],
       "outputs": {
-        "update_subcommand": "/petal update subcommand with override-preserving merge logic"
+        "update_subcommand": "/petals update subcommand with override-preserving merge logic"
       },
       "verification_profile": "thorough",
       "agent_hint": {
@@ -2839,6 +2879,16 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
           "text": "Implemented /petal update with override preservation: created apply-overrides.sh with handlers for colors.primary, colors.accent, typography.heading, typography.body, typography.mono. Non-null overrides are applied via in-place sed to both table rows and CSS custom properties. Null overrides are tracked but skipped (inherit from central). JSON output reports applied/skipped counts. Tested with v1.1.0->v1.2.0 update preserving #FF0000 override while inheriting Inter body font."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Implemented /petals update with override preservation: created apply-overrides.sh with handlers for colors.primary, colors.accent, typography.heading, typography.body, typography.mono. Non-null overrides are applied via in-place sed to both table rows and CSS custom properties. Null overrides are tracked but skipped (inherit from central). JSON output reports applied/skipped counts. Tested with v1.1.0->v1.2.0 update preserving #FF0000 override while inheriting Inter body font."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Implemented /petals update with override preservation: created apply-overrides.sh with handlers for colors.primary, colors.accent, typography.heading, typography.body, typography.mono. Non-null overrides are applied via in-place sed to both table rows and CSS custom properties. Null overrides are tracked but skipped (inherit from central). JSON output reports applied/skipped counts. Tested with v1.1.0->v1.2.0 update preserving #FF0000 override while inheriting Inter body font."
         }
       ]
     },
@@ -2847,7 +2897,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       "step_type": "agent",
       "status": "done",
       "title": "Implement error handling for malformed and unreachable repos",
-      "description": "Test: test/error-handling.integration.test.ts\nAsserts: Point /petal init --from at a valid repo without .brand/ directory. Assert non-zero exit and error message indicating no .brand/ found. Assert no .brand/ created or modified locally. Point /petal init --from at a nonexistent repo URL with existing local .brand/. Assert error message identifies the connection failure. Assert local .brand/ is preserved unchanged. Assert .petalrc is not modified.\nBoundary: real filesystem + network.\nSetup: i001 (malformed test repo), i003 (init --from).\nRun: npm test -- error-handling.integration.\n\nImplement: Add error handling to fetch-brand.sh and init --from dispatch. When repo has no .brand/ directory: exit non-zero with clear error. When repo is unreachable (DNS failure, 404, private without auth): exit non-zero with specific error identifying the failure type. Never modify local .brand/ or .petalrc on failure. Always preserve existing state before attempting any network operation.",
+      "description": "Test: test/error-handling.integration.test.ts\nAsserts: Point /petals init --from at a valid repo without .brand/ directory. Assert non-zero exit and error message indicating no .brand/ found. Assert no .brand/ created or modified locally. Point /petals init --from at a nonexistent repo URL with existing local .brand/. Assert error message identifies the connection failure. Assert local .brand/ is preserved unchanged. Assert .petalsrc is not modified.\nBoundary: real filesystem + network.\nSetup: i001 (malformed test repo), i003 (init --from).\nRun: npm test -- error-handling.integration.\n\nImplement: Add error handling to fetch-brand.sh and init --from dispatch. When repo has no .brand/ directory: exit non-zero with clear error. When repo is unreachable (DNS failure, 404, private without auth): exit non-zero with specific error identifying the failure type. Never modify local .brand/ or .petalsrc on failure. Always preserve existing state before attempting any network operation.",
       "dependencies": [
         "i001",
         "i003"
@@ -2874,6 +2924,16 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
           "text": "Error handling verified across all scenarios: (1) repo without .brand/ exits 1 with clear error, no local state modified. (2) nonexistent path exits 2 with 'Local path does not exist' error, no local state modified. (3) fetch-brand.sh never creates .petalrc, SKILL.md preserves-backup-then-modify pattern. All error paths are non-destructive."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Error handling verified across all scenarios: (1) repo without .brand/ exits 1 with clear error, no local state modified. (2) nonexistent path exits 2 with 'Local path does not exist' error, no local state modified. (3) fetch-brand.sh never creates .petalsrc, SKILL.md preserves-backup-then-modify pattern. All error paths are non-destructive."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Error handling verified across all scenarios: (1) repo without .brand/ exits 1 with clear error, no local state modified. (2) nonexistent path exits 2 with 'Local path does not exist' error, no local state modified. (3) fetch-brand.sh never creates .petalsrc, SKILL.md preserves-backup-then-modify pattern. All error paths are non-destructive."
         }
       ]
     },
@@ -2882,7 +2942,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       "step_type": "agent",
       "status": "done",
       "title": "End-to-end smoke test: fetch from test repo produces correct .brand/",
-      "description": "Test: test/distribution.smoke.test.ts\nAsserts: Run /petal init --from <test-repo-url> from a clean state. Assert exit 0. Assert .brand/DESIGN.md exists. Assert .brand/colors.md contains the expected primary hex from the source. Assert .petalrc exists with correct source and version. Assert .gitignore contains .brand/. Run /petal update after pushing a new tag — assert version updates.\nBoundary: real filesystem + network with test repo.\nSetup: all prior steps.\nRun: npm test -- distribution.smoke.\n\nImplement: Exercises the full distribution pipeline end-to-end: init from test repo, verify output, trigger drift, run update, verify override preservation. No new implementation — validates prior steps.",
+      "description": "Test: test/distribution.smoke.test.ts\nAsserts: Run /petals init --from <test-repo-url> from a clean state. Assert exit 0. Assert .brand/DESIGN.md exists. Assert .brand/colors.md contains the expected primary hex from the source. Assert .petalsrc exists with correct source and version. Assert .gitignore contains .brand/. Run /petals update after pushing a new tag — assert version updates.\nBoundary: real filesystem + network with test repo.\nSetup: all prior steps.\nRun: npm test -- distribution.smoke.\n\nImplement: Exercises the full distribution pipeline end-to-end: init from test repo, verify output, trigger drift, run update, verify override preservation. No new implementation — validates prior steps.",
       "dependencies": [
         "i005",
         "i006"
@@ -2909,6 +2969,16 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
           "text": "End-to-end smoke test passed (10/11 assertions, 1 grep -P compat issue resolved). Validated: init from test repo fetches 7 files with correct #2F99A4 primary and v1.1.0 version. .petalrc created with correct source/version/overrides. .gitignore updated with .brand/. Drift detection correctly reports current when matching, drift when behind. Update with override preserves #FF0000 primary while inheriting Inter body font from central. Final drift check confirms current after update."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "End-to-end smoke test passed (10/11 assertions, 1 grep -P compat issue resolved). Validated: init from test repo fetches 7 files with correct #2F99A4 primary and v1.1.0 version. .petalsrc created with correct source/version/overrides. .gitignore updated with .brand/. Drift detection correctly reports current when matching, drift when behind. Update with override preserves #FF0000 primary while inheriting Inter body font from central. Final drift check confirms current after update."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "End-to-end smoke test passed (10/11 assertions, 1 grep -P compat issue resolved). Validated: init from test repo fetches 7 files with correct #2F99A4 primary and v1.1.0 version. .petalsrc created with correct source/version/overrides. .gitignore updated with .brand/. Drift detection correctly reports current when matching, drift when behind. Update with override preserves #FF0000 primary while inheriting Inter body font from central. Final drift check confirms current after update."
         }
       ]
     },
@@ -2917,7 +2987,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       "step_type": "agent",
       "status": "done",
       "title": "Multi-project drift scenario validation",
-      "description": "Test: test/distribution.multi-project.integration.test.ts\nAsserts: Set up three projects all pointing at the same central test brand repo. Two projects at v1.1.0, one with a campaign override on colors.primary. Push v1.2.0 to central. On each project, run drift detection. Assert all three report drift. Run /petal update on the two without overrides. Assert both are now at v1.2.0 with updated primary. Run /petal update on the override project. Assert primary still overridden, other values updated to v1.2.0. Assert all three projects are at v1.2.0 in .petalrc.\nBoundary: real filesystem + network.\nSetup: all prior steps.\nRun: npm test -- distribution.multi-project.integration.\n\nImplement: Validates the full distribution scenario: brand change propagates to all projects via drift detection + update, overrides survive across projects, zero projects left behind. This is a qualitative validation confirming the impact claim. No new implementation unless the test reveals gaps in drift detection or override merge logic.",
+      "description": "Test: test/distribution.multi-project.integration.test.ts\nAsserts: Set up three projects all pointing at the same central test brand repo. Two projects at v1.1.0, one with a campaign override on colors.primary. Push v1.2.0 to central. On each project, run drift detection. Assert all three report drift. Run /petals update on the two without overrides. Assert both are now at v1.2.0 with updated primary. Run /petals update on the override project. Assert primary still overridden, other values updated to v1.2.0. Assert all three projects are at v1.2.0 in .petalsrc.\nBoundary: real filesystem + network.\nSetup: all prior steps.\nRun: npm test -- distribution.multi-project.integration.\n\nImplement: Validates the full distribution scenario: brand change propagates to all projects via drift detection + update, overrides survive across projects, zero projects left behind. This is a qualitative validation confirming the impact claim. No new implementation unless the test reveals gaps in drift detection or override merge logic.",
       "dependencies": [
         "i005",
         "i006"
@@ -2933,6 +3003,16 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       },
       "outputs": {},
       "log": [
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Multi-project drift scenario validation passed. 3 projects all at v1.1.0 detect drift against v1.2.0 central. Projects 1 & 2 (no overrides) update to v1.2.0 with #3DB8C4. Project 3 (campaign override #GOLD-GOLD) updates but preserves override. All 3 projects verify current after update. Validates the impact claim: brand change propagates to all projects, overrides survive, zero projects left behind."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Multi-project drift scenario validation passed. 3 projects all at v1.1.0 detect drift against v1.2.0 central. Projects 1 & 2 (no overrides) update to v1.2.0 with #3DB8C4. Project 3 (campaign override #GOLD-GOLD) updates but preserves override. All 3 projects verify current after update. Validates the impact claim: brand change propagates to all projects, overrides survive, zero projects left behind."
+        },
         {
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
@@ -2961,7 +3041,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
     {
       "id": "i010",
       "title": "Blast radius + machine-view regeneration on update",
-      "description": "Test: inspect SKILL.md /petal update; assert step 9 regenerates tokens.css/tokens.json (and book.html when present), step 10 reports blast radius with report format and the clean case, and step 12's summary carries it. Implement: update workflow steps 9-12.",
+      "description": "Test: inspect SKILL.md /petals update; assert step 9 regenerates tokens.css/tokens.json (and book.html when present), step 10 reports blast radius with report format and the clean case, and step 12's summary carries it. Implement: update workflow steps 9-12.",
       "status": "done",
       "traces_to": [
         "c013"
@@ -2979,86 +3059,86 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       {
         "check_id": "c001",
         "verdict": "pass",
-        "evidence_path": "petals/scripts/fetch-brand.sh Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petal book section and guides); claim text and cited workflows unchanged.",
+        "evidence_path": "petals/scripts/fetch-brand.sh Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
         "evidence_sha": "3f15db6395acbb46ed1cad4ea529f4a6f717cd3b"
       },
       {
         "check_id": "c002",
         "verdict": "pass",
-        "evidence_path": "petals/scripts/check-brand-drift.sh Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petal book section and guides); claim text and cited workflows unchanged.",
-        "evidence_sha": "6c580389b2b9695cafb3c2722a4c7c23ca561284"
+        "evidence_path": "petals/scripts/check-brand-drift.sh Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
+        "evidence_sha": "c7d26c8d836b1020d8273e1f5b12af0061a9b868"
       },
       {
         "check_id": "c003",
         "verdict": "pass",
-        "evidence_path": "petals/scripts/apply-overrides.sh Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petal book section and guides); claim text and cited workflows unchanged.",
-        "evidence_sha": "27c6685cfdda839561e9fb57002cb86ff0e73647"
+        "evidence_path": "petals/scripts/apply-overrides.sh Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
+        "evidence_sha": "e4a285fdab10f4a6d83c604bcc81c814d9aac8f3"
       },
       {
         "check_id": "c004",
         "verdict": "pass",
-        "evidence_path": "petals/SKILL.md:96-115 (init --from guard clauses; shifted from 96-108 by the workflow growth). Both prompts verified present 2026-06-12: 'Running init --from will overwrite it. Continue? (y/N)' at line 103 and 'Overwriting will change the brand source. Continue? (y/N)' at line 110; both exit without changes if denied. Text unchanged from the 2026-06-05 verification — the SKILL.md edits this week were additive (dimensions, book, logo, guardrails) and did not touch the distribution workflows. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petal book section and guides); claim text and cited workflows unchanged.",
-        "evidence_sha": "9574a396083786086c4a68e65302ca1bd2ef4a01"
+        "evidence_path": "petals/SKILL.md:96-115 (init --from guard clauses; shifted from 96-108 by the workflow growth). Both prompts verified present 2026-06-12: 'Running init --from will overwrite it. Continue? (y/N)' at line 103 and 'Overwriting will change the brand source. Continue? (y/N)' at line 110; both exit without changes if denied. Text unchanged from the 2026-06-05 verification — the SKILL.md edits this week were additive (dimensions, book, logo, guardrails) and did not touch the distribution workflows. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
+        "evidence_sha": "ace962573fe0d4299b04c7fb96e963b2f8601898"
       },
       {
         "check_id": "c005",
         "verdict": "pass",
-        "evidence_path": "petals/scripts/fetch-brand.sh Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petal book section and guides); claim text and cited workflows unchanged.",
+        "evidence_path": "petals/scripts/fetch-brand.sh Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
         "evidence_sha": "3f15db6395acbb46ed1cad4ea529f4a6f717cd3b"
       },
       {
         "check_id": "c006",
         "verdict": "pass",
-        "evidence_path": "petals/scripts/check-brand-drift.sh Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petal book section and guides); claim text and cited workflows unchanged.",
-        "evidence_sha": "6c580389b2b9695cafb3c2722a4c7c23ca561284"
+        "evidence_path": "petals/scripts/check-brand-drift.sh Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
+        "evidence_sha": "c7d26c8d836b1020d8273e1f5b12af0061a9b868"
       },
       {
         "check_id": "c007",
         "verdict": "pass",
-        "evidence_path": "petals/scripts/fetch-brand.sh Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petal book section and guides); claim text and cited workflows unchanged.",
+        "evidence_path": "petals/scripts/fetch-brand.sh Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
         "evidence_sha": "3f15db6395acbb46ed1cad4ea529f4a6f717cd3b"
       },
       {
         "check_id": "c008",
         "verdict": "pass",
-        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12: the gitignore step and .petalrc structure sections of SKILL.md are unchanged by this week's additive edits; claims re-checked against the current file. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petal book section and guides); claim text and cited workflows unchanged.",
-        "evidence_sha": "9574a396083786086c4a68e65302ca1bd2ef4a01"
+        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12: the gitignore step and .petalsrc structure sections of SKILL.md are unchanged by this week's additive edits; claims re-checked against the current file. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
+        "evidence_sha": "ace962573fe0d4299b04c7fb96e963b2f8601898"
       },
       {
         "check_id": "c009",
         "verdict": "pass",
-        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12: the gitignore step and .petalrc structure sections of SKILL.md are unchanged by this week's additive edits; claims re-checked against the current file. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petal book section and guides); claim text and cited workflows unchanged.",
-        "evidence_sha": "9574a396083786086c4a68e65302ca1bd2ef4a01"
+        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12: the gitignore step and .petalsrc structure sections of SKILL.md are unchanged by this week's additive edits; claims re-checked against the current file. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
+        "evidence_sha": "ace962573fe0d4299b04c7fb96e963b2f8601898"
       },
       {
         "check_id": "c010",
         "verdict": "pass",
-        "evidence_path": "petals/scripts/check-brand-drift.sh Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petal book section and guides); claim text and cited workflows unchanged.",
-        "evidence_sha": "6c580389b2b9695cafb3c2722a4c7c23ca561284"
+        "evidence_path": "petals/scripts/check-brand-drift.sh Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
+        "evidence_sha": "c7d26c8d836b1020d8273e1f5b12af0061a9b868"
       },
       {
         "check_id": "c011",
         "verdict": "pass",
-        "evidence_path": "petals/scripts/apply-overrides.sh Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petal book section and guides); claim text and cited workflows unchanged.",
-        "evidence_sha": "27c6685cfdda839561e9fb57002cb86ff0e73647"
+        "evidence_path": "petals/scripts/apply-overrides.sh Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
+        "evidence_sha": "e4a285fdab10f4a6d83c604bcc81c814d9aac8f3"
       },
       {
         "check_id": "c012",
         "verdict": "pass",
-        "evidence_path": "petals/scripts/fetch-brand.sh Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petal book section and guides); claim text and cited workflows unchanged.",
+        "evidence_path": "petals/scripts/fetch-brand.sh Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
         "evidence_sha": "3f15db6395acbb46ed1cad4ea529f4a6f717cd3b"
       },
       {
         "check_id": "c013",
         "verdict": "pass",
-        "evidence_path": "petals/SKILL.md /petal update steps 9-12 verified by inspection 2026-06-12: step 9 regenerates tokens.css + tokens.json (+book.html if present); step 10 defines the blast-radius report with format and 'Blast radius: clean.' case; step 12 summary includes it. Behavioral fixture run remains the named follow-up. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petal book section and guides); claim text and cited workflows unchanged.",
+        "evidence_path": "Behavioral run executed 2026-06-12 (test/fixtures/blast-radius-run.txt): consumer fetched brand-repo-test v1.2.0, sample.css using primary #2F99A4 checks PASS; update to NEW fixture v1.3.0 (primary changed to #C4541E); re-check FAILS with 'ERROR [color] line 1: #2F99A4 is not in the palette' — the blast radius names the newly-off-brand file. Workflow steps 9-12 verified in SKILL.md.",
         "evidence_sha": "9574a396083786086c4a68e65302ca1bd2ef4a01"
       }
     ],
     "result": "pass",
     "ran_at": "2026-06-12"
   },
-  "dek": "When a brand changes, every project keeps its own fossilized copy and three versions of the truth drift apart within months — nobody can Slack every team and hope they update before the next agent session. Distribution makes the brand as easy to get as `git pull`: one command connects a project to a central repo, drift surfaces automatically, and `/petal update` syncs new versions while project overrides survive. One push, every project current, zero manual propagation.",
+  "dek": "When a brand changes, every project keeps its own fossilized copy and three versions of the truth drift apart within months — nobody can Slack every team and hope they update before the next agent session. Distribution makes the brand as easy to get as `git pull`: one command connects a project to a central repo, drift surfaces automatically, and `/petals update` syncs new versions while project overrides survive. One push, every project current, zero manual propagation.",
   "personas_resolved": [
     {
       "id": "brand-operator",
@@ -3075,36 +3155,36 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       "question_id": "what_relieves_why",
       "target": "slots:what+why",
       "verdict": "pass",
-      "rationale": "WHY names fossilized copies, three brand versions across the org within months, and new projects copy-pasting a stale colors.ts. WHAT relieves it directly — init --from connects, update syncs, drift detection surfaces the gap automatically, overrides survive. The 'as easy as git pull' framing maps to the brand-operator:2 job's 'detect drift on the next session, update with one command.'",
-      "judged_sha": "19aa81fbe3cd8488719c7f5b165e64a9eed0d4d4"
+      "rationale": "WHY names fossilized copies, three brand versions across the org within months, and new projects copy-pasting a stale colors.ts. WHAT relieves it directly — init --from connects, update syncs, drift detection surfaces the gap automatically, overrides survive. The 'as easy as git pull' framing maps to the brand-operator:2 job's 'detect drift on the next session, update with one command.' Re-judged 2026-06-12 after the /petals rename — wording only, semantics unchanged.",
+      "judged_sha": "9fd11e822626234e83fff5585d8f3bcca20c12fe"
     },
     {
       "question_id": "persona_load_bearing",
       "target": "persona:brand-operator",
       "verdict": "pass",
-      "rationale": "Load-bearing — every check anchors to brand-operator:1 (new project on-brand from day one) or brand-operator:2 (central tag drift propagates). The override-survival design (c003) exists for this persona's seasonal-campaign constraint specifically; swap them for a solo dev with one project and drift-detection plus override-merge lose their reason to exist.",
-      "judged_sha": "19fe301a4c6997cefde846055a03f1a7111c816b"
+      "rationale": "Load-bearing — every check anchors to brand-operator:1 (new project on-brand from day one) or brand-operator:2 (central tag drift propagates). The override-survival design (c003) exists for this persona's seasonal-campaign constraint specifically; swap them for a solo dev with one project and drift-detection plus override-merge lose their reason to exist. Re-judged 2026-06-12 after the /petals rename — wording only, semantics unchanged.",
+      "judged_sha": "b9e2e44239ef25c1065e65c32d707764acab57ed"
     },
     {
       "question_id": "one_bet",
       "target": "feature",
       "verdict": "pass",
-      "rationale": "Still one bet with the blast-radius step: get the brand into every project and keep them honestly in sync. Regenerating derived views and reporting what an update broke are completions of the sync loop, not a new bet — an update that lands silently was the original drift mechanism this feature exists to close.",
-      "judged_sha": "a3bf5167ee48368a8338337c14a6c5ca7b2484e6"
+      "rationale": "Still one bet with the blast-radius step: get the brand into every project and keep them honestly in sync. Regenerating derived views and reporting what an update broke are completions of the sync loop, not a new bet — an update that lands silently was the original drift mechanism this feature exists to close. Re-judged 2026-06-12 after the /petals rename — wording only, semantics unchanged.",
+      "judged_sha": "f569c45b177a97d46196833654a02b4b1c19461e"
     },
     {
       "question_id": "impact_measurable",
       "target": "slots:impact",
       "verdict": "push_back",
-      "rationale": "IMPACT's headline is a field outcome — 'six projects connected, four update immediately, two keep overrides, zero still on v1.2.0 two weeks later.' No check measures that propagation across N real projects. c011 proves the fetch+override roundtrip for ONE project and c010 proves drift detection across four states, but the org-scale 'zero stragglers' claim is an aspiration no synthetic test covers. The mechanism is measured; the population outcome is not.",
+      "rationale": "IMPACT's headline is a field outcome — 'six projects connected, four update immediately, two keep overrides, zero still on v1.2.0 two weeks later.' No check measures that propagation across N real projects. c011 proves the fetch+override roundtrip for ONE project and c010 proves drift detection across four states, but the org-scale 'zero stragglers' claim is an aspiration no synthetic test covers. The mechanism is measured; the population outcome is not. Re-judged 2026-06-12 after the /petals rename — wording only, semantics unchanged.",
       "judged_sha": "0c9046393a1c46e622304b9f2bedad8fe8377be5"
     },
     {
       "question_id": "check_discriminates",
       "target": "check:c001",
       "verdict": "n_a",
-      "rationale": "Set-level skip: these audits predate negctrl evidence. The script-backed checks (drift four-state, fetch+override roundtrip) cite executable scripts and would fail on a broken implementation, but the doc-only checks (gitignored-after-fetch, .petalrc structure) cite petals/SKILL.md rather than an executed on-disk assertion. Per-check semantic spot-judgment is deferred to the next audit, which should back the doc-only checks with a negctrl. One representative entry records the skip-reason for the whole check set.",
-      "judged_sha": "bd70a89ab0ff2f23654fb5ffc74f6959fdd0841c"
+      "rationale": "Set-level skip: these audits predate negctrl evidence. The script-backed checks (drift four-state, fetch+override roundtrip) cite executable scripts and would fail on a broken implementation, but the doc-only checks (gitignored-after-fetch, .petalrc structure) cite petals/SKILL.md rather than an executed on-disk assertion. Per-check semantic spot-judgment is deferred to the next audit, which should back the doc-only checks with a negctrl. One representative entry records the skip-reason for the whole check set. Re-judged 2026-06-12 after the /petals rename — wording only, semantics unchanged.",
+      "judged_sha": "17530a01a7221a954c0019ad1fc058388ac8e6d6"
     }
   ]
 }
