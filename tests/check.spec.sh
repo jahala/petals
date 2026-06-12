@@ -16,7 +16,7 @@ OUT_GOOD=$(bash "$SCRIPT" "$GOOD" --brand .brand 2>&1); RC_GOOD=$?
 
 t "off-palette hex is an error with a suggestion"  'ERROR \[color\] line 2: #3B82F6 is not in the palette\. Did you mean #' "$OUT_BAD"
 t "low contrast pair under 3.0 is an error"        'ERROR \[color\].*#E8917F on #3F7A33 is 2\.1[0-9]:1' "$OUT_BAD"
-t "contrast 3.0-4.5 band is a warning"             'WARNING \[color\].*#8A8A86 on #F8F5EC is 3\.1[0-9]:1' "$OUT_BAD"
+t "documented decorative pair used for words is an error" 'ERROR \[color\].*#8A8A86 on #F8F5EC is 3\.1[0-9]:1.*decorative' "$OUT_BAD"
 t "13px off the 4px scale is a warning"            'WARNING \[layout\] line 3: 13px is outside the spacing scale\. Did you mean 12px' "$OUT_BAD"
 t "undocumented breakpoint is a warning"           'WARNING \[layout\] line 10: 700px is not a documented breakpoint' "$OUT_BAD"
 t "off-scale radius is a warning"                  'WARNING \[surface\] line 4: 9px is off the radius scale\. Did you mean 8px or 10px' "$OUT_BAD"
@@ -29,6 +29,7 @@ t "summary block present"                          '--- petals check \(determini
 t "typography stays agent-side, stated"            'Typography: agent dimension' "$OUT_BAD"
 t "bad file fails"                                 '^Result: FAIL' "$OUT_BAD"
 [ "$RC_BAD" -ne 0 ] && echo "PASS bad exit code non-zero" || { echo "FAIL bad exit code"; fails=$((fails+1)); }
+if echo "$OUT_GOOD" | grep -q '46913C'; then echo "FAIL documented labels pair passes silently"; fails=$((fails+1)); else echo "PASS documented labels pair passes silently"; fi
 if echo "$OUT_GOOD" | grep -q '18px'; then echo "FAIL radius scan ignores width/height on the same line"; fails=$((fails+1)); else echo "PASS radius scan ignores width/height on the same line"; fi
 if echo "$OUT_GOOD" | grep -qi 'supercharge'; then echo "FAIL quoted bad-example voice hits are skipped"; fails=$((fails+1)); else echo "PASS quoted bad-example voice hits are skipped"; fi
 t "good file passes every dimension"               '^Result: PASS' "$OUT_GOOD"

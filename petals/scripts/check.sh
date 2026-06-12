@@ -34,12 +34,26 @@ RADII=$(grep -ohE '^\| radius-[a-z]+ \| [0-9]+px' "$BRAND/components.md" 2>/dev/
 BREAKPOINTS=$(grep -ohE '^\| [0-9]+px' "$BRAND/layout.md" 2>/dev/null | grep -oE '[0-9]+' | tr '\n' ' ')
 SPACE_UNIT=4
 
+# Documented contrast pairs from colors.md's Contrast Pairings table:
+# "HEX1|HEX2|class" rows, \036-joined. A documented class overrides the
+# generic thresholds (the table is the brand's own classification).
+DOCPAIRS=$(awk '/^## Contrast Pairings/{f=1;next} /^## /{f=0} f && /^\|.* on .*\|/ {
+  n=0; delete hx
+  line=$0
+  while(match(line, /#[0-9a-fA-F]{6}/)){ hx[++n]=toupper(substr(line,RSTART,RLENGTH)); line=substr(line,RSTART+RLENGTH) }
+  if(n>=2){
+    nf=split($0, cols, "|")
+    cls=cols[nf-1]; gsub(/^ +| +$/, "", cls)
+    print hx[1] "|" hx[2] "|" cls
+  }
+}' "$BRAND/colors.md" 2>/dev/null | tr '\n' '\036')
+
 # Forbidden terms: "term<TAB>alternatives" rows from voice.md's Forbidden Terms
 # table, newline -> \036 (awk -v cannot carry newlines portably)
 FORBIDDEN=$(awk -F'|' '/^## Forbidden Terms/{f=1} /^## /{if(f&&$0!~/Forbidden/)f=0} f && NF>=4 && $2!~/Term|---/ {gsub(/^ +| +$/,"",$2); gsub(/^ +| +$/,"",$4); if($2!="") print $2"\t"$4}' "$BRAND/voice.md" 2>/dev/null | tr '\n' '\036')
 
 awk -v palette="$PALETTE" -v radii="$RADII" -v bps="$BREAKPOINTS" \
-    -v unit="$SPACE_UNIT" -v forbidden="$FORBIDDEN" '
+    -v unit="$SPACE_UNIT" -v forbidden="$FORBIDDEN" -v docpairs="$DOCPAIRS" '
 function hexval(c,   i){ return index("0123456789ABCDEF", toupper(c)) - 1 }
 function h2(s){ return hexval(substr(s,1,1))*16 + hexval(substr(s,2,1)) }
 function expand(h){ if(length(h)==4) return "#" substr(h,2,1) substr(h,2,1) substr(h,3,1) substr(h,3,1) substr(h,4,1) substr(h,4,1); return h }
@@ -56,6 +70,8 @@ BEGIN{
   np=split(palette, pal, " ")
   nr=split(radii, rad, " ")
   nb=split(bps, bp, " ")
+  ndp=split(docpairs, dprows, "\036")
+  for(i=1;i<=ndp;i++){ m=split(dprows[i], dpkv, "|"); if(m>=3) docclass[dpkv[1] "|" dpkv[2]] = tolower(dpkv[3]) }
   nf=split(forbidden, frows, "\036")
   for(i=1;i<=nf;i++){ split(frows[i], kv, "\t"); fterm[i]=kv[1]; falt[i]=kv[2] }
   blockstart=0; block=""
@@ -108,7 +124,16 @@ BEGIN{
     }
     if(fg!="" && bg!=""){
       r=ratio(fg,bg)
-      if(r<3.0)      err("color", "line " blockstart ": " fg " on " bg " is " sprintf("%.2f",r) ":1 — below the 3.0:1 labels minimum (colors.md Contrast Pairings).")
+      key=fg "|" bg; cls=(key in docclass) ? docclass[key] : ((bg "|" fg) in docclass ? docclass[bg "|" fg] : "")
+      if(cls ~ /decorative/)
+        err("color", "line " blockstart ": " fg " on " bg " is " sprintf("%.2f",r) ":1 — documented decorative-only pair (colors.md Contrast Pairings): never words.")
+      else if(cls ~ /label|display/){
+        if(r<3.0) err("color", "line " blockstart ": " fg " on " bg " is " sprintf("%.2f",r) ":1 — below the 3.0:1 labels minimum (colors.md Contrast Pairings).")
+      }
+      else if(cls ~ /reading/){
+        if(r<4.5) err("color", "line " blockstart ": " fg " on " bg " is " sprintf("%.2f",r) ":1 — below the 4.5:1 reading minimum (colors.md Contrast Pairings).")
+      }
+      else if(r<3.0) err("color", "line " blockstart ": " fg " on " bg " is " sprintf("%.2f",r) ":1 — below the 3.0:1 labels minimum (colors.md Contrast Pairings).")
       else if(r<4.5) warn("color", "line " blockstart ": " fg " on " bg " is " sprintf("%.2f",r) ":1 — labels & display only; verify the pair class for reading copy (4.5:1).")
     }
     blockstart=0; block=""

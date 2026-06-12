@@ -6,3 +6,4 @@
 @media (max-width: 880px) { .stack { gap: 16px; } }
 .icon { width: 18px; height: 18px; border-radius: 8px; border: 1px solid #D6D2C2; }
 /* <div class="ba bad">Supercharge everything</div> — quoted bad example */
+.tick { color: #F8F5EC; background: #46913C; }

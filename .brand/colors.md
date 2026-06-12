@@ -75,6 +75,7 @@ Canonical pairs, measured (WCAG 2.x relative luminance):
 | Healthy #46913C on Surface #F0EDE1 | 3.33 | labels |
 | Muted #8A8A86 on Paper #F8F5EC | 3.18 | decorative / disabled only |
 | Paper #F8F5EC on Primary #3F7A33 | 4.76 | reading |
+| Paper #F8F5EC on Healthy #46913C | 3.58 | labels (glyphs, ticks) |
 | Surface #F0EDE1 on Terminal #161A12 | 15.04 | reading |
 | Terminal green #8FCB63 on Terminal | 9.15 | reading |
 | Terminal info #7E9DAD on Terminal | 6.14 | reading |
