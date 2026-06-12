@@ -56,12 +56,13 @@ Load reference files on demand based on the task:
 | Task | Load |
 |------|------|
 | Extracting brand from assets | `references/extraction-guide.md` |
-| Populating output templates | `templates/DESIGN.md`, `templates/colors.md`, `templates/typography.md`, `templates/voice.md`, `templates/identity.md` |
+| Populating output templates | `templates/DESIGN.md`, `templates/colors.md`, `templates/typography.md`, `templates/voice.md`, `templates/identity.md`, `templates/components.md` |
 | Auditing colors | `.brand/colors.md`, `references/color-audit-guide.md` |
 | Auditing typography/spacing | `.brand/typography.md` |
+| Auditing surface (radius/shadow/motion) | `.brand/components.md` |
 | Auditing voice | `.brand/voice.md`, `references/voice-guide.md` |
 | Auditing output (all dimensions) | `references/color-audit-guide.md`, `references/voice-guide.md`, `.brand/*.md` |
-| Generating UI | `.brand/DESIGN.md`, `.brand/colors.md`, `.brand/typography.md` |
+| Generating UI | `.brand/DESIGN.md`, `.brand/colors.md`, `.brand/typography.md`, `.brand/components.md` |
 | Writing copy | `.brand/voice.md`, `.brand/identity.md` |
 
 ## /petal init Workflow
@@ -250,7 +251,7 @@ When `/petal check` is invoked without a file argument, it checks for brand drif
 
 ## /petal check `<file>` (File Audit)
 
-When `/petal check <file>` is invoked with a file argument, the agent audits the file against `.brand/` rules across up to three dimensions: color, typography/spacing, and voice. The audit follows progressive disclosure: each dimension only loads the `.brand/` file it needs.
+When `/petal check <file>` is invoked with a file argument, the agent audits the file against `.brand/` rules across up to five dimensions: color, typography, spacing, surface, and voice. The audit follows progressive disclosure: each dimension only loads the `.brand/` file it needs.
 
 ### Guard clause
 
@@ -342,7 +343,35 @@ If zero spacing warnings:
 PASS [spacing] All spacing values match the brand scale.
 ```
 
-### Dimension 4: Voice Audit (within check)
+### Dimension 4: Surface Audit
+
+**Load**: `.brand/components.md` (only this file). If `.brand/components.md` does not exist, skip and report: `SKIP [surface] components.md not found. Skipping surface audit.`
+
+**Process**:
+
+1. Extract the token tables from `.brand/components.md`: the radius scale, border-stroke widths, shadow recipes (and their stated color policy), and motion tokens (easings, durations).
+2. Read the target file and scan for surface declarations:
+   - `border-radius: <value>` (and JSX `borderRadius`)
+   - `box-shadow: <value>` (and JSX `boxShadow`)
+   - `border: <width> …` / `border-width`, `outline` widths
+   - `transition: … <duration> <easing>`, `animation: … <duration> <easing>`, `transition-timing-function`, `animation-timing-function`
+3. Check each declaration against the tokens:
+   - **Radius**: a value not on the radius scale (allowing `999px`/`50%` as radius-full) is a **warning** — suggest the nearest scale value.
+   - **Shadow**: a shadow violating the stated color policy (e.g. pure `#000` / un-tinted `rgba(0, 0, 0, …)` where the brand specifies tinted shadows) is a **warning** — name the policy.
+   - **Border width**: a width not in the stroke table is a **warning** — suggest the nearest stroke.
+   - **Easing**: a bounce/elastic easing (e.g. `cubic-bezier` with an overshoot, `ease-in-out-back`) or any easing/duration far outside the motion tokens is a **warning** — name the brand ease. Anything in the brand's forbidden-motion list is an **error**.
+   - Skip values inside data URIs and third-party vendored code, mirroring the color audit's false-positive rules.
+4. Report as:
+   ```
+   WARNING [surface] line <N>: <found-value> is off the <radius|stroke|shadow|motion> tokens. Did you mean <closest-token>?
+   ```
+
+If zero surface violations:
+```
+PASS [surface] Radius, borders, shadows, and motion match the surface tokens.
+```
+
+### Dimension 5: Voice Audit (within check)
 
 If the target file contains text content (copy strings, comments with user-facing text, JSX text nodes), also run the voice audit. See `/petal voice` workflow below for the detailed process.
 
@@ -357,6 +386,7 @@ After all dimensions complete, print a summary:
 Colors:   <N> error(s), <M> warning(s)
 Typography: <N> error(s), <M> warning(s)
 Spacing:  <N> error(s), <M> warning(s)
+Surface:  <N> error(s), <M> warning(s)
 Voice:    <N> error(s), <M> warning(s)
 
 Result: <PASS (all dimensions clean) | FAIL (<X> error(s) to fix, <Y> warning(s) to review)>

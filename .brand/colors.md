@@ -4,8 +4,9 @@
 
 | Role | Hex | RGB | Usage |
 |------|-----|-----|-------|
-| Primary | #4C5E3C | rgb(76, 94, 60) | Primary brand green — buttons, key actions, links, selected states, product-wide emphasis. Deepened from #5F6F4E for confident contrast (6.28:1 on cream). |
-| Accent | #B96A4F | rgb(185, 106, 79) | The bloom — CTAs, launch moments, attention marks, annotations, kicker labels, display numerals. |
+| Primary | #3F7A33 | rgb(63, 122, 51) | Primary brand green — buttons, key actions, links, selected states, product-wide emphasis. Vital leaf green (4.8:1 on cream) — alive, not archival; evolved from the gray-olive #4C5E3C. |
+| Primary (deep) | #356428 | rgb(53, 100, 40) | Hover / pressed states of primary; one step deeper into the foliage. |
+| Accent | #C04B3C | rgb(192, 75, 60) | The bloom — vivid blossom clay (4.5:1 on cream). CTAs, launch moments, attention marks, annotations, kicker labels, display numerals. Evolved from the dried-clay #B96A4F for vitality. |
 | Background | #F8F5EC | rgb(248, 245, 236) | Main application and marketing background; warm paper base. |
 | Background (band) | #EFEDE2 | rgb(239, 237, 226) | Alternating section band — a half-step deeper than the paper base, for vertical rhythm. |
 | Text | #20241B | rgb(32, 36, 27) | Primary text, headings, high-emphasis copy. Deepened warm near-black (14.91:1 on cream). |
@@ -26,7 +27,7 @@ Long-read polyglot surfaces use lighter paper for higher luminance during extend
 
 | Role | Hex | Usage |
 |------|-----|-------|
-| Healthy / Sound / verified | #4F7942 | Confirmed actions, healthy status, successful syncs, positive outcomes. |
+| Healthy / Sound / verified | #46913C | Confirmed actions, healthy status, successful syncs, positive outcomes. Brightened in step with the vital-leaf primary. |
 | Caution / Warning / in-progress | #C9923C | Caution states, incomplete setup, drift warnings, review-needed signals. |
 | Error / Broken / failed | #B85C3E | Destructive actions, validation errors, failed checks, high-risk alerts. |
 | Info / neutral signal | #587383 | Informational notices, neutral signals, source notes, system guidance. |
@@ -43,7 +44,7 @@ Each product in the plotplot portfolio has its own accent. The primary palette i
 | Seed | #A6A15F | Ideas |
 | Tend | #D97757 | Roadmap |
 | Stem | #4E6A4A | Strategy |
-| Petal | #D39586 | Brand |
+| Petal | #E8917F | Brand |
 | Prune | #5B5A52 | Clarity |
 | Graft | #5F8A7A | Integration |
 | Cultivate | #5E7F8D | Signals |
@@ -56,8 +57,8 @@ Each product in the plotplot portfolio has its own accent. The primary palette i
 
 | Role | Light Mode | Dark Mode |
 |------|-----------|-----------|
-| Primary | #4C5E3C | #A9B78D |
-| Accent | #B96A4F | #E0866B |
+| Primary | #3F7A33 | #A9B78D |
+| Accent | #C04B3C | #E0866B |
 | Background | #F8F5EC | #17140F |
 | Text | #20241B | #F0EDE1 |
 | Surface | #F0EDE1 | #20251B |
@@ -72,7 +73,7 @@ Embedded terminal panes (the landing-page demos) run a deepened dark soil so the
 | Terminal background | #161A12 | Deepened soil-black behind terminal text (15.3:1 for surface text). |
 | Terminal surface | #20251B | Titlebar / chrome inside the terminal pane. |
 | Terminal border | #3C4433 | Terminal pane and titlebar dividers. |
-| Terminal green (in-pane) | #86B36E | Brightened command / OK lines — legible on the deep terminal soil (7.8:1). |
+| Terminal green (in-pane) | #8FCB63 | Vivid-leaf command / OK lines — legible and alive on the deep terminal soil. |
 | Terminal info (in-pane) | #7E9DAD | Brightened informational lines inside the terminal (6.6:1). |
 
 ## CSS Custom Properties
@@ -80,8 +81,9 @@ Embedded terminal panes (the landing-page demos) run a deepened dark soil so the
 ```css
 :root {
   /* shared family palette */
-  --pp-primary:    #4C5E3C;   /* botanical green — deepened from #5F6F4E */
-  --pp-accent:     #B96A4F;   /* the bloom — was #C97863 */
+  --pp-primary:    #3F7A33;   /* vital leaf green — evolved from #4C5E3C */
+  --pp-primary-deep: #356428; /* hover / pressed — deep leaf */
+  --pp-accent:     #C04B3C;   /* the bloom, vivid — evolved from #B96A4F */
   --pp-text:       #20241B;   /* warm near-black — deepened from #28241D */
   --pp-text-soft:  #5A6150;   /* secondary prose — warm, AA on cream */
   --pp-surface:    #F0EDE1;
@@ -91,7 +93,7 @@ Embedded terminal panes (the landing-page demos) run a deepened dark soil so the
   --pp-bg-artifact:#fbfaf8;   /* tend's lighter long-read paper */
 
   /* reconciled status (matches tend's glyph colors) */
-  --pp-healthy: #4F7942;
+  --pp-healthy: #46913C;
   --pp-caution: #C9923C;
   --pp-error:   #B85C3E;
   --pp-info:    #587383;
@@ -101,7 +103,7 @@ Embedded terminal panes (the landing-page demos) run a deepened dark soil so the
   --pp-tend: #B96A4F;  /* was #6F8157 */
   --pp-bloom: #D8745F; --pp-harvest: #B89448; --pp-canopy: #3F5F46;
   --pp-soil: #735A43;  --pp-root: #4B3A2A;    --pp-seed: #A6A15F;
-  --pp-stem: #4E6A4A;  --pp-petal: #D39586;   --pp-prune: #5B5A52;
+  --pp-stem: #4E6A4A;  --pp-petal: #E8917F;   --pp-prune: #5B5A52;
   --pp-graft: #5F8A7A; --pp-cultivate: #5E7F8D; --pp-weather: #7D8790;
 }
 

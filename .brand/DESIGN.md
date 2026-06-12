@@ -25,11 +25,11 @@ Plotplot is built around the idea that companies need a living map of what they 
 
 ## 3. Color System
 
-The palette is a botanical archive: warm paper, dark soil, muted green labels, dried specimens, and occasional bloom-colored annotation marks. The shared primary palette is defined in `colors.md` and uses #4C5E3C as primary botanical green, #F7F1E6 as warm paper background, #211D17 as soil-black text, #EFE7D8 as card surface, #D8CCB8 as border, and #D97757 as restrained bloom clay accent.
+The palette is a living garden on archival paper: warm paper, dark soil, vital leaf green, and vivid bloom marks — alive, not dried. The shared primary palette is defined in `colors.md` and uses #3F7A33 as primary vital-leaf green, #F8F5EC as warm paper background, #20241B as soil-black text, #F0EDE1 as card surface, #D6D2C2 as border, and #C04B3C as the vivid bloom accent.
 
 Each product has its own muted accent color while keeping the same family feel. Root, Soil, Seed, Tend, Stem, Petal, Prune, Graft, Cultivate, Weather, Bloom, Harvest, and Canopy all have explicit hex values in `colors.md`. Use product accents for navigation markers, small badges, product headers, chart highlights, and focused states — not as full-screen theme replacements.
 
-Dark mode should feel like dark soil at night, not a harsh developer theme. Use #17140F for dark backgrounds, #231F18 for surfaces, #EFE7D8 for text, and #453C30 for borders.
+Dark mode should feel like dark soil at night, not a harsh developer theme. Use #17140F for dark backgrounds, #20251B for surfaces, #F0EDE1 for text, and #3C4433 for borders.
 
 ## 4. Typography System
 
@@ -45,11 +45,13 @@ Layouts should feel calm and readable. Use generous whitespace, quiet grids, cle
 
 ## 6. Component Foundations
 
-Buttons should be restrained, direct, and legible. Primary buttons use #4C5E3C with #F7F1E6 text. Accent buttons use #D97757 only for high-momentum actions such as launch, publish, or confirm. Destructive buttons use #B85C3E.
+Machine-readable surface tokens — radius scale, border strokes, shadow recipes, component conventions — live in `components.md`; this section carries the principles.
 
-Inputs should feel like annotated archive fields: warm surfaces, subtle borders, clear focus states, and plain labels. Use #EFE7D8 for input backgrounds, #D8CCB8 for borders, #4C5E3C for focus, and #211D17 for text.
+Buttons should be restrained, direct, and legible. Primary buttons use #3F7A33 with #F8F5EC text. Accent buttons use #C04B3C only for high-momentum actions such as launch, publish, or confirm. Destructive buttons use #B85C3E.
 
-Cards should group context, not decorate content. Use #EFE7D8 surfaces, #D8CCB8 borders, small product accent markers, and clear headings. Cards should expose source, owner, status, and relationship when relevant.
+Inputs should feel like annotated archive fields: warm surfaces, subtle borders, clear focus states, and plain labels. Use #F0EDE1 for input backgrounds, #D6D2C2 for borders, #3F7A33 for focus, and #20241B for text.
+
+Cards should group context, not decorate content. Use #F0EDE1 surfaces, #D6D2C2 borders, small product accent markers, and clear headings. Cards should expose source, owner, status, and relationship when relevant.
 
 Navigation should make the portfolio understandable. Use product accents sparingly as section identifiers. Keep labels plain: Root, Soil, Seed, Tend, Stem, Petal, Prune, Graft, Cultivate, Weather, Bloom, Harvest, Canopy.
 
@@ -66,6 +68,8 @@ Illustrations should mix botanical diagrams, strategic maps, system sketches, an
 The illustration system should feel like an intelligent archive rather than a playful garden. It can be warm and poetic, but it must remain useful, structured, and literate. Avoid mascots, smiling objects, cartoon leaves, glossy gradients, and generic futuristic AI visuals.
 
 ## 9. Motion
+
+Machine-readable motion tokens — the entrance ease, durations, stagger step, forbidden effects — live in `components.md`; this section carries the principles.
 
 Motion should be subtle, calm, and informative. Use short fades, gentle reveals, map-like expansions, quiet state transitions, and source-trail highlighting. Movement should help users understand relationship, sequence, or change.
 
