@@ -32,6 +32,17 @@ layout, surface, voice, identity, DESIGN) plus two derived machine views
 explicit values are written; anything missing is flagged for a human, never
 guessed. From then on the agent reads the brand before generating UI or copy.
 
+## One brand, many products
+
+A brand may be a family: an umbrella (the organization's shared palette,
+type, layout, surface, voice) plus a layer per product at
+`.brand/products/<product>/` — deltas only: the product's accent claim,
+mark, tagline, terminology. Everything absent inherits. The check, the
+book, and the tokens resolve umbrella ⊕ product, and the check knows the
+boundaries — another product's accent in your UI warns by name. Single-brand
+projects stay flat and never see this structure. (This repository is the
+living example: plotplot is the umbrella, petals the product layer.)
+
 ## The five dimensions
 
 `/petals check <file>` audits generated output against the brand:

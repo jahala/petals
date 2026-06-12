@@ -133,8 +133,11 @@ Project .petalsrc  (committed — source, version, overrides)
    brand:
      source: <repo-url>
      version: <detected-version>   # e.g. v1.1.0
+     product: <product-name>       # optional: this project's product context
+                                   # in a family brand (resolves products/<name>/)
      overrides: {}
    ```
+   When the fetched brand carries `products/`, ask which product this project is (or none, to use the umbrella alone) and record it — the check, book, and tokens resolve against it.
    The `overrides` map starts empty. Users add entries to override specific brand values for this project (see Override format below).
 
 5. **Add .brand/ to .gitignore** — Check if `.gitignore` exists. If not, create it. Append `.brand/` to `.gitignore` if not already present. Use:
