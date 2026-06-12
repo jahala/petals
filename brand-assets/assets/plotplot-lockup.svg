@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 56"><g transform="translate(2,4)"><svg width="48" height="48" viewBox="0 0 48 48">
+  <rect x="6.5" y="6.5" width="35" height="35" rx="6.5" fill="#F7F1E6" stroke="#5F6F4E" stroke-width="1.7"/>
+  <g stroke="#5F6F4E" stroke-width="1" opacity="0.21" stroke-linecap="round">
+    <path d="M11.5 11.5h3M11.5 11.5v3"/><path d="M36.5 11.5h-3M36.5 11.5v3"/>
+    <path d="M11.5 36.5h3M11.5 36.5v-3"/><path d="M36.5 36.5h-3M36.5 36.5v-3"/></g>
+
+    <line x1="14" y1="33.5" x2="34" y2="33.5" stroke="#5F6F4E" stroke-width="1" opacity="0.32"/>
+    <path d="M24 33.5V25.5M24 25.5C24 22 19.5 21 18 18M24 25.5C24 22 28.5 21 30 18" fill="none" stroke="#5F6F4E" stroke-width="1.8" stroke-linecap="round"/>
+    <circle cx="24" cy="33.5" r="1.7" fill="#5F6F4E"/>
+    <circle cx="18" cy="17" r="2.2" fill="#F7F1E6" stroke="#5F6F4E" stroke-width="1.6"/>
+    <circle cx="30" cy="17" r="2.8" fill="#D97757"/></svg></g>
+   <text x="64" y="37" font-family="Sora, 'Helvetica Neue', Arial, sans-serif" font-weight="600" font-size="29" fill="#28241D" letter-spacing="-0.6">plot<tspan fill="#5F6F4E">plot</tspan></text></svg>

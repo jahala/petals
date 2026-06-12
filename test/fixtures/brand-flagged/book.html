@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>northwind — brand book</title>
+<style>
+  /* set in northwind's own brand — petals imposes no styling of its own */
+  :root { --nw-secondary: #1C355E; --nw-bg: #F4F7FA; --nw-text: #16202B; }
+  body { font-family: Helvetica, sans-serif; color: var(--nw-text); background: var(--nw-bg); margin: 0; padding: 48px; }
+  h1, h2 { font-family: Georgia, serif; }
+  .flag-card { border: 2px solid var(--nw-secondary); background: #FFFFFF; padding: 16px 24px; margin-bottom: 48px; }
+  .flag-card .tag { font-weight: 700; color: var(--nw-secondary); display: block; margin-bottom: 8px; }
+  section { border-top: 1px solid var(--nw-secondary); padding: 24px 0; }
+  .sw { display: inline-block; width: 48px; height: 48px; }
+</style>
+</head>
+<body>
+<h1>northwind <span>brand book</span></h1>
+
+<!-- flags float to the top: the owner's review queue, before any section -->
+<aside class="flag-card">
+  <span class="tag">needs an answer — colors.md</span>
+  [FLAG: color-primary] "Primary: Ocean Blue" names no hex value. Provide the exact primary hex.
+</aside>
+
+<section id="color">
+  <h2>Color — colors.md</h2>
+  <span class="sw" style="background:#1C355E"></span>
+  <span class="sw" style="background:#F4F7FA"></span>
+  <span class="sw" style="background:#16202B"></span>
+  <p>Secondary #1C355E · Background #F4F7FA · Text #16202B. The primary is flagged above, not guessed.</p>
+</section>
+
+<section id="type">
+  <h2>Type — typography.md</h2>
+  <p style="font-family: Georgia, serif; font-size: 32px;">Georgia speaks for northwind</p>
+  <p>Body runs in Helvetica.</p>
+</section>
+
+<section id="voice">
+  <h2>Voice — voice.md</h2>
+  <p>Never "synergy" — use "alignment".</p>
+</section>
+
+<footer><p>generated from .brand/ — the markdown is canonical, this book is a view</p></footer>
+</body>
+</html>

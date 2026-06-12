@@ -9,7 +9,7 @@
 
 set -euo pipefail
 
-PETALRC=".petalrc"
+PETALRC=".petalsrc"
 LOCAL_ARG=""
 SOURCE_ARG=""
 CLI_MODE=false
@@ -75,7 +75,7 @@ if $CLI_MODE; then
   higher=$(printf '%s\n%s\n' "$local_v" "$central_v" | sort -V | tail -1)
   if [[ "$higher" == "$central_v" ]]; then
     json_out "$LOCAL_VERSION" "$CENTRAL_VERSION" "drift" \
-      "Brand drift detected. Local: $LOCAL_VERSION. Central: $CENTRAL_VERSION. Run /petal update to sync."
+      "Brand drift detected. Local: $LOCAL_VERSION. Central: $CENTRAL_VERSION. Run /petals update to sync."
     exit 1
   else
     json_out "$LOCAL_VERSION" "$CENTRAL_VERSION" "ahead" \
@@ -84,10 +84,10 @@ if $CLI_MODE; then
   fi
 fi
 
-# ── Config mode: parse .petalrc ──────────────────────────────────────────────
+# ── Config mode: parse .petalsrc ──────────────────────────────────────────────
 
 if [[ ! -f "$PETALRC" ]]; then
-  json_out "" "" "no-source" "No .petalrc found. Run /petal init --from <repo-url> first."
+  json_out "" "" "no-source" "No .petalsrc found. Run /petals init --from <repo-url> first."
   exit 3
 fi
 
@@ -95,7 +95,7 @@ SOURCE=$(grep -E '^[[:space:]]*source:' "$PETALRC" 2>/dev/null | head -1 | sed -
 LOCAL_VERSION=$(grep -E '^[[:space:]]*version:' "$PETALRC" 2>/dev/null | head -1 | sed -E 's/^[[:space:]]*version:[[:space:]]*"?([^"#]+)"?.*/\1/' | xargs)
 
 if [[ -z "$SOURCE" ]]; then
-  json_out "${LOCAL_VERSION:-unknown}" "" "no-source" "No source in .petalrc."
+  json_out "${LOCAL_VERSION:-unknown}" "" "no-source" "No source in .petalsrc."
   exit 3
 fi
 
@@ -134,7 +134,7 @@ fi
 higher=$(printf '%s\n%s\n' "$local_v" "$central_v" | sort -V | tail -1)
 if [[ "$higher" == "$central_v" ]]; then
   json_out "$LOCAL_VERSION" "$CENTRAL_VERSION" "drift" \
-    "Brand drift detected. Local: $LOCAL_VERSION. Central: $CENTRAL_VERSION. Run /petal update to sync."
+    "Brand drift detected. Local: $LOCAL_VERSION. Central: $CENTRAL_VERSION. Run /petals update to sync."
   exit 1
 else
   json_out "$LOCAL_VERSION" "$CENTRAL_VERSION" "ahead" \

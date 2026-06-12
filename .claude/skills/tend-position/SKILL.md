@@ -97,7 +97,7 @@ The schema (see `schema/catalog.schema.json`):
 `archetype` and `jobs[]` are optional in the schema, but this skill's
 output should always fill them — that's the whole point.
 
-**Propagation flow.** `tend_update_catalog` is the canonical write. MCP side-effects mirror each persona and opportunity into its matching catalog-description polyglot (`data.persona` / `data.opportunity` block) automatically. Derived snapshots — `bound_features`, `solving_features`, and similar cross-refs — refresh on every feature write that touches `personas` or `solves`. No manual aggregate step is needed under normal flow; the write keeps everything consistent.
+**Propagation flow.** `tend_update_catalog` is the canonical write. For each **approved** persona / opportunity, MCP side-effects materialize its catalog-description polyglot at `docs/tend/features/<id>.tend.html` — **creating the file if it doesn't exist yet** and mirroring the catalog data into its `data.persona` / `data.opportunity` block. (Catalog-description polyglots live in `features/`, the same directory as bet features — they're discriminated by the `data.persona` / `data.opportunity` block, *not* a separate `personas/` or `opportunities/` folder. There is no `tend_create_catalog_entry` tool and you do **not** call `tend_create_feature` by hand for these — the catalog write scaffolds them. **Draft** entries — auto-stubbed from an unknown feature ref — are not scaffolded until approved.) Derived snapshots — `bound_features`, `solving_features`, and similar cross-refs — refresh on every feature write that touches `personas` or `solves`. No manual create or aggregate step is needed under normal flow; the write keeps everything consistent. (`tend aggregate` also re-materializes any missing catalog-description polyglots, as a recovery path for hand-edited or imported catalogs.)
 
 ## When to invoke
 
@@ -352,6 +352,51 @@ After writing:
   plausible owner (or personas without features), name them as
   follow-ups — they're either a brainstorm prompt or a signal to
   revisit the ICP set.
+
+## Done when
+
+The spine is sound when every one of these is true — each is binary, check
+it explicitly before declaring the run complete:
+
+- [ ] **Every persona has a non-generic archetype.** A situated phrase
+      with stakes and constraints ("solo founder shipping on weekends, can't
+      justify a day of tooling"), NOT a role restatement ("Backend
+      Engineer", "the admin user"). If the archetype just names the role,
+      it isn't done.
+- [ ] **Every persona has ≥3 Klement jobs, each with a MEASURABLE
+      validation clause.** The "we'll know we got it right when…" clause
+      names something observable and testable (timing, error-message text,
+      end-state, count) — never vanity ("users will love it"). Three is
+      the floor; a one-job persona is under-specified.
+- [ ] **Every opportunity has ≥1 persona binding.** `opportunity.personas`
+      is non-empty — no anonymous pain. An opportunity nobody feels is
+      invented demand; drop it or bind it.
+- [ ] **Every feature maps to ≥1 persona.** Walking `project_index`, each
+      feature has a plausible persona owner. A feature with no owner is
+      unowned drift — surface it.
+- [ ] **`tend_validate` reports no `unbound_persona` warnings.** Run it;
+      the spine isn't load-bearing until every persona is referenced by at
+      least one feature.
+
+## Next move
+
+Close the loop — don't leave the user guessing what comes next.
+
+1. **Compute it.** Call `tend_get_next` (MCP preferred; CLI fallback
+   `node dist/bin/tend.js next --json`). It reads on-disk state and
+   returns the highest-leverage action with reason codes.
+2. **Present it plainly.** State the recommended `action` verbatim and the
+   reason in plain words (paraphrase the reason code, don't paste it).
+   With a fresh spine the move is usually `/tend brainstorm` — *"personas
+   and jobs are planted; features can now anchor checks to them."*
+3. **Offer to chain — never auto-execute.** Ask before continuing:
+   *"Want me to start `/tend brainstorm` on the first feature now?"* Only
+   proceed on the user's yes. If they decline, route to whichever
+   sub-skill matches their intent.
+
+Once the spine exists, `/tend brainstorm` (new features) and
+`/tend narrate` (sharper, scenario-led prose on existing ones) both read
+it. Let `tend_get_next` confirm which is the higher-leverage move.
 
 ## Composition with other skills
 

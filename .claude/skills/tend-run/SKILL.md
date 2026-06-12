@@ -70,6 +70,31 @@ Confirm `steps[]` is present and non-empty. Note the feature's
 continues past failures). Note `smoke.cmd` if present - the final
 verification will run it.
 
+### 0.5. Smoke pre-flight — halt on the missing end-to-end gate
+
+Before choosing a path, check the smoke gate. If **both** are true —
+`smoke.cmd` is absent **AND** no `decisions[]` entry explains why this
+feature has no smoke — **HALT and surface the gap.** A feature with no
+end-to-end check and no logged reason can't prove it works as a whole; the
+run would finish "all steps done" with nothing tying them together.
+
+```bash
+bash docs/tend/features/<id>.tend.html data | jq '{smoke: .smoke.cmd, decisions: [.decisions[]?.decision]}'
+```
+
+If `smoke.cmd` is null/empty and no decision mentions smoke / no-smoke /
+"pure library" rationale:
+
+> "This feature has no `smoke.cmd` and no logged decision explaining its
+> absence. Running it now would leave the bet without an end-to-end
+> verification. Recommended: run `/tend brainstorm <id>` to add a
+> `smoke.cmd`, or to log a `decisions[]` entry stating why none applies
+> (e.g. a pure library with only unit-testable APIs). Add one of those,
+> then re-run `/tend run`. Want to proceed without smoke anyway?"
+
+Only continue past this gate on explicit user direction. If `smoke.cmd`
+exists, or a decision already explains its absence, proceed silently.
+
 ### 1. Choose path
 
 ```
@@ -234,3 +259,22 @@ state: claims of completion without verification.
 - A summary of step results is reported.
 - The user is explicitly told to run `/tend audit <id>` before considering the feature done.
 - `status` is unchanged unless transition from `planned` -> `in-progress` was triggered by the first step starting. Never `verified`.
+
+## Next move
+
+Close the loop — don't leave the user guessing what comes next.
+
+1. **Compute it.** Call `tend_get_next` (MCP preferred; CLI fallback
+   `node dist/bin/tend.js next --json`). It reads on-disk state and
+   returns the highest-leverage action with reason codes.
+2. **Present it plainly.** State the recommended `action` verbatim and the
+   reason in plain words (paraphrase the reason code, don't paste it).
+   After a completed run the recommendation is almost always
+   `/tend audit <id>` — *"all steps are done but no audit has run, so the
+   bet is implemented-not-verified."*
+3. **Offer to chain — never auto-execute.** Ask before continuing:
+   *"Want me to run `/tend audit <id>` now?"* Only proceed on the user's
+   yes. Run never sets `status = verified`; only `/tend audit` can.
+
+All-steps-done is not feature-works. Let `tend_get_next` confirm the audit
+move rather than assuming the run is the finish line.

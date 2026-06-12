@@ -1,0 +1,10 @@
+:root { --x-bg: #F8F5EC; }
+.a { color: #3B82F6; }
+.b { padding: 13px; margin: 8px; }
+.c { border-radius: 9px; }
+.d { transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+.e { box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); }
+.f { color: #8A8A86; background: var(--x-bg); }
+.g { color: #E8917F; background: #3F7A33; }
+/* Supercharge your workflow with our brand folder approach. Petals is great. */
+@media (max-width: 700px) { .h { gap: 24px; } }

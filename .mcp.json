@@ -1,9 +1,8 @@
 {
   "mcpServers": {
     "tend": {
-      "command": "npx",
+      "command": "tend",
       "args": [
-        "tend-cli",
         "serve"
       ]
     }

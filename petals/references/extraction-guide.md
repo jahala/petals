@@ -1,6 +1,6 @@
-# Extraction Guide — `/petal init` Process
+# Extraction Guide — `/petals init` Process
 
-This document defines the structured process for the `/petal init <folder>` subcommand. Follow these steps in order. Deviate only when you encounter an edge case documented in Section 7.
+This document defines the structured process for the `/petals init <folder>` subcommand. Follow these steps in order. Deviate only when you encounter an edge case documented in Section 7.
 
 ## 1. Asset Discovery
 
@@ -68,6 +68,17 @@ For each output file, read the corresponding template from `petals/templates/`:
 | `.brand/typography.md` | `petals/templates/typography.md` |
 | `.brand/voice.md` | `petals/templates/voice.md` |
 | `.brand/identity.md` | `petals/templates/identity.md` |
+| `.brand/components.md` | `petals/templates/components.md` |
+| `.brand/layout.md` | `petals/templates/layout.md` |
+
+### 5a. Derived machine views
+
+After the templates are populated, emit two generated views (never templates — they are derived from the markdown, and the markdown stays canonical):
+
+- `.brand/tokens.css` — every brand value as a CSS custom property, using the brand's own token prefix (take it from the CSS custom-properties block in colors.md when one exists; otherwise derive it from the brand name, e.g. `--acme-*`). Colors, font stacks, spacing, radius, strokes, shadows, motion. Projects import it and reference variables instead of hard-coding values.
+- `.brand/tokens.json` — the same values in W3C design-tokens shape (`{ "$value", "$type" }` groups: color, fontFamily, space, layout, radius, stroke, shadow, motion). Build tools and Tailwind/theme configs consume this directly.
+
+Skip a token when its source value was flagged rather than extracted — a generated view must not launder a guess into a value. Regenerate both files on every `/petals update`.
 
 Replace each `{{PLACEHOLDER}}` in the template with the extracted value. For placeholders where no explicit value was found:
 - If the field is optional (metadata, visual theme attributes), write "not specified" or remove the line.

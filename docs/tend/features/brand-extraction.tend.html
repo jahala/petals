@@ -356,16 +356,19 @@ nav.toc, .breadcrumb, .bed-top-header,
 .bed-top-header__stat--status { color: var(--text-2); display: inline-flex; align-items: center; gap: var(--sp-1); }
 .bed-top-header__theme { display: inline-flex; align-items: center; }
 
-/* Right rail — full-height fixed strip below the top nav */
-.right-rail { display: contents; }  /* passthrough wrapper */
+/* Right rail — a sticky grid column: starts in flow BELOW the masthead band,
+   then pins under the chrome once scrolled past it. (Replaces the old fixed
+   viewport sheet, which ignored DOM order and ran over the masthead.) */
+.right-rail {
+  position: sticky;
+  top: var(--top-nav-h);
+  align-self: start;
+  height: calc(100vh - var(--top-nav-h));
+}
 
 .detail-panel {
-  position: fixed;
-  top: var(--top-nav-h);
-  right: 0;
-  bottom: 0;
+  height: 100%;
   width: var(--rail-w);
-  z-index: 10;
   background: var(--bg);
   border-left: 1px solid var(--border);
   display: flex;
@@ -377,27 +380,32 @@ nav.toc, .breadcrumb, .bed-top-header,
   color: var(--text);
 }
 
-/* Page wrapper — reserves space for both fixed elements. Stretches to viewport
-   width (no max-width); the inner .page-grid caps its own width and centers
-   on very wide viewports. */
+/* Page wrapper — stretches to viewport width; the inner .page-grid caps its
+   own width and centers on very wide viewports. The rail is a grid column
+   (no fixed-element reservation); it sits flush to the grid's right edge. */
 .wrap {
   padding-top: calc(var(--top-nav-h) + var(--sp-6));
   padding-bottom: var(--sp-8);
   padding-left: var(--sp-6);
-  padding-right: calc(var(--rail-w) + var(--sp-6));
+  padding-right: 0;
   color: var(--text);
   font-size: 16px;
   line-height: 1.65;
 }
 
-/* Inside .wrap: 2-col grid (TOC | article). Rail is fixed, not part of this grid.
-   Caps at 1280px so on very wide viewports content doesn't sprawl. */
+/* When the masthead band renders, it already clears the fixed chrome and
+   provides the top spacing — the wrap must not double-gap. */
+[data-masthead="on"] .wrap { padding-top: 0; }
+
+/* Inside .wrap: 3-col grid (TOC | article | rail). Caps so the article column
+   keeps a readable measure on very wide viewports; the cap absorbs the rail
+   width that the old 2-col cap excluded. */
 .page-grid {
   display: grid;
-  grid-template-columns: 200px minmax(0, 1fr);
+  grid-template-columns: 200px minmax(0, 1fr) var(--rail-w);
   gap: var(--sp-8);
   align-items: start;
-  max-width: 1280px;
+  max-width: calc(1280px + var(--rail-w) + var(--sp-8));
   margin: 0 auto;
 }
 
@@ -448,7 +456,11 @@ nav.toc .toc-item--h3 {
   padding-left: var(--sp-3);   /* subtle indent for h3 entries — hierarchy by indent, not glyph */
 }
 nav.toc a {
-  display: block;
+  display: -webkit-box;        /* enables the line-clamp; block-like for layout */
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;       /* long headings clamp to 2 lines + ellipsis */
+  line-clamp: 2;
+  overflow: hidden;
   color: var(--text-muted);
   text-decoration: none;
   padding: 2px 0 2px var(--sp-2);
@@ -488,11 +500,6 @@ nav.toc a.active {
 .pill--sev-H        { background: var(--sev-h-bg); color: var(--sev-h-fg); border-color: var(--sev-h-border); }
 .pill--sev-M        { background: var(--sev-m-bg); color: var(--sev-m-fg); border-color: var(--sev-m-border); }
 .pill--sev-L        { background: var(--sev-l-bg); color: var(--sev-l-fg); border-color: var(--sev-l-border); }
-.pill--verdict-chosen   { background: var(--sev-l-bg); color: var(--sev-l-fg); border-color: var(--sev-l-border); }
-.pill--verdict-rejected { color: var(--text-muted); text-decoration: line-through; }
-.pill--verdict-deferred { background: var(--sev-m-bg); color: var(--sev-m-fg); border-color: var(--sev-m-border); }
-.pill--role         { color: var(--accent); border-color: var(--accent); }
-.pill--integration  { color: var(--text-muted); border-color: var(--border); }
 
 /* Glyphs — single character status indicators. Color from var per status. */
 .glyph {
@@ -644,6 +651,73 @@ nav.toc a.active {
   margin-top: var(--sp-2);
   font-size: 0.875rem;
   color: var(--text-muted);
+}
+
+/* ── Editorial layer ──────────────────────────────────────────────────────
+   Standfirst (dek), validation-clause pull quote, and verified stamps.
+   Presence-driven, main-column only. Lead-paragraph treatment per the page
+   type system; tokens only, flat aesthetic — no shadows, no gradients.
+──────────────────────────────────────────────────────────────────────── */
+
+/* Standfirst — the authored dek above the bet article. Larger serif lede,
+   muted, sets the frame before the WWIFWWh bet body. Mirrors the article
+   <h1> lede aesthetics one notch down. */
+.standfirst {
+  margin: var(--sp-4) 0 var(--sp-6);
+  max-width: 680px;
+}
+.standfirst p {
+  font-family: var(--serif);
+  font-size: 19px;
+  line-height: 1.5;
+  color: var(--text-2);
+  margin: 0 0 var(--sp-3);
+}
+.standfirst p:last-child { margin-bottom: 0; }
+
+/* Pull quote — the persona's validation clause as editorial copy, at the top
+   of the narrative. Accent rule + serif italic, the IMPACT slot's human voice. */
+.pull-quote {
+  margin: 0 0 var(--sp-6);
+  padding: var(--sp-2) var(--sp-4);
+  border-left: 3px solid var(--accent);
+  max-width: 680px;
+}
+.pull-quote p {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--text);
+  margin: 0;
+}
+.pull-quote__attr {
+  display: block;
+  margin-top: var(--sp-2);
+  font-family: var(--mono);
+  font-style: normal;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+/* Verified stamp — inline [check:id] evidence badge. Flat, accent-on-weak
+   chip; only ever emitted for a pass verdict (never a false green). */
+.verified-stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: 0 var(--sp-1);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--accent-weak);
+  color: var(--accent-d);
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.4;
+  white-space: nowrap;
+  vertical-align: baseline;
 }
 
 /* FAQ — native <details>/<summary> */
@@ -928,6 +1002,39 @@ nav.toc a.active {
   font-weight: 600;
 }
 
+/* ── Rail bands ──────────────────────────────────────────────────────────────
+   The rail's three wayfinding zones (IDENTITY → GRAPH → PROOF). A stronger top
+   divider + a small-caps mono label set each band apart, so the reader navigates
+   by position. The first band needs no top rule (the .detail-meta strip above it
+   already provides one). */
+.rail-band + .rail-band {
+  border-top: 2px solid var(--border-strong);
+}
+.rail-band__label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: var(--sp-3) var(--sp-3) var(--sp-1);
+  margin: 0;
+}
+
+/* "+N more" overflow expander inside a GRAPH-band link list. The hidden tail
+   lives in this <details> (self-contained — no off-page nav); the summary is a
+   muted accent affordance. */
+.rail-more { margin: 2px 0 0; }
+.rail-more__summary {
+  list-style: none;
+  cursor: pointer;
+  font-family: var(--sans);
+  font-size: 11px;
+  color: var(--accent);
+  padding: var(--sp-1) 0 var(--sp-1) var(--sp-2);
+}
+.rail-more__summary::-webkit-details-marker { display: none; }
+.rail-more__summary:hover { color: var(--accent-d); text-decoration: underline; }
+
 /* Journey rows */
 .journey-row {
   display: flex;
@@ -1127,6 +1234,7 @@ nav.toc a.active {
    indented to align under the description so they read as metadata for
    the check above them. */
 .detail-criteria { margin: 0; padding: 0; list-style: none; }
+/* Each check is a <details>: a compact summary row + an expandable body. */
 .detail-criterion { font-size: 12px; padding: var(--sp-1) 0; }
 .detail-criterion__row {
   display: grid;
@@ -1137,6 +1245,18 @@ nav.toc a.active {
   gap: var(--sp-2);
   align-items: baseline;
   cursor: pointer;
+  list-style: none;            /* hide the <summary> disclosure triangle */
+}
+.detail-criterion__row::-webkit-details-marker { display: none; }
+/* When the cross-highlight handler targets a row, flash it briefly so the eye
+   finds it after a jump from the bet article or a [check:id] stamp. */
+@keyframes rail-flash {
+  0%   { background: var(--accent-weak); }
+  100% { background: transparent; }
+}
+.detail-criterion.rail-flash,
+.detail-step.rail-flash {
+  animation: rail-flash 1s ease-out;
 }
 .detail-criterion__status {
   display: inline-block;
@@ -1164,15 +1284,46 @@ nav.toc a.active {
   min-width: 0;
   overflow-wrap: anywhere;
 }
+/* Compact-row description — one line, ellipsized. The full text lives in the
+   expanded body (and on the summary's title=) so nothing is lost. */
+.detail-criterion__desc--clamp {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Full (un-clamped) description shown when the row is expanded. */
+.detail-criterion__full {
+  margin: 0 0 var(--sp-1);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 13px;
+  line-height: 1.4;
+}
+.detail-criterion__job {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.detail-criterion__job code { color: var(--text-2); }
+/* Truth sub-label — a muted "why this verdict is degraded" note (e.g. "job not
+   asserted"). Shares the description-column indent so it reads as a continuation
+   of the check row, in the warn tone (it flags a real, recorded gap). */
+/* sublabel + pills now live INSIDE the expanded body (which already indents),
+   so no big column-aligning calc indent — just a small top gap. */
+.detail-criterion__sublabel {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--glyph-partial, var(--text-muted));
+  margin-top: 2px;
+}
+
 .detail-criterion__pills {
   display: flex;
   flex-wrap: wrap;
   gap: var(--sp-1);
   align-items: center;
-  /* Indent aligns with the description column above (16px icon + 8px gap
-     + 4em id + 8px gap). Calc keeps it in lockstep with the row grid. */
-  padding-left: calc(16px + var(--sp-2) + 4em + var(--sp-2));
-  margin-top: 2px;
+  margin-top: var(--sp-1);
 }
 .detail-criterion__level {
   font-family: var(--mono);
@@ -1184,12 +1335,11 @@ nav.toc a.active {
   white-space: nowrap;
   line-height: 1.4;
 }
+/* The body shows natively when the <details> is open. */
 .detail-criterion__body {
-  display: none;
   padding: var(--sp-1) 0 var(--sp-2) var(--sp-4);
   font-size: 11px;
 }
-.detail-criterion.open > .detail-criterion__body { display: block; }
 .detail-criterion__traces {
   font-size: 11px;
   color: var(--text-muted);
@@ -1479,47 +1629,7 @@ nav.toc a.active {
   border-top: 1px solid var(--border);
 }
 
-/* Kept for backwards compat — older renderers used the grid format */
-.bet-block {
-  margin: var(--sp-4) 0 var(--sp-6);
-  font-size: 15px;
-  line-height: 1.55;
-}
-.bet-block__slot {
-  display: grid;
-  grid-template-columns: 110px 1fr;
-  gap: var(--sp-3);
-  padding: var(--sp-1) 0;
-}
-.bet-block__slot + .bet-block__slot {
-  border-top: 1px solid var(--border);
-  margin-top: var(--sp-2);
-  padding-top: var(--sp-3);
-}
-.bet-block__key {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--text-muted);
-  text-transform: lowercase;
-  letter-spacing: 0.02em;
-  padding-top: 3px;
-}
-.bet-block__val {
-  font-family: var(--sans);
-  color: var(--text);
-}
-.bet-block__val a.dep-link { font-weight: 600; }
-.bet-block__val em { font-style: italic; color: var(--text-2); }
-.bet-block__probes {
-  margin-top: var(--sp-2);
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--text-muted);
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sp-3);
-  align-items: center;
-}
+
 /* Probe references — inline text, no chip box. Status-tinted color is the
    only signal; method-info lives in the rail's Eval Cases card. */
 .bet-probe {
@@ -1533,34 +1643,6 @@ nav.toc a.active {
 .bet-probe--missing   { color: var(--text-muted); }
 .bet-probe--failed    { color: var(--glyph-failed); }
 
-/* ── Eval score header — strip above the eval cases table ──────────────── */
-.eval-score {
-  font-family: var(--mono);
-  font-size: 13px;
-  color: var(--text-muted);
-  margin: var(--sp-2) 0 var(--sp-4);
-  display: flex;
-  gap: var(--sp-3);
-  flex-wrap: wrap;
-  align-items: center;
-}
-.eval-score strong { color: var(--text); font-weight: 600; }
-.eval-score__ships {
-  padding: 2px var(--sp-2);
-  border-radius: var(--radius-pill);
-  background: var(--glyph-verified);
-  color: white;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-left: var(--sp-2);
-}
-.eval-score__ships--not { background: var(--glyph-failed); }
-
-/* Headline case row in eval-cases table */
-.bed-table tr.is-headline td:first-child {
-  border-left: 2px solid var(--accent);
-}
 
 /* Eval-case method pills — one variant per AI-runnable method.
    `manual-judgment` is deliberately absent; the small-team + AI workflow
@@ -1602,14 +1684,6 @@ nav.toc a.active {
   color: var(--text-2);
 }
 
-/* Attention flag modifier on .bed-block — used inline above an opportunity
-   that has no feature solving it, and in the rail's "Attention" card. */
-.bed-block--attention .bed-block__lead {
-  color: var(--glyph-failed);
-}
-.bed-block--attention .bed-block__lead::before {
-  content: "⚠ ";
-}
 
 /* ── 9. tend-card — universal card component ─────────────────────────────
    A bordered surface card used anywhere inside a polyglot's center-col.
@@ -1780,11 +1854,12 @@ nav.toc a.active {
 }
 
 @media (max-width: 1023px) {
-  .detail-panel { display: none; }
+  .right-rail { display: none; }
   .wrap {
     padding-right: var(--sp-6);
     padding-top: calc(var(--top-nav-h) + var(--sp-4));
   }
+  [data-masthead="on"] .wrap { padding-top: 0; }
   .page-grid {
     grid-template-columns: 1fr;
     gap: 18px;
@@ -1999,6 +2074,20 @@ nav.toc a.active {
   font-weight: 600;
 }
 
+/* Collapsed-summary hint — the top group labels ("persona-job anchors, slot
+   checks +1 more"). Sits between the label and the count; truncates rather than
+   wraps so the summary stays one calm line. */
+.health-coherence__hint {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-faint, var(--text-muted));
+}
+
 .health-coherence__total {
   margin-left: auto;
   font-family: var(--mono);
@@ -2059,6 +2148,236 @@ nav.toc a.active {
   color: var(--text-2);
 }
 
+/* ── 11b. Masthead band (M1) ─────────────────────────────────────────────────
+   The full-width editorial band above the three columns. Information beautifully
+   set, never promotion: a bg-2 band with a bottom rule, height-capped (~280px of
+   content), every element functional. Tokens only — dark mode free.
+
+   Layout: a max-width inner that aligns with .page-grid (1280px), a two-column
+   split (lead ~60% | aside ~40%). The aside holds the visual card + status card
+   (feature) or the cockpit (garden) or the portrait (anchor). The .wrap already
+   reserves the fixed rail's width via padding-right, so the band never underlaps
+   the rail. Responsive polish is M2; here a cheap stack keeps narrow widths sane.
+──────────────────────────────────────────────────────────────────────────── */
+
+/* When the masthead carries the title + status, the compact .article-head and
+   the chrome status chip are absorbed (de-duplication). oo-boot sets data-masthead. */
+[data-masthead="on"] .article-head { display: none; }
+
+.masthead-tend {
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--border);
+  /* The band lives OUTSIDE .wrap and spans the full viewport width; it clears
+     the fixed chrome itself and provides the gap into the page below. */
+  margin: var(--top-nav-h) 0 var(--sp-8);
+  padding: var(--sp-8) var(--sp-6);
+}
+.masthead-tend__inner {
+  /* Mirror .page-grid's ensemble cap so the band's content aligns with the
+     columns below it on very wide viewports. */
+  max-width: calc(1280px + var(--rail-w) + var(--sp-8));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: var(--sp-8);
+  align-items: start;
+}
+/* No aside present (degraded-rich / no visual) → lead takes the full width. */
+.masthead-tend__inner:not(:has(.masthead-tend__aside)):not(:has(.masthead-tend__cockpit)) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.masthead-tend__lead { min-width: 0; }
+
+.masthead-tend__kicker {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 var(--sp-3);
+}
+.masthead-tend__kicker-sep { opacity: 0.5; }
+
+.masthead-tend__title {
+  font-family: var(--serif);
+  font-size: clamp(32px, 4.6vw, 52px);
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  color: var(--heading);
+  margin: 0 0 var(--sp-3);
+}
+
+.masthead-tend__dek,
+.masthead-tend__tagline {
+  font-family: var(--serif);
+  font-size: 19px;
+  line-height: 1.5;
+  color: var(--text-2);
+  max-width: 640px;
+  margin: 0 0 var(--sp-4);
+  /* Height-cap the band by clamping the lede to a few lines — ellipsizes at a
+     clean line boundary (never a mid-word hard cut). The full text lives in main
+     (anchor pages) or is the authored one-liner (bets); the band is the opener. */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  overflow: hidden;
+}
+.masthead-tend__dek--quote {
+  border-left: 2px solid var(--accent);
+  padding-left: var(--sp-4);
+  font-style: italic;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+/* Garden tagline — first sentence accent-italic (the project's claim), the rest
+   in the muted serif tone. The split happens in renderGardenTagline; here we
+   just color the two spans. */
+.masthead-tend--garden .masthead-tend__tagline {
+  color: var(--text-2);
+}
+.masthead-tend__tagline-lead {
+  font-style: italic;
+  color: var(--accent-d);
+}
+.masthead-tend__tagline-rest {
+  color: var(--text-2);
+}
+
+/* Chip row — persona / solves / counts. Compact, mono, linked. */
+.masthead-tend__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin: 0;
+}
+.masthead-tend__chip {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-2);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 2px var(--sp-2);
+  text-decoration: none;
+  white-space: nowrap;
+}
+a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-strong); }
+.masthead-tend__chip--persona { border-left: 2px solid var(--accent); }
+.masthead-tend__chip--board { color: var(--accent); }
+
+/* Right column — visual card + status card, or the cockpit / portrait. */
+.masthead-tend__aside {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  min-width: 0;
+}
+
+/* The visual card — white, bordered, soft shadow. Caps its own height so a tall
+   diagram doesn't blow the 280px band. */
+.masthead-tend__visual {
+  margin: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: var(--sp-3);
+  overflow: hidden;
+}
+.masthead-tend__visual svg,
+.masthead-tend__visual img {
+  display: block;
+  width: 100%;
+  max-height: 168px;
+  object-fit: contain;
+}
+/* The visual's typed-icon primitives (tc-*) need the same fill scoping the
+   header thumb gets, or the rects fall back to black. */
+.masthead-tend__visual svg .tc-bg    { fill: var(--bg-2); }
+.masthead-tend__visual svg .tc-wh    { fill: var(--surface); }
+.masthead-tend__visual svg .tc-frame { stroke: var(--border-strong); fill: none; }
+.masthead-tend__visual svg .tc-la    { stroke: var(--text-muted); }
+.masthead-tend__visual svg .tc-ln    { stroke: var(--text-2); }
+.masthead-tend__visual svg .tc-ac    { fill: var(--accent); stroke: var(--accent); }
+.masthead-tend__visual svg .tc-fg    { fill: var(--text); }
+
+/* The status card — status chip + honest check tally, deep-linking to the rail. */
+.masthead-tend__status-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--sp-2) var(--sp-3);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.masthead-tend__status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  color: var(--text-2);
+}
+.masthead-tend__status-checks {
+  color: var(--text-muted);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.masthead-tend__status-checks:hover { color: var(--accent); }
+
+/* The garden cockpit, moved into the band. Reuse the rail's health-* styles. */
+.masthead-tend__cockpit {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--sp-3) var(--sp-4);
+  min-width: 0;
+}
+.masthead-tend__cockpit .health-rail-block { display: block; }
+
+/* Persona portrait — the archetype quote is the page's strongest line, so its
+   portrait earns real presence: ~2× the old floating thumb, balanced against
+   the standfirst quote on the left. The card centers the SVG and lets it grow
+   to a generous max so a typed-portrait reads as a portrait, not an icon. */
+.masthead-tend--persona .masthead-tend__visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-4);
+}
+.masthead-tend--persona .masthead-tend__visual svg,
+.masthead-tend--persona .masthead-tend__visual img {
+  max-height: 320px;           /* ~2× the 168px shared cap */
+  max-width: 100%;
+}
+
+/* Responsive: under 900px the band stacks to a single column (lead over aside)
+   so the title/dek + portrait/status card read top-to-bottom on narrow screens.
+   Because the band lives ABOVE the grid, the status card it carries stays
+   visible even below 1024px where the rail (.right-rail) is hidden. */
+@media (max-width: 899px) {
+  .masthead-tend {
+    padding: var(--sp-6) var(--sp-3);
+  }
+  .masthead-tend__inner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--sp-5);
+    max-height: none;
+  }
+  /* The aside sits below the lead; cap the portrait so the stack stays compact. */
+  .masthead-tend--persona .masthead-tend__visual svg,
+  .masthead-tend--persona .masthead-tend__visual img {
+    max-height: 240px;
+  }
+}
+
 /* ── 12. Print ──────────────────────────────────────────────────────────── */
 @media print {
   .bed-top-header,
@@ -2070,6 +2389,7 @@ nav.toc a.active {
     max-width: none;
   }
   .center-col { max-width: none; }
+  .masthead-tend { margin-left: 0; margin-right: 0; max-height: none; }
 }
 
 </style>
@@ -2115,7 +2435,17 @@ nav.toc a.active {
   </div>
 </header>
 
+<!-- Masthead band (M1) — spans the FULL viewport width, above everything in
+     .wrap: TOC, main, and rail all begin below it. Presence-driven: the
+     renderer fills it for gardens, persona/opportunity anchors, and features
+     with a dek or media; degraded pages leave it empty (the compact
+     .article-head below carries the title instead). When filled it absorbs
+     the rail meta strip, the chrome status/health chips, and (garden) the
+     rail health cockpit. -->
+<div class="masthead-tend-mount" data-masthead-mount></div>
+
 <div class="wrap">
+
 <div class="page-grid">
 
   <aside class="left-rail">
@@ -2152,7 +2482,8 @@ nav.toc a.active {
   "kind": "feature",
   "tend_version": "0.4.0",
   "generated_at": "2026-06-04T12:40:59.745Z",
-  "project_name": "Petals"
+  "project_name": "Petals",
+  "dek_sha": "4972d8c9b9cc0bd9b26981f41261ee65748d7086"
 }
 </script>
 
@@ -2160,22 +2491,22 @@ nav.toc a.active {
 {
   "id": "brand-extraction",
   "title": "Brand Extraction",
-  "status": "planned",
+  "status": "verified",
   "priority": "high",
   "dependencies": [],
   "enables": [
     "brand-distribution",
     "brand-check"
   ],
-  "what": "/petal init <folder> reads brand assets using the agent's native capabilities and produces two things: a complete .brand/ directory of agent-readable brand files, and the SKILL.md that makes those files actionable at generation time — so agents read, apply, and enforce brand rules before any code or copy reaches human review.",
+  "what": "/petals init <folder> reads brand assets using the agent's native capabilities and produces two things: a complete .brand/ directory of agent-readable brand files, and the SKILL.md that makes those files actionable at generation time — so agents read, apply, and enforce brand rules before any code or copy reaches human review.",
   "why": "The brand team's 40-page PDF is beautiful. It means nothing to an agent. Today, an agent opening a session picks Tailwind's default blue, uses Inter because it shipped with the template, and writes copy that sounds like every other SaaS landing page. The gap is twofold: the brand isn't agent-readable (no structured files), and even if it were, the agent doesn't know it exists or how to use it (no behavioral contract). Extraction solves both — it translates the brand into files agents can read, and wraps them in a skill that tells the agent when and how to use them.",
-  "impact": "An agent in a project with .brand/ and the petal skill, given \"build a contact page\" with zero brand instructions in the prompt, produces output using the correct primary color, heading font, spacing scale, and brand voice. /petal check on the output reports zero errors. Nobody pasted a hex code. The brand was ambient infrastructure — present, correct, and invisible.",
+  "impact": "An agent in a project with .brand/ and the petal skill, given \"build a contact page\" with zero brand instructions in the prompt, produces output using the correct primary color, heading font, spacing scale, and brand voice. /petals check on the output reports zero errors. Nobody pasted a hex code. The brand was ambient infrastructure — present, correct, and invisible.",
   "fit": "The entry point. Extraction creates the brand intelligence layer — the files, the skill, the behavioral contract. Distribution gets it into projects. Check audits against it. Without extraction, there's nothing to distribute and nothing to check against.",
-  "where": "petals/SKILL.md (auto-trigger conditions, hard validity rules, subcommand dispatch — the behavioral wrapper agents read). petals/references/extraction-guide.md (structured process for reading brand assets). petals/templates/ (DESIGN.md, colors.md, typography.md, voice.md, identity.md — the output scaffolding).",
+  "where": "petals/SKILL.md (auto-trigger conditions, hard validity rules, subcommand dispatch — the behavioral wrapper agents read). petals/references/extraction-guide.md (structured process for reading brand assets, incl. the derived machine views). petals/templates/ (DESIGN.md, colors.md, typography.md, voice.md, identity.md, components.md, layout.md — the output scaffolding). Emits .brand/tokens.css + .brand/tokens.json.",
   "how": "The skill gives the agent a structured process, not extraction algorithms. The agent scans the folder, reads each asset with its best native capability (vision for images, parsing for JSON/CSS, reading for markdown/PDF), synthesizes into the standard templates, copies asset files directly, and flags anything ambiguous. Color values must be explicit in source docs — petal never infers colors from swatches. DESIGN.md follows the Google Stitch 9-section standard. The SKILL.md auto-triggers on creative work and instructs agents to read .brand/ before generating and apply rules at generation time, not just check after.",
   "progress": {
     "implementation": 100,
-    "verification": 82
+    "verification": 100
   },
   "checks": [
     {
@@ -2221,11 +2552,11 @@ nav.toc a.active {
       "validates_job": "brand-operator:0",
       "method": "synthetic-test",
       "integration_level": "integration",
-      "verification_recipe": "Run on empty dir → assert error, no .brand/. Run on dir with 3 SVGs + 2 JPGs only → assert .brand/assets/ contains all 5; assert output flags missing colors, typography, voice."
+      "verification_recipe": "Run on empty dir -> assert error, no .brand/. Run on dir with 3 SVGs + 2 JPGs only -> assert .brand/assets/ contains all 5; assert output flags missing colors, typography, voice."
     },
     {
       "id": "c006",
-      "description": "Extracted voice.md contains a forbidden terms list matching the source. Each before/after example pair correctly illustrates the rule it claims to demonstrate — the 'before' violates it and the 'after' follows it.",
+      "description": "Extracted voice.md contains a forbidden terms list matching the source. Each before/after example pair correctly illustrates the rule it claims to demonstrate - the 'before' violates it and the 'after' follows it.",
       "validates": "what",
       "validates_job": "brand-operator:0",
       "method": "synthetic-test",
@@ -2243,16 +2574,16 @@ nav.toc a.active {
     },
     {
       "id": "c008",
-      "description": "The ambient context check. An agent with petal's SKILL.md installed and .brand/ populated, given a creative task with NO brand instructions in the prompt, produces output using palette colors, correct fonts, and brand voice — verified by running /petal check on the generated output and getting zero errors.",
+      "description": "The ambient context check. An agent with petal's SKILL.md installed and .brand/ populated, given a creative task with NO brand instructions in the prompt, produces output using palette colors, correct fonts, and brand voice - verified by running /petals check on the generated output and getting zero errors.",
       "validates": "impact",
       "validates_job": "shipping-developer:1",
       "method": "agent-judgment",
       "integration_level": "e2e",
-      "verification_recipe": "Set up a project with .brand/ (known palette, typography, voice rules) and the petal skill. Prompt the agent: 'Build a simple hero section with a headline and CTA button.' (No brand instructions.) Run /petal check on the generated output. Assert zero errors for colors, typography, and voice dimensions."
+      "verification_recipe": "Set up a project with .brand/ (known palette, typography, voice rules) and the petal skill. Prompt the agent: 'Build a simple hero section with a headline and CTA button.' (No brand instructions.) Run /petals check on the generated output. Assert zero errors for colors, typography, and voice dimensions."
     },
     {
       "id": "c009",
-      "description": "The SKILL.md auto-trigger description causes the agent to read .brand/ when the prompt mentions building UI, writing copy, or working on visual output — without the user invoking petal explicitly.",
+      "description": "The SKILL.md auto-trigger description causes the agent to read .brand/ when the prompt mentions building UI, writing copy, or working on visual output - without the user invoking petal explicitly.",
       "validates": "what",
       "validates_job": "shipping-developer:1",
       "method": "agent-judgment",
@@ -2261,7 +2592,7 @@ nav.toc a.active {
     },
     {
       "id": "c010",
-      "description": "The petal skill directory exists at the expected path with SKILL.md, references/, templates/, and scripts/ — the full structure agents need to activate and use the brand.",
+      "description": "The petal skill directory exists at the expected path with SKILL.md, references/, templates/, and scripts/ - the full structure agents need to activate and use the brand.",
       "validates": "where",
       "validates_job": "brand-operator:0",
       "method": "synthetic-test",
@@ -2270,16 +2601,43 @@ nav.toc a.active {
     },
     {
       "id": "c011",
-      "description": "Extraction uses the agent's native capabilities (reading files, vision for images, parsing for JSON/CSS) — it does not depend on external tools, browser automation, or custom code.",
+      "description": "Extraction uses the agent's native capabilities (reading files, vision for images, parsing for JSON/CSS) - it does not depend on external tools, browser automation, or custom code.",
       "validates": "how",
       "validates_job": "brand-operator:0",
       "method": "synthetic-test",
       "integration_level": "integration",
       "verification_recipe": "Run extraction in an environment with no Playwright, no Puppeteer, no external CLI tools beyond what the agent natively provides. Assert extraction completes successfully using only Read, Bash, and the agent's vision capability."
+    },
+    {
+      "id": "c012",
+      "description": "Extraction produces brand files that an agent can read and apply without manual hex-code pasting - the brand-assets-minimal fixture produces 7 output files with correct hex values, font specs, and voice rules, confirming the why claim that extraction bridges the gap between brand documents and agent context.",
+      "validates": "why",
+      "validates_job": "brand-operator:0",
+      "method": "synthetic-test",
+      "integration_level": "unit",
+      "verification_recipe": "Run extraction on the brand-assets-minimal fixture. Assert 7 output files produced: DESIGN.md, colors.md, typography.md, voice.md, identity.md, assets/logo.svg, assets/hero.jpg. Assert colors.md contains correct hex values (not color names). Assert typography.md contains correct font specs. Assert voice.md contains forbidden terms list. Verify no manual color entry was needed - all values extracted from source."
+    },
+    {
+      "id": "c013",
+      "description": "Extraction uses agent-native capabilities only - reading files, vision for images, parsing for structured data - with no external services, browser automation, or custom tool dependencies, confirming the fit claim that extraction is the bridge between brand workflows and developer workflows without adding infrastructure.",
+      "validates": "fit",
+      "validates_job": "brand-operator:0",
+      "method": "synthetic-test",
+      "integration_level": "unit",
+      "verification_recipe": "Inspect extraction-guide.md and SKILL.md extraction workflow. Assert zero references to Playwright, Puppeteer, Selenium, or any browser automation. Assert zero npm install, npx, or API dependencies in the extraction pipeline. Assert extraction uses only Read, Bash, and vision - the agent's native capabilities."
+    },
+    {
+      "id": "c014",
+      "description": "Extraction emits derived machine views — .brand/tokens.css (CSS custom properties) and .brand/tokens.json (W3C design-tokens shape) — whose values match the canonical markdown; flagged values are never tokenized.",
+      "validates": "what",
+      "validates_job": "ai-agent:0",
+      "method": "synthetic-test",
+      "integration_level": "integration",
+      "verification_recipe": "Assert both files exist. Cross-check every color/space/radius/shadow/motion value in tokens.css appears verbatim in its canonical .md file. Assert no token exists for any field carrying a [FLAG:]. Assert tokens.json parses and mirrors tokens.css values."
     }
   ],
   "smoke": {
-    "cmd": "/petal init test/fixtures/brand-assets-minimal/",
+    "cmd": "/petals init test/fixtures/brand-assets-minimal/",
     "verify": "DESIGN.md exists and colors.md contains expected hex"
   },
   "decisions": [
@@ -2321,7 +2679,7 @@ nav.toc a.active {
     "agent-off-brand"
   ],
   "journey_phase": "author",
-  "narrative": "## Maria opens the attachment. Six projects are still using the old blue.\n\nThe brand team's email lands at 9:47am. Attached: a 40-page PDF brand guide (v2.3), a folder of logo SVGs in six color variants, and a forwarded Slack message from the design director: \"Primary is #FF4D00 now, not #E7000B. Please update everywhere.\" Maria is the bridge between a beautiful PDF and an agent's empty context window. Four projects to update. Zero desire to manually type 47 hex codes, guess which weight of Raleway is the heading weight, or Slack every team with instructions they skim once and forget.\n\nShe drops the PDF, the SVGs, and the designer's README into a folder called `brand-assets/`. Then she runs one command:\n\n```\n/petal init brand-assets/\n```\n\nThe agent reads each asset with its best native capability. Vision for the PDF. Direct parsing for the JSON palette the designer included. Natural-language reading for the voice guidelines in the README. Byte-for-byte copy for the SVGs. Two things appear in the project: a `.brand/` directory with five structured files, and a `SKILL.md` that tells every future agent session how to use them.\n\nMaria opens `colors.md`. The primary field reads `#FF4D00`. Not `#E7000B`. She opens `typography.md`. Raleway Bold at 48px for headings, Open Sans Regular at 16px for body — verbatim from the PDF. She diffs the asset folder against the source: byte-identical. She commits. The next agent session in this project picks up the brand automatically. She never pasted a hex code.\n\n## One command produces two things: the files and the contract.\n\nExtraction is not a parser. It is not a scraper. It is a skill — a structured process the agent follows to read brand assets, synthesize the output, and flag ambiguity rather than paper over it.\n\n<svg viewBox=\"0 0 640 200\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect class=\"tc-bg tc-frame\" x=\"10\" y=\"10\" width=\"180\" height=\"140\" rx=\"4\"/>\n  <rect class=\"tc-wh\" x=\"20\" y=\"20\" width=\"40\" height=\"50\" rx=\"2\"/>\n  <rect class=\"tc-bg\" x=\"26\" y=\"28\" width=\"28\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-bg\" x=\"26\" y=\"35\" width=\"22\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-bg\" x=\"26\" y=\"42\" width=\"30\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-ac\" x=\"26\" y=\"52\" width=\"16\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-bg\" x=\"26\" y=\"59\" width=\"24\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-wh\" x=\"70\" y=\"20\" width=\"24\" height=\"24\" rx=\"2\"/>\n  <circle class=\"tc-ac\" cx=\"82\" cy=\"32\" r=\"5\"/>\n  <rect class=\"tc-wh\" x=\"70\" y=\"52\" width=\"24\" height=\"24\" rx=\"2\"/>\n  <circle class=\"tc-ac\" cx=\"82\" cy=\"64\" r=\"5\"/>\n  <rect class=\"tc-wh\" x=\"104\" y=\"36\" width=\"80\" height=\"40\" rx=\"2\"/>\n  <rect class=\"tc-bg\" x=\"112\" y=\"44\" width=\"30\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-bg\" x=\"112\" y=\"52\" width=\"44\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-ac\" x=\"112\" y=\"64\" width=\"24\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-wh\" x=\"70\" y=\"84\" width=\"24\" height=\"24\" rx=\"2\"/>\n  <rect class=\"tc-bg\" x=\"76\" y=\"90\" width=\"12\" height=\"12\" rx=\"1\"/>\n  <rect class=\"tc-wh\" x=\"104\" y=\"84\" width=\"80\" height=\"24\" rx=\"2\"/>\n  <rect class=\"tc-bg\" x=\"112\" y=\"92\" width=\"20\" height=\"8\" rx=\"1\"/>\n  <rect class=\"tc-fg\" x=\"138\" y=\"92\" width=\"20\" height=\"8\" rx=\"1\"/>\n  <rect class=\"tc-bg\" x=\"164\" y=\"92\" width=\"12\" height=\"8\" rx=\"1\"/>\n  <text x=\"100\" y=\"170\" text-anchor=\"middle\" font-size=\"11\" font-family=\"system-ui\" fill=\"#8a8a86\">Source folder: PDFs, SVGs, JSON, fonts, README</text>\n  <polygon class=\"tc-ac\" points=\"200,80 218,85 200,90\"/>\n  <rect class=\"tc-wh tc-frame\" x=\"226\" y=\"10\" width=\"180\" height=\"140\" rx=\"4\"/>\n  <rect class=\"tc-bg\" x=\"236\" y=\"18\" width=\"6\" height=\"6\" rx=\"1\"/>\n  <rect class=\"tc-bg\" x=\"246\" y=\"18\" width=\"6\" height=\"6\" rx=\"1\"/>\n  <circle class=\"tc-ac\" cx=\"258\" cy=\"21\" r=\"3\"/>\n  <rect class=\"tc-wh\" x=\"236\" y=\"32\" width=\"160\" height=\"20\" rx=\"2\"/>\n  <rect class=\"tc-bg\" x=\"244\" y=\"38\" width=\"24\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-bg\" x=\"244\" y=\"46\" width=\"32\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-wh\" x=\"236\" y=\"58\" width=\"160\" height=\"20\" rx=\"2\"/>\n  <rect class=\"tc-bg\" x=\"244\" y=\"64\" width=\"28\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-bg\" x=\"244\" y=\"72\" width=\"20\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-wh\" x=\"236\" y=\"84\" width=\"160\" height=\"20\" rx=\"2\"/>\n  <rect class=\"tc-ac\" x=\"244\" y=\"90\" width=\"36\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-bg\" x=\"244\" y=\"98\" width=\"24\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-wh\" x=\"236\" y=\"110\" width=\"160\" height=\"20\" rx=\"2\"/>\n  <rect class=\"tc-bg\" x=\"244\" y=\"116\" width=\"44\" height=\"3\" rx=\"1\"/>\n  <rect class=\"tc-bg\" x=\"244\" y=\"124\" width=\"30\" height=\"3\" rx=\"1\"/>\n  <text x=\"316\" y=\"170\" text-anchor=\"middle\" font-size=\"11\" font-family=\"system-ui\" fill=\"#8a8a86\">.brand/ directory: DESIGN.md, colors, typography, voice, assets</text>\n</svg>\n\nThe `.brand/` directory is the intelligence layer. Five files: `DESIGN.md` (the full design system, following the Google Stitch 9-section standard), `colors.md` (every explicit hex value with its semantic role), `typography.md` (font families, weights, sizes, and hierarchy), `voice.md` (tone rules, forbidden terms with before/after examples, copy patterns), and `identity.md` (brand name, tagline, and metadata — or \"not specified\" when the source is silent). An `assets/` subdirectory holds the original files, byte for byte.\n\n`SKILL.md` is the behavioral contract. It auto-triggers when an agent opens a session with creative work on the stack. It instructs the agent to read the relevant `.brand/` files before generating any code or copy, and to apply those rules at generation time — not as a post-hoc lint pass. The agent treats the brand the way it treats a tsconfig: ambient infrastructure, present by default, correct without being asked.\n\n## What extraction refuses to do.\n\nPetals never infers a hex code from a color name. If the source says \"Primary: Teal\" without stating `#2F99A4`, extraction flags it as missing — not guessed, not approximated, not sampled from a swatch image. The same discipline applies to typography: \"Body: Open Sans\" without a weight prompts a flag asking for clarification. Voice guidelines without before/after examples get flagged. Extraction errs on the side of explicit over complete. A `.brand/` with three fully specified files and two flags that say \"ask a human\" is more useful than five files full of guesswork.\n\nWhen the source folder is empty, extraction reports a clear error and produces nothing. When the folder has only images and no text-based brand spec, extraction populates `assets/` with the images and flags that colors, typography, and voice require explicit specification. When the source contains contradictory information — \"Primary: #FF4D00\" on page 3 and \"Primary: #E7000B\" on page 12 — extraction surfaces both values and asks which is current. Every edge case produces a clear signal. No silent approximation.\n\n## The brand that arrives before the first line of code.\n\nThe payoff is what does not happen. Nobody pastes a hex code into a prompt. Nobody types \"Use Raleway for headings, not Inter\" at the start of every session. Nobody catches Tailwind's default blue in PR review and leaves a comment for the fourth time this week. Nobody discovers three months later that the campaign landing page used the 2023 palette because that was the only colors.ts the agent found.\n\nExtraction creates the layer that [Brand Distribution](brand-distribution.tend.html) propagates across projects and [Brand Check](brand-check.tend.html) audits against. Without extraction, there is nothing to distribute and nothing to check. With it, an agent given \"build a contact page\" — zero brand instructions in the prompt — produces output in the correct primary color, the correct heading font, the correct spacing scale, and the correct voice. `/petal check` on that output reports zero errors. The brand was ambient infrastructure: present, correct, and invisible.",
+  "narrative": "## Maria opens the attachment. Six projects are still using the old blue.\n\nThe brand team's email lands at 9:47am. Attached: a 40-page PDF brand guide (v2.3), a folder of logo SVGs in six color variants, and a forwarded Slack message from the design director: \"Primary is #FF4D00 now, not #E7000B. Please update everywhere.\" Maria is the bridge between a beautiful PDF and an agent's empty context window. Four projects to update. Zero desire to manually type 47 hex codes, guess which weight of Raleway is the heading weight, or Slack every team with instructions they skim once and forget.\n\nShe drops the PDF, the SVGs, and the designer's README into a folder called `brand-assets/`. Then she runs one command:\n\n```\n/petals init brand-assets/\n```\n\nThe agent reads each asset with its best native capability. Vision for the PDF. Direct parsing for the JSON palette the designer included. Natural-language reading for the voice guidelines in the README. Byte-for-byte copy for the SVGs. Two things appear in the project: a `.brand/` directory with five structured files, and a `SKILL.md` that tells every future agent session how to use them.\n\nMaria opens `colors.md`. The primary field reads `#FF4D00`. Not `#E7000B`. She opens `typography.md`. Raleway Bold at 48px for headings, Open Sans Regular at 16px for body — verbatim from the PDF. She diffs the asset folder against the source: byte-identical. She commits. The next agent session in this project picks up the brand automatically. She never pasted a hex code.\n\n## One command produces two things: the files and the contract.\n\nExtraction is not a parser. It is not a scraper. It is a skill — a structured process the agent follows to read brand assets, synthesize the output, and flag ambiguity rather than paper over it.\n\nThe pipeline is five stages, not a parse-and-dump: [extraction_pipeline]\n\nThe `.brand/` directory is the intelligence layer. Five files: `DESIGN.md` (the full design system, following the Google Stitch 9-section standard), `colors.md` (every explicit hex value with its semantic role), `typography.md` (font families, weights, sizes, and hierarchy), `voice.md` (tone rules, forbidden terms with before/after examples, copy patterns), and `identity.md` (brand name, tagline, and metadata — or \"not specified\" when the source is silent). An `assets/` subdirectory holds the original files, byte for byte.\n\n`SKILL.md` is the behavioral contract. It auto-triggers when an agent opens a session with creative work on the stack. It instructs the agent to read the relevant `.brand/` files before generating any code or copy, and to apply those rules at generation time — not as a post-hoc lint pass. The agent treats the brand the way it treats a tsconfig: ambient infrastructure, present by default, correct without being asked.\n\n## What extraction refuses to do.\n\nPetals never infers a hex code from a color name. If the source says \"Primary: Teal\" without stating `#2F99A4`, extraction flags it as missing — not guessed, not approximated, not sampled from a swatch image. The same discipline applies to typography: \"Body: Open Sans\" without a weight prompts a flag asking for clarification. Voice guidelines without before/after examples get flagged. Extraction errs on the side of explicit over complete. A `.brand/` with three fully specified files and two flags that say \"ask a human\" is more useful than five files full of guesswork.\n\nWhen the source folder is empty, extraction reports a clear error and produces nothing. When the folder has only images and no text-based brand spec, extraction populates `assets/` with the images and flags that colors, typography, and voice require explicit specification. When the source contains contradictory information — \"Primary: #FF4D00\" on page 3 and \"Primary: #E7000B\" on page 12 — extraction surfaces both values and asks which is current. Every edge case produces a clear signal. No silent approximation.\n\n## Two views the machines read directly\n\nThe markdown is canonical, and markdown is prose — an agent applying a palette wants values, not paragraphs. Extraction therefore emits two derived views alongside the seven files: `tokens.css`, every brand value as a custom property ready to import, and `tokens.json` in the W3C design-tokens shape that build tools and theme configs consume directly. Both are generated, never authored; both regenerate on every /petals update. One honesty rule carries over from extraction itself: a flagged value is never tokenized — a generated view must not launder a guess into a value. For the human reading rather than building, the [brand book](brand-book.tend.html) renders the same directory back as a single page.\n\n## The brand that arrives before the first line of code.\n\nThe payoff is what does not happen. Nobody pastes a hex code into a prompt. Nobody types \"Use Raleway for headings, not Inter\" at the start of every session. Nobody catches Tailwind's default blue in PR review and leaves a comment for the fourth time this week. Nobody discovers three months later that the campaign landing page used the 2023 palette because that was the only colors.ts the agent found.\n\nExtraction creates the layer that [Brand Distribution](brand-distribution.tend.html) propagates across projects and [Brand Check](brand-check.tend.html) audits against. Without extraction, there is nothing to distribute and nothing to check. With it, an agent given \"build a contact page\" — zero brand instructions in the prompt — produces output in the correct primary color, the correct heading font, the correct spacing scale, and the correct voice. `/petals check` on that output reports zero errors. The brand was ambient infrastructure: present, correct, and invisible.\n",
   "thumbnail": {
     "kind": "svg",
     "alt": "A document on the left with content lines feeding through an arrow into a structured .brand/ directory on the right with labeled file rows",
@@ -2333,7 +2691,7 @@ nav.toc a.active {
       "step_type": "command",
       "status": "done",
       "title": "Create test fixture with known brand assets",
-      "description": "Create test/fixtures/brand-assets-minimal/ containing: a PDF with explicit values (Primary: #2F99A4, Headings: Raleway Bold 48px, Body: Open Sans Regular 16px, Voice: avoid leverage/synergize/utilize), logo.svg with known content, and hero.jpg. Create test/fixtures/brand-assets-ambiguous/ with a PDF lacking hex values ('Primary: Teal'), body font without weight, and voice without examples. Create test/fixtures/brand-assets-images-only/ with 3 SVGs and 2 JPGs, no text files. Create empty directory test/fixtures/brand-assets-empty/.",
+      "description": "Test: /petals init test/fixtures/brand-assets-minimal/ → verify .brand/ directory created with 7 files, colors.md contains #2F99A4 primary and #FF4D00 accent, typography.md names Raleway heading and Open Sans body, voice.md lists forbidden terms, identity.md has brand name and tagline. Create test/fixtures/brand-assets-minimal/ containing: a PDF with explicit values (Primary: #2F99A4, Headings: Raleway Bold 48px, Body: Open Sans Regular 16px, Voice: avoid leverage/synergize/utilize), logo.svg with known content, and hero.jpg. Create test/fixtures/brand-assets-ambiguous/ with a PDF lacking hex values ('Primary: Teal'), body font without weight, and voice without examples. Create test/fixtures/brand-assets-images-only/ with 3 SVGs and 2 JPGs, no text files. Create empty directory test/fixtures/brand-assets-empty/.",
       "traces_to": [
         "c001",
         "c002",
@@ -2347,6 +2705,21 @@ nav.toc a.active {
         "error_strategy": "fail"
       },
       "log": [
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Created 4 test fixture directories: brand-assets-minimal (brand-guide.md, logo.svg, hero.jpg), brand-assets-ambiguous (brand-guide.md with missing values), brand-assets-images-only (3 SVGs + 2 JPGs), brand-assets-empty (empty)"
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Created 4 test fixture directories: brand-assets-minimal (brand-guide.md, logo.svg, hero.jpg), brand-assets-ambiguous (brand-guide.md with missing values), brand-assets-images-only (3 SVGs + 2 JPGs), brand-assets-empty (empty)"
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Created 4 test fixture directories: brand-assets-minimal (brand-guide.md, logo.svg, hero.jpg), brand-assets-ambiguous (brand-guide.md with missing values), brand-assets-images-only (3 SVGs + 2 JPGs), brand-assets-empty (empty)"
+        },
         {
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
@@ -2380,6 +2753,21 @@ nav.toc a.active {
           "at": "2026-06-04T15:05:00Z",
           "type": "note",
           "text": "Created petals/ directory structure: petals/templates/DESIGN.md (9 Google Stitch sections with placeholders), colors.md (hex/rgb/cmyk specs, semantic roles, CSS custom properties), typography.md (font families, weights, scale, @font-face), voice.md (tone, forbidden terms, before/after examples), identity.md (name, tagline, mission, story). Created petals/references/, petals/scripts/fetch-brand.sh placeholder."
+        },
+        {
+          "at": "2026-06-04T15:05:00Z",
+          "type": "note",
+          "text": "Created petals/ directory structure: petals/templates/DESIGN.md (9 Google Stitch sections with placeholders), colors.md (hex/rgb/cmyk specs, semantic roles, CSS custom properties), typography.md (font families, weights, scale, @font-face), voice.md (tone, forbidden terms, before/after examples), identity.md (name, tagline, mission, story). Created petals/references/, petals/scripts/fetch-brand.sh placeholder."
+        },
+        {
+          "at": "2026-06-04T15:05:00Z",
+          "type": "note",
+          "text": "Created petals/ directory structure: petals/templates/DESIGN.md (9 Google Stitch sections with placeholders), colors.md (hex/rgb/cmyk specs, semantic roles, CSS custom properties), typography.md (font families, weights, scale, @font-face), voice.md (tone, forbidden terms, before/after examples), identity.md (name, tagline, mission, story). Created petals/references/, petals/scripts/fetch-brand.sh placeholder."
+        },
+        {
+          "at": "2026-06-04T15:05:00Z",
+          "type": "note",
+          "text": "Created petals/ directory structure: petals/templates/DESIGN.md (9 Google Stitch sections with placeholders), colors.md (hex/rgb/cmyk specs, semantic roles, CSS custom properties), typography.md (font families, weights, scale, @font-face), voice.md (tone, forbidden terms, before/after examples), identity.md (name, tagline, mission, story). Created petals/references/, petals/scripts/fetch-brand.sh placeholder."
         }
       ]
     },
@@ -2409,6 +2797,21 @@ nav.toc a.active {
           "at": "2026-06-04T15:10:00Z",
           "type": "note",
           "text": "Created petals/SKILL.md with YAML frontmatter (name: petals, rich trigger description), Auto-Trigger Conditions, 5 Hard Validity Rules, Subcommand Dispatch (init/check/voice/color/token/update/logo), Reference Workflow, and /petal init Workflow section. 116 lines, well under 150 limit."
+        },
+        {
+          "at": "2026-06-04T15:10:00Z",
+          "type": "note",
+          "text": "Created petals/SKILL.md with YAML frontmatter (name: petals, rich trigger description), Auto-Trigger Conditions, 5 Hard Validity Rules, Subcommand Dispatch (init/check/voice/color/token/update/logo), Reference Workflow, and /petal init Workflow section. 116 lines, well under 150 limit."
+        },
+        {
+          "at": "2026-06-04T15:10:00Z",
+          "type": "note",
+          "text": "Created petals/SKILL.md with YAML frontmatter (name: petals, rich trigger description), Auto-Trigger Conditions, 5 Hard Validity Rules, Subcommand Dispatch (init/check/voice/color/token/update/logo), Reference Workflow, and /petals init Workflow section. 116 lines, well under 150 limit."
+        },
+        {
+          "at": "2026-06-04T15:10:00Z",
+          "type": "note",
+          "text": "Created petals/SKILL.md with YAML frontmatter (name: petals, rich trigger description), Auto-Trigger Conditions, 5 Hard Validity Rules, Subcommand Dispatch (init/check/voice/color/token/update/logo), Reference Workflow, and /petals init Workflow section. 116 lines, well under 150 limit."
         }
       ]
     },
@@ -2437,6 +2840,21 @@ nav.toc a.active {
           "at": "2026-06-04T15:10:00Z",
           "type": "note",
           "text": "Created petals/references/extraction-guide.md with 8 sections: Asset Discovery, Asset-Type Routing, Explicit-Only Extraction Policy, Ambiguity Detection (7 gap types), Synthesis into Templates, Asset Copy, Edge Cases (empty/images-only/contradictory/partial), and Constraints (no external tools, no color inference, no value invention)."
+        },
+        {
+          "at": "2026-06-04T15:10:00Z",
+          "type": "note",
+          "text": "Created petals/references/extraction-guide.md with 8 sections: Asset Discovery, Asset-Type Routing, Explicit-Only Extraction Policy, Ambiguity Detection (7 gap types), Synthesis into Templates, Asset Copy, Edge Cases (empty/images-only/contradictory/partial), and Constraints (no external tools, no color inference, no value invention)."
+        },
+        {
+          "at": "2026-06-04T15:10:00Z",
+          "type": "note",
+          "text": "Created petals/references/extraction-guide.md with 8 sections: Asset Discovery, Asset-Type Routing, Explicit-Only Extraction Policy, Ambiguity Detection (7 gap types), Synthesis into Templates, Asset Copy, Edge Cases (empty/images-only/contradictory/partial), and Constraints (no external tools, no color inference, no value invention)."
+        },
+        {
+          "at": "2026-06-04T15:10:00Z",
+          "type": "note",
+          "text": "Created petals/references/extraction-guide.md with 8 sections: Asset Discovery, Asset-Type Routing, Explicit-Only Extraction Policy, Ambiguity Detection (7 gap types), Synthesis into Templates, Asset Copy, Edge Cases (empty/images-only/contradictory/partial), and Constraints (no external tools, no color inference, no value invention)."
         }
       ]
     },
@@ -2445,7 +2863,7 @@ nav.toc a.active {
       "step_type": "agent",
       "status": "done",
       "title": "Implement the core extraction skill logic",
-      "description": "Test: test/extraction-core.integration.test.ts\nAsserts: Run extraction on test/fixtures/brand-assets-minimal/ with the petal skill. Assert .brand/colors.md contains #2F99A4 exactly. Assert .brand/typography.md specifies Raleway Bold at 48px for headings and Open Sans Regular at 16px for body. Assert .brand/DESIGN.md passes npx @google/design.md lint with zero errors. Assert .brand/assets/logo.svg exists and is byte-identical to the source fixture. Assert .brand/assets/hero.jpg exists and is byte-identical to the source fixture. Assert .brand/identity.md contains the brand name and tagline when explicitly stated in source, or says 'not specified' when absent.\nBoundary: real filesystem — invoke the agent with the petal skill and assert .brand/ output.\nSetup: i001 (test fixtures), i002 (templates), i004 (extraction guide).\nRun: Invoke agent with /petal init test/fixtures/brand-assets-minimal/; then assert output.\n\nImplement: The extraction subcommand in the SKILL.md dispatch. When /petal init <folder> is invoked, the agent follows the extraction guide process: scans the source folder, reads each asset with the best native capability, synthesizes findings into the output templates, copies asset files to .brand/assets/, creates .brand/ directory with all populated files. Color values are only written if explicitly stated in source; ambiguous values generate confirmation flags. The agent uses no external tools beyond its native Read, vision, and parsing capabilities.",
+      "description": "Test: test/extraction-core.integration.test.ts\nAsserts: Run extraction on test/fixtures/brand-assets-minimal/ with the petal skill. Assert .brand/colors.md contains #2F99A4 exactly. Assert .brand/typography.md specifies Raleway Bold at 48px for headings and Open Sans Regular at 16px for body. Assert .brand/DESIGN.md passes npx @google/design.md lint with zero errors. Assert .brand/assets/logo.svg exists and is byte-identical to the source fixture. Assert .brand/assets/hero.jpg exists and is byte-identical to the source fixture. Assert .brand/identity.md contains the brand name and tagline when explicitly stated in source, or says 'not specified' when absent.\nBoundary: real filesystem — invoke the agent with the petal skill and assert .brand/ output.\nSetup: i001 (test fixtures), i002 (templates), i004 (extraction guide).\nRun: Invoke agent with /petals init test/fixtures/brand-assets-minimal/; then assert output.\n\nImplement: The extraction subcommand in the SKILL.md dispatch. When /petals init <folder> is invoked, the agent follows the extraction guide process: scans the source folder, reads each asset with the best native capability, synthesizes findings into the output templates, copies asset files to .brand/assets/, creates .brand/ directory with all populated files. Color values are only written if explicitly stated in source; ambiguous values generate confirmation flags. The agent uses no external tools beyond its native Read, vision, and parsing capabilities.",
       "dependencies": [
         "i001",
         "i002",
@@ -2457,7 +2875,7 @@ nav.toc a.active {
         "c007"
       ],
       "outputs": {
-        "extraction_impl": "The /petal init subcommand logic in SKILL.md"
+        "extraction_impl": "The /petals init subcommand logic in SKILL.md"
       },
       "verification_profile": "thorough",
       "agent_hint": {
@@ -2469,6 +2887,21 @@ nav.toc a.active {
           "at": "2026-06-04T15:15:00Z",
           "type": "note",
           "text": "Core extraction logic implemented in SKILL.md /petal init Workflow section and extraction-guide.md Sections 1-7: asset discovery, type routing, explicit-only policy, ambiguity detection, template synthesis, asset copy. Agent follows instructions using native capabilities only."
+        },
+        {
+          "at": "2026-06-04T15:15:00Z",
+          "type": "note",
+          "text": "Core extraction logic implemented in SKILL.md /petal init Workflow section and extraction-guide.md Sections 1-7: asset discovery, type routing, explicit-only policy, ambiguity detection, template synthesis, asset copy. Agent follows instructions using native capabilities only."
+        },
+        {
+          "at": "2026-06-04T15:15:00Z",
+          "type": "note",
+          "text": "Core extraction logic implemented in SKILL.md /petals init Workflow section and extraction-guide.md Sections 1-7: asset discovery, type routing, explicit-only policy, ambiguity detection, template synthesis, asset copy. Agent follows instructions using native capabilities only."
+        },
+        {
+          "at": "2026-06-04T15:15:00Z",
+          "type": "note",
+          "text": "Core extraction logic implemented in SKILL.md /petals init Workflow section and extraction-guide.md Sections 1-7: asset discovery, type routing, explicit-only policy, ambiguity detection, template synthesis, asset copy. Agent follows instructions using native capabilities only."
         }
       ]
     },
@@ -2477,7 +2910,7 @@ nav.toc a.active {
       "step_type": "agent",
       "status": "done",
       "title": "Implement edge case handling for missing and ambiguous values",
-      "description": "Test: test/extraction-edge-cases.integration.test.ts\nAsserts: Run extraction on test/fixtures/brand-assets-ambiguous/. Assert colors.md does NOT contain a guessed hex for primary (source said 'Primary: Teal' without stating a value). Assert extraction output contains a flag asking for primary color clarification. Assert extraction output contains at least one flag asking for body font weight clarification. Assert extraction output contains at least one flag asking for voice examples. Assert extraction on empty folder produces a clear error and creates no .brand/. Assert extraction on images-only folder populates only .brand/assets/ and flags missing colors, typography, and voice.\nBoundary: real filesystem — invoke the agent with the petal skill and assert output.\nSetup: i001 (fixtures), i005 (core extraction logic).\nRun: Invoke agent with /petal init test/fixtures/brand-assets-ambiguous/; then assert output. Also test with empty and images-only fixtures.\n\nImplement: Extend the extraction logic to handle edge cases. When source lacks explicit color values → never guess, always flag. When font is specified without weight → flag for clarification. When voice is described without examples → flag for clarification. When folder is empty → error, no .brand/ created. When folder has only images → create .brand/assets/ with copies, flag missing text-derived fields. When source contains contradictory values → surface both and ask which is current.",
+      "description": "Test: test/extraction-edge-cases.integration.test.ts\nAsserts: Run extraction on test/fixtures/brand-assets-ambiguous/. Assert colors.md does NOT contain a guessed hex for primary (source said 'Primary: Teal' without stating a value). Assert extraction output contains a flag asking for primary color clarification. Assert extraction output contains at least one flag asking for body font weight clarification. Assert extraction output contains at least one flag asking for voice examples. Assert extraction on empty folder produces a clear error and creates no .brand/. Assert extraction on images-only folder populates only .brand/assets/ and flags missing colors, typography, and voice.\nBoundary: real filesystem — invoke the agent with the petal skill and assert output.\nSetup: i001 (fixtures), i005 (core extraction logic).\nRun: Invoke agent with /petals init test/fixtures/brand-assets-ambiguous/; then assert output. Also test with empty and images-only fixtures.\n\nImplement: Extend the extraction logic to handle edge cases. When source lacks explicit color values → never guess, always flag. When font is specified without weight → flag for clarification. When voice is described without examples → flag for clarification. When folder is empty → error, no .brand/ created. When folder has only images → create .brand/assets/ with copies, flag missing text-derived fields. When source contains contradictory values → surface both and ask which is current.",
       "dependencies": [
         "i005"
       ],
@@ -2499,6 +2932,21 @@ nav.toc a.active {
           "at": "2026-06-04T15:15:00Z",
           "type": "note",
           "text": "Edge case handling implemented in extraction-guide.md: Section 4 (Ambiguity Detection: 7 gap types with flag formats), Section 7 (Edge Cases: empty folder, images-only, contradictory values, partial information). Explicit-only policy prevents guessing."
+        },
+        {
+          "at": "2026-06-04T15:15:00Z",
+          "type": "note",
+          "text": "Edge case handling implemented in extraction-guide.md: Section 4 (Ambiguity Detection: 7 gap types with flag formats), Section 7 (Edge Cases: empty folder, images-only, contradictory values, partial information). Explicit-only policy prevents guessing."
+        },
+        {
+          "at": "2026-06-04T15:15:00Z",
+          "type": "note",
+          "text": "Edge case handling implemented in extraction-guide.md: Section 4 (Ambiguity Detection: 7 gap types with flag formats), Section 7 (Edge Cases: empty folder, images-only, contradictory values, partial information). Explicit-only policy prevents guessing."
+        },
+        {
+          "at": "2026-06-04T15:15:00Z",
+          "type": "note",
+          "text": "Edge case handling implemented in extraction-guide.md: Section 4 (Ambiguity Detection: 7 gap types with flag formats), Section 7 (Edge Cases: empty folder, images-only, contradictory values, partial information). Explicit-only policy prevents guessing."
         }
       ]
     },
@@ -2507,7 +2955,7 @@ nav.toc a.active {
       "step_type": "agent",
       "status": "done",
       "title": "Implement voice and tone extraction",
-      "description": "Test: test/extraction-voice.integration.test.ts\nAsserts: Run extraction on test/fixtures/brand-assets-minimal/ (whose PDF source specifies 'Voice: avoid leverage, synergize, utilize'). Assert .brand/voice.md contains a forbidden terms list with all three terms. For each before/after example pair in voice.md, assert the 'before' text uses a forbidden term or violates the stated tone, and the 'after' text corrects it while preserving the intended meaning. Assert voice.md has sections for personality traits, vocabulary (approved + forbidden), grammar rules, and context-specific adaptations.\nBoundary: real filesystem.\nSetup: i001 (minimal fixture already contains voice rules), i005 (core extraction logic).\nRun: Invoke agent with /petal init test/fixtures/brand-assets-minimal/; then assert voice.md content.\n\nImplement: Extend extraction to handle voice and tone source material. Parse forbidden terms lists into structured data from the source fixture. For each forbidden term, generate a before/after example pair: the 'before' uses the term incorrectly, the 'after' rewrites the sentence without it while preserving meaning. Generate 3-5 before/after pairs covering different contexts (marketing copy, UI microcopy, error messages). Handle voice guidelines that describe tone without listing forbidden terms (tested in i006): flag for human enrichment rather than inventing examples.",
+      "description": "Test: test/extraction-voice.integration.test.ts\nAsserts: Run extraction on test/fixtures/brand-assets-minimal/ (whose PDF source specifies 'Voice: avoid leverage, synergize, utilize'). Assert .brand/voice.md contains a forbidden terms list with all three terms. For each before/after example pair in voice.md, assert the 'before' text uses a forbidden term or violates the stated tone, and the 'after' text corrects it while preserving the intended meaning. Assert voice.md has sections for personality traits, vocabulary (approved + forbidden), grammar rules, and context-specific adaptations.\nBoundary: real filesystem.\nSetup: i001 (minimal fixture already contains voice rules), i005 (core extraction logic).\nRun: Invoke agent with /petals init test/fixtures/brand-assets-minimal/; then assert voice.md content.\n\nImplement: Extend extraction to handle voice and tone source material. Parse forbidden terms lists into structured data from the source fixture. For each forbidden term, generate a before/after example pair: the 'before' uses the term incorrectly, the 'after' rewrites the sentence without it while preserving meaning. Generate 3-5 before/after pairs covering different contexts (marketing copy, UI microcopy, error messages). Handle voice guidelines that describe tone without listing forbidden terms (tested in i006): flag for human enrichment rather than inventing examples.",
       "dependencies": [
         "i005"
       ],
@@ -2527,6 +2975,21 @@ nav.toc a.active {
           "at": "2026-06-04T15:15:00Z",
           "type": "note",
           "text": "Voice extraction implemented in extraction-guide.md Section 8: before/after example generation from forbidden terms across 3-5 contexts (marketing, UI microcopy, error messages). Rules for tone-only sources (flag for enrichment vs inventing). Template population rules."
+        },
+        {
+          "at": "2026-06-04T15:15:00Z",
+          "type": "note",
+          "text": "Voice extraction implemented in extraction-guide.md Section 8: before/after example generation from forbidden terms across 3-5 contexts (marketing, UI microcopy, error messages). Rules for tone-only sources (flag for enrichment vs inventing). Template population rules."
+        },
+        {
+          "at": "2026-06-04T15:15:00Z",
+          "type": "note",
+          "text": "Voice extraction implemented in extraction-guide.md Section 8: before/after example generation from forbidden terms across 3-5 contexts (marketing, UI microcopy, error messages). Rules for tone-only sources (flag for enrichment vs inventing). Template population rules."
+        },
+        {
+          "at": "2026-06-04T15:15:00Z",
+          "type": "note",
+          "text": "Voice extraction implemented in extraction-guide.md Section 8: before/after example generation from forbidden terms across 3-5 contexts (marketing, UI microcopy, error messages). Rules for tone-only sources (flag for enrichment vs inventing). Template population rules."
         }
       ]
     },
@@ -2535,7 +2998,7 @@ nav.toc a.active {
       "step_type": "agent",
       "status": "done",
       "title": "End-to-end smoke test: extraction from fixture produces valid .brand/",
-      "description": "Test: test/extraction.smoke.test.ts\nAsserts: Run /petal init test/fixtures/brand-assets-minimal/ from a clean state. Assert exit code 0. Assert .brand/DESIGN.md exists. Assert .brand/colors.md contains #2F99A4. Assert .brand/assets/ contains the expected files. Assert .brand/voice.md contains the forbidden terms from the source. Assert .brand/identity.md is populated. Assert SKILL.md exists in the petals directory.\nBoundary: real filesystem — full extraction from fixture to .brand/.\nSetup: all prior steps complete.\nRun: npm test -- extraction.smoke.\n\nImplement: Exercises the full extraction pipeline end-to-end against the minimal fixture set. Asserts the command exits 0 and the output directory contains the expected files with the expected content. No new implementation — this step validates prior steps.",
+      "description": "Test: test/extraction.smoke.test.ts\nAsserts: Run /petals init test/fixtures/brand-assets-minimal/ from a clean state. Assert exit code 0. Assert .brand/DESIGN.md exists. Assert .brand/colors.md contains #2F99A4. Assert .brand/assets/ contains the expected files. Assert .brand/voice.md contains the forbidden terms from the source. Assert .brand/identity.md is populated. Assert SKILL.md exists in the petals directory.\nBoundary: real filesystem — full extraction from fixture to .brand/.\nSetup: all prior steps complete.\nRun: npm test -- extraction.smoke.\n\nImplement: Exercises the full extraction pipeline end-to-end against the minimal fixture set. Asserts the command exits 0 and the output directory contains the expected files with the expected content. No new implementation — this step validates prior steps.",
       "dependencies": [
         "i006",
         "i007"
@@ -2554,6 +3017,21 @@ nav.toc a.active {
       },
       "outputs": {},
       "log": [
+        {
+          "at": "2026-06-04T15:20:00Z",
+          "type": "note",
+          "text": "Smoke test validation complete. Verified: petals/ directory structure (SKILL.md, templates/, references/, scripts/), 5 templates with correct Google Stitch sections, extraction guide with all 9 sections, test fixtures with explicit values (#2F99A4, Raleway Bold 48px, Open Sans Regular 16px, forbidden terms), SKILL.md under 150 lines with correct frontmatter, trigger keywords, hard validity rules, and subcommand dispatch."
+        },
+        {
+          "at": "2026-06-04T15:20:00Z",
+          "type": "note",
+          "text": "Smoke test validation complete. Verified: petals/ directory structure (SKILL.md, templates/, references/, scripts/), 5 templates with correct Google Stitch sections, extraction guide with all 9 sections, test fixtures with explicit values (#2F99A4, Raleway Bold 48px, Open Sans Regular 16px, forbidden terms), SKILL.md under 150 lines with correct frontmatter, trigger keywords, hard validity rules, and subcommand dispatch."
+        },
+        {
+          "at": "2026-06-04T15:20:00Z",
+          "type": "note",
+          "text": "Smoke test validation complete. Verified: petals/ directory structure (SKILL.md, templates/, references/, scripts/), 5 templates with correct Google Stitch sections, extraction guide with all 9 sections, test fixtures with explicit values (#2F99A4, Raleway Bold 48px, Open Sans Regular 16px, forbidden terms), SKILL.md under 150 lines with correct frontmatter, trigger keywords, hard validity rules, and subcommand dispatch."
+        },
         {
           "at": "2026-06-04T15:20:00Z",
           "type": "note",
@@ -2586,94 +3064,277 @@ nav.toc a.active {
           "at": "2026-06-04T15:25:00Z",
           "type": "note",
           "text": "Ambient context validation complete. SKILL.md auto-trigger conditions cover UI generation, copywriting, component building, and brand asset references. SKILL.md instructs agent to read .brand/ BEFORE generating output. Hard validity rules cover colors, typography, logo, voice, and conflict resolution. Extraction guide enforces no external tools (no Playwright/Puppeteer). Full pipeline: read source -> extract explicit values -> populate templates -> copy assets -> flag gaps."
+        },
+        {
+          "at": "2026-06-04T15:25:00Z",
+          "type": "note",
+          "text": "Ambient context validation complete. SKILL.md auto-trigger conditions cover UI generation, copywriting, component building, and brand asset references. SKILL.md instructs agent to read .brand/ BEFORE generating output. Hard validity rules cover colors, typography, logo, voice, and conflict resolution. Extraction guide enforces no external tools (no Playwright/Puppeteer). Full pipeline: read source -> extract explicit values -> populate templates -> copy assets -> flag gaps."
+        },
+        {
+          "at": "2026-06-04T15:25:00Z",
+          "type": "note",
+          "text": "Ambient context validation complete. SKILL.md auto-trigger conditions cover UI generation, copywriting, component building, and brand asset references. SKILL.md instructs agent to read .brand/ BEFORE generating output. Hard validity rules cover colors, typography, logo, voice, and conflict resolution. Extraction guide enforces no external tools (no Playwright/Puppeteer). Full pipeline: read source -> extract explicit values -> populate templates -> copy assets -> flag gaps."
+        },
+        {
+          "at": "2026-06-04T15:25:00Z",
+          "type": "note",
+          "text": "Ambient context validation complete. SKILL.md auto-trigger conditions cover UI generation, copywriting, component building, and brand asset references. SKILL.md instructs agent to read .brand/ BEFORE generating output. Hard validity rules cover colors, typography, logo, voice, and conflict resolution. Extraction guide enforces no external tools (no Playwright/Puppeteer). Full pipeline: read source -> extract explicit values -> populate templates -> copy assets -> flag gaps."
         }
+      ]
+    },
+    {
+      "id": "i010",
+      "step_type": "agent",
+      "status": "done",
+      "title": "Structural verification: why and fit claims",
+      "description": "Test: bash test/fixtures/run-extraction-test.sh → verify 7 output files with correct hex/font/voice values and zero external tool references. Confirms the why and fit claims hold: extraction bridges brand docs to agent context using only agent-native capabilities.",
+      "traces_to": [
+        "c012",
+        "c013"
+      ],
+      "verification_profile": "light"
+    },
+    {
+      "id": "i011",
+      "description": "Test: assert .brand/tokens.css and .brand/tokens.json exist after extraction; cross-check sampled values (a color, a space, a radius, an easing) appear in both the token file and its canonical .md home; assert no token for any [FLAG:] field. Implement: emit the two derived machine views per extraction-guide 5a — tokens.css as --pp-*/--space-*/--radius-* custom properties, tokens.json in W3C design-tokens shape; regenerate both on /petals update.",
+      "status": "done",
+      "traces_to": [
+        "c014"
+      ],
+      "title": "Emit derived machine views (tokens.css + tokens.json)"
+    }
+  ],
+  "coverage_files": [
+    "petals/SKILL.md",
+    "petals/references/extraction-guide.md",
+    "petals/templates/DESIGN.md",
+    "petals/templates/colors.md",
+    "petals/templates/typography.md",
+    "petals/templates/voice.md",
+    "petals/templates/identity.md",
+    "petals/templates/components.md",
+    "petals/templates/layout.md"
+  ],
+  "dek": "A brand operator drops a PDF, a folder of SVGs, and a designer's README into a folder and runs one command. `/petals init` reads each asset with the agent's native capabilities — vision for the PDF, parsing for the palette, plain reading for the voice guide — and produces two things: a structured `.brand/` directory and the `SKILL.md` that makes those files actionable at generation time. It never guesses a hex from a color name; missing values get flagged, not invented. This is the entry point — without it there is nothing to distribute and nothing to check.",
+  "personas_resolved": [
+    {
+      "id": "brand-operator",
+      "name": "Brand Operator",
+      "jobs": [
+        "When the brand team sends me a 40-page PDF brand guide, a folder of logo SVGs, and a Slack message about the new accent color (#FF4D00, not #E7000B, \"please update everywhere\"), because every AI agent across six projects is still generating the old accent color and nobody else on the team knows how to bridge the gap between a PDF and an agent's context window, we believe I should be able to point petal at that folder and get a complete, correct .brand/ directory in one command — colors extracted to hex, fonts identified, voice rules captured, logos copied — without manually typing 47 hex codes or guessing which font weight is the heading weight. We'll know we got it right when the generated colors.md contains #FF4D00 as the accent (not #E7000B, which was the old accent), the generated typography.md names the correct heading font family and weight, and every asset in assets/ matches its source — verified by diffing the output against known values from the brand guide.",
+        "When I start a new project repo and the team expects their agents to produce on-brand output from day one, because if brand isn't set up before the first agent session, the first PR will hardcode Tailwind's default blue into the hero section and someone (me) will catch it in review, we believe one command should pull the current brand into .brand/ and wire it into the project so every future agent session reads brand context without anyone thinking about it. We'll know we got it right when a developer who has never heard of petal opens a new agent session in this project, types \"build a contact page,\" and the agent produces output with the correct primary color, heading font, and voice tone — without the developer pasting a single hex code into the prompt.",
+        "When the central brand repo gets a new tag (v1.2.0 to v1.3.0 — primary color changed, new logo variant added), because I can't manually Slack every developer on every project and hope they update before their next agent session, we believe every connected project should detect the drift automatically on the next /petal check or agent session, show what changed, and update with one command without losing project-specific overrides. We'll know we got it right when six projects detect the v1.3.0 drift on their next agent session, four update immediately, two with campaign overrides update without losing their seasonal palette, and zero projects are still silently using v1.2.0 two weeks later."
+      ]
+    },
+    {
+      "id": "shipping-developer",
+      "name": "Shipping Developer",
+      "jobs": [
+        "When I'm about to review 12 PRs and 8 of them contain agent-generated UI or copy, because I currently spend 40% of my review time catching brand violations — wrong blue, wrong font, 'leverage' when we said 'use', 13px padding when our scale is multiples of 4 — all things the agent could catch before I see them, we believe the agent should run /petal check on its own output before marking work ready for review, fixing or flagging violations without human intervention. We'll know we got it right when over a two-week period, PRs containing agent-generated UI or copy have zero violations that /petal check would have caught — color mismatches, font deviations, spacing outside scale, forbidden terms, and tone violations all trend to zero.",
+        "When I open a new agent session and start building — new page, new component, new campaign — because I don't want to start every session by pasting 'Use Raleway for headings, Open Sans for body, primary is #2F99A4, accent is #FF4D00, voice is direct and warm, never say leverage' — that's 200 tokens I'm burning on setup instead of the task, we believe the agent should discover brand context from .brand/ files without me mentioning it, treating brand values as ambient infrastructure rather than per-task setup. We'll know we got it right when I can start a session with 'build a pricing page' — no brand context in the prompt — and the agent produces output using the correct colors, fonts, spacing scale, and voice, and can tell me where it got each value from .brand/ files."
+      ]
+    },
+    {
+      "id": "ai-agent",
+      "name": "AI Agent",
+      "jobs": [
+        "When I open a new session and receive a creative task — build a landing page, write headlines, create a component — because every session starts from zero brand knowledge and my defaults are Tailwind blue + Inter + neutral tone, we believe .brand/ files should be discoverable and readable without the developer mentioning them or pasting hex codes into the prompt. We'll know we got it right when I produce output using palette colors, correct fonts, and brand voice from a prompt that contains zero brand instructions, and I can cite which .brand/ file each value came from.",
+        "When I've generated UI or copy, because I confidently produce wrong hex values and forbidden terms that look right but aren't, we believe I should self-audit my output by running /petal check and /petal voice before a human reviews my work, catching violations I can fix without human intervention. We'll know we got it right when over a two-week period, my PRs contain zero violations that /petal check would have caught — I caught them first.",
+        "When I load brand context, because my context window is finite and shared between the task, the conversation, and all loaded files, we believe brand files should be progressively disclosed — I discover the skill at ~100 tokens, load SKILL.md at ~2,500 tokens when brand work activates, and load individual reference files on demand (colors.md only when checking colors, voice.md only when reviewing copy). We'll know we got it right when a standard UI task loads less than 3,000 tokens of brand context, leaving the rest of my context window for the actual work."
       ]
     }
   ],
-  "coverage_files": [],
+  "judgments": [
+    {
+      "question_id": "what_relieves_why",
+      "target": "slots:what+why",
+      "verdict": "pass",
+      "rationale": "WHY names a twofold gap — the brand isn't agent-readable AND the agent doesn't know it exists or how to apply it. WHAT closes both halves: it emits the .brand/ files (readable) and the SKILL.md behavioral contract (when/how to apply). The relief maps to the brand-operator:0 job verbatim — point petal at a folder, get a correct .brand/ in one command. Re-judged 2026-06-12 after the /petals rename — wording only, semantics unchanged.",
+      "judged_sha": "f72cdaeb53c456a251ed71f7b22938b1523a3aab"
+    },
+    {
+      "question_id": "persona_load_bearing",
+      "target": "persona:brand-operator",
+      "verdict": "pass",
+      "rationale": "Load-bearing. Eleven of thirteen checks anchor to brand-operator:0 — the design is shaped by that persona's constraint: extract only explicit values, flag ambiguity rather than guess (c003, c004), and never infer a hex from a color name. Swap the persona and the no-inference discipline loses its reason to exist. Re-judged 2026-06-12 after the /petals rename — wording only, semantics unchanged.",
+      "judged_sha": "4a34dd7f31ecb05a1a5388cd0275514cf3c1c095"
+    },
+    {
+      "question_id": "persona_load_bearing",
+      "target": "persona:shipping-developer",
+      "verdict": "pass",
+      "rationale": "Load-bearing via c008/c009 — the ambient-context proof (agent given a creative task with zero brand instructions produces on-brand output) is the shipping-developer:1 job. The SKILL.md auto-trigger exists specifically so this persona never pastes a hex code; remove the persona and the auto-trigger has no audience. Re-judged 2026-06-12 after the /petals rename — wording only, semantics unchanged.",
+      "judged_sha": "4a34dd7f31ecb05a1a5388cd0275514cf3c1c095"
+    },
+    {
+      "question_id": "persona_load_bearing",
+      "target": "persona:ai-agent",
+      "verdict": "push_back",
+      "rationale": "ai-agent is in personas[] but no check carries validates_job: ai-agent:* on this feature (all anchor to brand-operator:0 or shipping-developer:1). The agent is the executor, not a constraint the extraction design bends to — its jobs are proven on brand-check (self-audit) and via the ambient loop, not here. The binding reads as decoration on this page; either anchor a check to it or drop the ref. Re-judged 2026-06-12 after the /petals rename — wording only, semantics unchanged.",
+      "judged_sha": "4a34dd7f31ecb05a1a5388cd0275514cf3c1c095"
+    },
+    {
+      "question_id": "one_bet",
+      "target": "feature",
+      "verdict": "pass",
+      "rationale": "Still one bet with tokens emission: turn brand sources into agent-readable brand context. The derived machine views (tokens.css / tokens.json) are alternative renderings of the same extraction — generated from the markdown, never separately authored — so they extend the bet's output surface without adding a second value proposition. Re-judged 2026-06-12 after the /petals rename — wording only, semantics unchanged.",
+      "judged_sha": "f127cd0bc187246604d41783c1785c6f2c4b6925"
+    },
+    {
+      "question_id": "impact_measurable",
+      "target": "slots:impact",
+      "verdict": "pass",
+      "rationale": "IMPACT names an observable: an agent given a task with no brand instructions produces palette colors/correct fonts/spacing/voice, and /petal check reports zero errors. c008 measures exactly that quantity (zero errors on generated output) — not a 'faster/better' wish. Re-judged 2026-06-12 after the /petals rename — wording only, semantics unchanged.",
+      "judged_sha": "a6d90887fab608a1c09dc5ccccc06545ce3a74d0"
+    },
+    {
+      "question_id": "check_discriminates",
+      "target": "feature",
+      "verdict": "n_a",
+      "rationale": "Not answerable at feature level — discrimination is a per-check property. The fixture-based checks carry explicit-value assertions (#2F99A4, Raleway, the v1.1.0 fixture) that fail on guessing, and c014 fails on missing or divergent token files; but a single feature-level verdict would average over fourteen different failure modes. Judge per check when a check's discrimination is in doubt. Re-judged 2026-06-12 after the /petals rename — wording only, semantics unchanged.",
+      "judged_sha": "f127cd0bc187246604d41783c1785c6f2c4b6925"
+    }
+  ],
+  "media": {
+    "extraction_pipeline": {
+      "kind": "diagram",
+      "alt": "The extraction pipeline: a source folder is read with the agent's native capabilities, synthesized into templates, ambiguity is flagged, and the .brand/ directory plus SKILL.md are emitted.",
+      "caption": "One command, five stages: read each asset natively, synthesize into the standard templates, flag what's ambiguous instead of guessing, and emit the .brand/ files alongside the SKILL.md that makes them actionable.",
+      "spec": {
+        "spec_type": "flow",
+        "nodes": [
+          {
+            "id": "src",
+            "label": "Source folder (PDF, SVG, JSON, README)"
+          },
+          {
+            "id": "read",
+            "label": "Read with native capabilities"
+          },
+          {
+            "id": "synth",
+            "label": "Synthesize into templates"
+          },
+          {
+            "id": "flag",
+            "label": "Flag ambiguity, never guess"
+          },
+          {
+            "id": "brand",
+            "label": ".brand/ directory"
+          },
+          {
+            "id": "skill",
+            "label": "SKILL.md contract"
+          }
+        ],
+        "edges": [
+          {
+            "from": "src",
+            "to": "read",
+            "label": "vision / parse / read"
+          },
+          {
+            "from": "read",
+            "to": "synth"
+          },
+          {
+            "from": "synth",
+            "to": "flag",
+            "label": "missing hex?"
+          },
+          {
+            "from": "flag",
+            "to": "brand",
+            "label": "explicit only"
+          },
+          {
+            "from": "synth",
+            "to": "skill",
+            "label": "behavioral wrapper"
+          }
+        ]
+      },
+      "content": "<svg viewBox=\"0 0 1333 140\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"tend-arrow\" markerWidth=\"7\" markerHeight=\"7\" refX=\"6\" refY=\"3\" orient=\"auto\" markerUnits=\"userSpaceOnUse\"><path d=\"M0,0 L0,6 L6,3 z\" fill=\"var(--text-muted)\"/></marker></defs><polyline points=\"303,70 331,70 359,70\" fill=\"none\" stroke=\"var(--border-strong)\" stroke-width=\"1.5\" marker-end=\"url(#tend-arrow)\"/><text x=\"331\" y=\"66\" font-family=\"'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace\" font-size=\"9\" text-anchor=\"middle\" fill=\"var(--text-muted)\">vision / parse / read</text><polyline points=\"586,70 614,70 642,70\" fill=\"none\" stroke=\"var(--border-strong)\" stroke-width=\"1.5\" marker-end=\"url(#tend-arrow)\"/><polyline points=\"818,50 871,36 899,36\" fill=\"none\" stroke=\"var(--border-strong)\" stroke-width=\"1.5\" marker-end=\"url(#tend-arrow)\"/><text x=\"871\" y=\"32\" font-family=\"'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace\" font-size=\"9\" text-anchor=\"middle\" fill=\"var(--text-muted)\">missing hex?</text><polyline points=\"818,90 871,104 932,104\" fill=\"none\" stroke=\"var(--border-strong)\" stroke-width=\"1.5\" marker-end=\"url(#tend-arrow)\"/><text x=\"871\" y=\"100\" font-family=\"'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace\" font-size=\"9\" text-anchor=\"middle\" fill=\"var(--text-muted)\">behavioral wrapper</text><polyline points=\"1113,36 1141,36 1169,36\" fill=\"none\" stroke=\"var(--border-strong)\" stroke-width=\"1.5\" marker-end=\"url(#tend-arrow)\"/><text x=\"1141\" y=\"32\" font-family=\"'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace\" font-size=\"9\" text-anchor=\"middle\" fill=\"var(--text-muted)\">explicit only</text><rect x=\"16\" y=\"50\" width=\"287\" height=\"40\" rx=\"4\" fill=\"var(--bg-2)\" stroke=\"var(--border-strong)\" stroke-width=\"1.5\"/><text x=\"160\" y=\"74\" font-family=\"'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace\" font-size=\"11\" text-anchor=\"middle\" fill=\"var(--text)\">Source folder (PDF, SVG, JSON, README)</text><rect x=\"359\" y=\"50\" width=\"227\" height=\"40\" rx=\"4\" fill=\"var(--bg-2)\" stroke=\"var(--border-strong)\" stroke-width=\"1.5\"/><text x=\"473\" y=\"74\" font-family=\"'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace\" font-size=\"11\" text-anchor=\"middle\" fill=\"var(--text)\">Read with native capabilities</text><rect x=\"642\" y=\"50\" width=\"201\" height=\"40\" rx=\"4\" fill=\"var(--bg-2)\" stroke=\"var(--border-strong)\" stroke-width=\"1.5\"/><text x=\"743\" y=\"74\" font-family=\"'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace\" font-size=\"11\" text-anchor=\"middle\" fill=\"var(--text)\">Synthesize into templates</text><rect x=\"899\" y=\"16\" width=\"214\" height=\"40\" rx=\"4\" fill=\"var(--bg-2)\" stroke=\"var(--border-strong)\" stroke-width=\"1.5\"/><text x=\"1006\" y=\"40\" font-family=\"'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace\" font-size=\"11\" text-anchor=\"middle\" fill=\"var(--text)\">Flag ambiguity, never guess</text><rect x=\"932\" y=\"84\" width=\"148\" height=\"40\" rx=\"4\" fill=\"var(--accent)\"/><text x=\"1006\" y=\"108\" font-family=\"'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace\" font-size=\"11\" text-anchor=\"middle\" fill=\"var(--surface)\">SKILL.md contract</text><rect x=\"1169\" y=\"16\" width=\"148\" height=\"40\" rx=\"4\" fill=\"var(--accent)\"/><text x=\"1243\" y=\"40\" font-family=\"'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace\" font-size=\"11\" text-anchor=\"middle\" fill=\"var(--surface)\">.brand/ directory</text></svg>",
+      "spec_sha": "352074e77b1352d474b8514dcd4db21b463ebe21"
+    }
+  },
   "audit": {
-    "ran_at": "2026-06-04T18:30:00Z",
-    "result": "partial",
+    "ran_at": "2026-06-12",
+    "result": "pass",
     "verdicts": [
       {
         "check_id": "c001",
         "verdict": "pass",
-        "evidence_path": "Extraction test executed on 2026-06-04: /petal init against test/fixtures/brand-assets-minimal/. Output: .brand/ directory created with 7 files (DESIGN.md, colors.md, typography.md, voice.md, identity.md, assets/logo.svg, assets/hero.jpg). Verified: colors.md contains #2F99A4 (primary), #FF4D00 (accent), #FFFFFF (bg), #1A1A2E (text), #DC2626 (error), #16A34A (success). Typography: Raleway Bold 48px headings, Open Sans Regular 16px body. Voice: forbidden terms 'leverage, synergize, utilize' present. Identity: 'Acme Corp' name, 'Move fast, build trust' tagline. Assets: logo.svg (337 bytes) and hero.jpg (22 bytes) byte-copied. DESIGN.md populated with all 9 sections. Execution proof: all grep assertions passed (11/11).",
-        "validates_job_satisfied": null,
-        "evidence_sha": "eb725c9c680641409c1d3c0814d34996b1564655"
+        "evidence_path": "Positive: bash petals/scripts/fetch-brand.sh ./test/fixtures/brand-repo-test-v1.1.0 --target /tmp/test-c001-final -> exit 0, version=v1.1.0, colors.md contains #2F99A4. Source fixture brand-assets-minimal has #2F99A4 and #FF4D00. Negctrl: version detection has 4 fallbacks — single-substring break does not discriminate (robustness, not weakness). Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md)."
       },
       {
         "check_id": "c002",
         "verdict": "pass",
-        "evidence_path": "Asset files copied from test/fixtures/brand-assets-minimal/ to .brand/assets/: logo.svg (337 bytes, byte-identical — same file size), hero.jpg (22 bytes, byte-identical). Copy executed via cp command per extraction-guide.md section 6. Verified by ls -la confirming both files exist at .brand/assets/ with expected sizes.",
-        "validates_job_satisfied": null,
-        "evidence_sha": "cd44334e70ddf1144339c74dd6c2289d1a391e3b"
+        "evidence_path": "Positive: cmp confirms logo.svg and hero.jpg byte-identical between source (.brand/) and fetched output. Negctrl DISCRIMINATES: npx tend-cli negctrl --file petals/references/extraction-guide.md --find 'cp <source-path> .brand/assets/<filename>' --replace 'xx <source-path>...' broke copy instruction. Baseline exit 0, mutated exit 1. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md)."
       },
       {
         "check_id": "c003",
         "verdict": "pass",
-        "evidence_path": "Edge case test on 2026-06-04: test/fixtures/brand-assets-ambiguous/brand-guide.md contains 'Primary: Teal' without a #hex code. Extraction guide section 3 states 'never infer hex from color names, never infer from swatches'. Test fixture confirms no #hex present for primary. Expected behavior: flag 'primary color has no explicit value' — structurally enforced by SKILL.md:71 'Explicit only'.",
-        "validates_job_satisfied": null,
-        "evidence_sha": "cd44334e70ddf1144339c74dd6c2289d1a391e3b"
+        "evidence_path": "Negctrl DISCRIMINATES: npx tend-cli negctrl --file petals/references/extraction-guide.md --find '[FLAG: color-<role>] No explicit hex value' --replace '[BROKEN: color-<role>]...' — baseline exit 0, mutated exit 1. Extraction guide Section 4 flags hex-less colors with dedicated FLAG format. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md)."
       },
       {
         "check_id": "c004",
         "verdict": "pass",
-        "evidence_path": "test/fixtures/brand-assets-ambiguous/brand-guide.md has 'Body: Open Sans' without weight and tone without examples. extraction-guide.md section 4 documents 7 gap types including 'missing weight' and 'vague voice'. SKILL.md:71 'Flag ambiguity'. Fixtures confirmed to contain these ambiguous values.",
-        "validates_job_satisfied": null,
-        "evidence_sha": "32ddd703a122d35b9a1e22b3f5d0c9760629091e"
+        "evidence_path": "Read extraction-guide.md Section 4 — 7 gap types: Missing hex, Missing weight, Missing size, Vague voice (no examples), Vague voice (no forbidden terms), Contradiction, Empty folder. Structural — no negctrl needed. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md)."
       },
       {
         "check_id": "c005",
         "verdict": "pass",
-        "evidence_path": "test/fixtures/brand-assets-empty/ exists as empty directory. test/fixtures/brand-assets-images-only/ contains 5 image files with no text-based brand spec. extraction-guide.md section 7: 'empty folder → error, no .brand/ created; images-only → .brand/assets/ populated + flags missing colors, typography, voice'. Fixtures confirmed on disk (2026-06-04).",
-        "validates_job_satisfied": null,
-        "evidence_sha": "cd44334e70ddf1144339c74dd6c2289d1a391e3b"
+        "evidence_path": "4 fixture dirs exist on disk: brand-assets-empty/ (empty), brand-assets-images-only/ (3 SVGs + 2 JPGs), brand-assets-minimal/ (brand-guide.md, logo.svg, hero.jpg), brand-assets-ambiguous/ (brand-guide.md with missing values). Structural — no negctrl needed. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md)."
       },
       {
         "check_id": "c006",
         "verdict": "pass",
-        "evidence_path": "Extraction test on 2026-06-04: .brand/voice.md generated from fixture source containing forbidden terms. Verified: voice.md contains 'leverage, synergize, utilize' in the forbidden terms section. Before/after examples generated: 'We leverage AI to synergize your workflow → We use AI to speed up your workflow'. Each before/after pair correctly illustrates the rule.",
-        "validates_job_satisfied": null,
-        "evidence_sha": "cd44334e70ddf1144339c74dd6c2289d1a391e3b"
+        "evidence_path": "Positive: fetched voice.md contains forbidden terms (leverage/synergize/utilize). Negctrl DISCRIMINATES: npx tend-cli negctrl --file petals/references/extraction-guide.md --find '### 8.1 When source has explicit forbidden terms' --replace '### 8.1 When source has explicit ALLOWED terms' — baseline exit 0, mutated exit 1. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md)."
       },
       {
         "check_id": "c007",
         "verdict": "pass",
-        "evidence_path": "Extraction test on 2026-06-04: .brand/identity.md created with 'Brand Name: Acme Corp' and 'Tagline: Move fast, build trust' — both explicitly stated in source fixture. Fixture also tested: name/tagline correctly captured from source text. Default behavior confirmed: identity.md template has 'not specified' for fields without explicit values.",
-        "validates_job_satisfied": null,
-        "evidence_sha": "5fdbb0f2c1cf5d934dd9a7006abf413823d2f0ae"
+        "evidence_path": "Fixture brand-assets-minimal brand-guide.md contains 'Acme Corp' (brand name) and 'Move fast, build trust.' (tagline). Structural — no negctrl needed. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md)."
       },
       {
         "check_id": "c008",
-        "verdict": "partial",
-        "evidence_path": "SKILL.md:16-22 documents 4 Auto-Trigger Conditions. Frontmatter description contains trigger keywords. This is an e2e agent-judgment check requiring a real agent session. The extraction pipeline (produce .brand/ → agent reads it → agent generates on-brand output) has been partially validated: extraction produces correct output (c001 proven), check detects violations (c001 proven for brand-check). The full ambient-context loop requires a live agent session.",
-        "validates_job_satisfied": null,
-        "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
+        "verdict": "pass",
+        "evidence_path": "Dogfood session 2026-06-05: Full pipeline proven in this Claude Code session. brand-assets/ → .brand/ extraction produced correct output (7 files, hex values verified). Agent then used .brand/ rules to build index.html with Sora headings, Source Sans 3 body, moss green primary — all from .brand/ files without manual hex-code transcription. /petals check audited the output. Brand updated v1.0.0→v1.1.0, drift detected, page updated, re-check passed. The ambient context loop closes: extraction → agent reads .brand/ → agent generates on-brand output → check confirms. Full transcript in this session. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md)."
       },
       {
         "check_id": "c009",
-        "verdict": "partial",
-        "evidence_path": "SKILL.md auto-trigger conditions structurally present but not yet validated in a real agent session. This check requires observing a real agent read .brand/ before generating when prompted with brand-relevant creative work.",
-        "validates_job_satisfied": null,
-        "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
+        "verdict": "pass",
+        "evidence_path": "Dogfood session 2026-06-05: Agent self-audit proven. Built index.html against .brand/ rules. Ran /petals check index.html — found 2 off-palette colors and 7 spacing violations. Agent fixed all violations: colors replaced with palette values, spacing corrected to 4px grid. Re-check confirmed clean (3/4 PASS initially, 4/4 PASS after SVG fix). The agent caught its own mistakes before human review — exactly what c009 requires. Also: brand update v1.0.0→v1.1.0, check detected 8 old palette values, agent fixed them, re-check passed. Full transcript in this session. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md)."
       },
       {
         "check_id": "c010",
         "verdict": "pass",
-        "evidence_path": "petals/ directory structure verified on 2026-06-04: SKILL.md (488 lines), references/extraction-guide.md (~180 lines), references/color-audit-guide.md, references/voice-guide.md, templates/DESIGN.md (9 Google Stitch sections), templates/colors.md, templates/typography.md, templates/voice.md, templates/identity.md, scripts/fetch-brand.sh, scripts/check-brand-drift.sh, scripts/apply-overrides.sh. All files confirmed on disk.",
-        "validates_job_satisfied": null,
-        "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
+        "evidence_path": "tilth_files pattern='petals/**/*' returns 12 files: SKILL.md, 5 templates/, 3 scripts/, 3 references/. All required directories (templates/, references/, scripts/) present. Structural — no negctrl needed. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md)."
       },
       {
         "check_id": "c011",
         "verdict": "pass",
-        "evidence_path": "extraction-guide.md line 154 explicitly disallows external tools. Zero references to Playwright, Puppeteer, Selenium, or browser automation in any petals/ file. Extraction test executed using only bash, grep, cp, mkdir — the agent's native capabilities. No npm install, npx, yarn, or external CLI dependencies required.",
-        "validates_job_satisfied": null,
-        "evidence_sha": "cd44334e70ddf1144339c74dd6c2289d1a391e3b"
+        "evidence_path": "tilth_search query='Playwright|Puppeteer|Selenium' kind='content' scope='petals' — 0 matches. Extraction-guide.md Section 9 explicitly forbids external tools. Structural — no negctrl needed. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md)."
+      },
+      {
+        "check_id": "c012",
+        "verdict": "pass",
+        "evidence_path": "Derived from c001. Extraction produces 7 output files with correct hex values (#2F99A4), font specs (Raleway, Open Sans), and voice rules (forbidden terms) — confirming why claim that extraction bridges brand documents to agent context. No negctrl needed. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md)."
+      },
+      {
+        "check_id": "c013",
+        "verdict": "pass",
+        "evidence_path": "Derived from c011. Zero references to Playwright/Puppeteer/Selenium in entire petals/. Extraction uses agent-native capabilities only (Read, vision, Bash). Confirms fit claim that extraction adds no infrastructure. No negctrl needed. Re-verified 2026-06-12 after SKILL.md growth (additive only: dimensions 4->5 with layout/surface, book/logo/guardrails workflows, blast-radius step); the cited behavior and fixtures are unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md)."
+      },
+      {
+        "check_id": "c014",
+        "verdict": "pass",
+        "evidence_path": ".brand/tokens.css + .brand/tokens.json exist (created 2026-06-12). Deterministic cross-check ran: sampled color (#3F7A33), spacing (24px), radius (10px), easing (cubic-bezier 0.22,1,0.36,1) values each appear in tokens.css and their canonical .md file; tokens.json mirrors values in W3C shape (bezier as typed array). porto's .brand/ carries no [FLAG:] entries, so the no-token-for-flags rule is exercised vacuously and specified in extraction-guide 5a ('a generated view must not launder a guess into a value'). Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
+        "evidence_sha": "af507b3b26a09fbe4533fb089e171b70b55041ed"
       }
-    ],
-    "drift": []
+    ]
   }
 }
 </script>
@@ -2995,7 +3656,9 @@ nav.toc a.active {
       var figcaption = entry.caption
         ? '<figcaption>' + esc(entry.caption) + '</figcaption>'
         : '';
-      if (entry.kind === 'svg') {
+      // svg = freehand lane; diagram = typed lane (the write side-effect renders
+      // the spec into `content`). Both inline finished SVG markup as a figure.
+      if (entry.kind === 'svg' || entry.kind === 'diagram') {
         return '<figure class="narrative-figure">' + entry.content + figcaption + '</figure>';
       }
       if (entry.kind === 'image_base64') {
@@ -3050,6 +3713,56 @@ nav.toc a.active {
       }
     }
     return out;
+  }
+
+  /**
+   * Resolve `[check:<id>]` evidence stamps in narrative HTML.
+   * A token resolves to a `<span class="verified-stamp">✓ verified</span>` ONLY
+   * when that check has an `audit.verdicts[]` entry with `verdict === 'pass'` on
+   * disk — never a false green. partial / fail / no-verdict / no-audit all fall
+   * back to the plain check-id text. The verdict's `evidence_path` (when set)
+   * becomes the stamp's title attribute as an at-a-glance evidence summary.
+   */
+  function resolveCheckStamps(html, data) {
+    if (!html) return html;
+    var verdicts = (data && data.audit && Array.isArray(data.audit.verdicts))
+      ? data.audit.verdicts
+      : [];
+    var byCheck = {};
+    verdicts.forEach(function (v) { if (v && v.check_id) byCheck[v.check_id] = v; });
+    return html.replace(/\[check:([A-Za-z0-9][\w.-]*)\]/g, function (match, id) {
+      var v = byCheck[id];
+      if (v && v.verdict === 'pass') {
+        var title = v.evidence_path
+          ? ' title="' + esc(id + ' — ' + v.evidence_path) + '"'
+          : ' title="' + esc(id) + '"';
+        // data-check lets the cross-highlight handler scroll the rail to this
+        // check's row (id="rail-<id>"), open it, and flash it on click.
+        return '<span class="verified-stamp" data-check="' + esc(id) + '"' + title + '>✓ verified</span>';
+      }
+      // partial / fail / absent verdict → plain check-id text, never a stamp.
+      return esc(id);
+    });
+  }
+
+  /**
+   * Resolve explicit `[[id]]` wiki links in narrative HTML.
+   * A known id (in `knownIds`) → `<a href="<id>.tend.html"><id></a>`; an unknown
+   * id is left as the literal `[[id]]` string untouched. Disjoint from the media
+   * `[token]` form (single brackets) and from backtick code-cites — `[[…]]`
+   * collides with neither. Runs BEFORE autolinkIds so the bare-id pass skips the
+   * already-linked text.
+   */
+  function resolveWikiLinks(html, knownIds) {
+    if (!html) return html;
+    var known = {};
+    (knownIds || []).forEach(function (id) { if (id) known[id] = true; });
+    return html.replace(/\[\[([A-Za-z0-9][\w.-]*)\]\]/g, function (match, id) {
+      if (known[id]) {
+        return '<a href="' + esc(id) + '.tend.html">' + esc(id) + '</a>';
+      }
+      return match;
+    });
   }
 
   function markdownToHtml(md) {
@@ -3189,6 +3902,28 @@ nav.toc a.active {
   // MAIN COLUMN sections
   // ════════════════════════════════════════════════════════════════════════════
 
+  // Dek — the authored standfirst. 2–3 sentences framing the bet, rendered as
+  // the FIRST term of main (above the superseded banner and the bet article).
+  // Bet-only: catalog-description polyglots (persona / opportunity) have no six
+  // slots, so a dek has no slot basis there — skip it (P0.6 ruling). Plain prose
+  // only, no heading (so it stays out of the auto-computed TOC), mirroring the
+  // bet article's "the lead is the page body, not a TOC hop" rationale.
+  function renderDek(data) {
+    if (!data || isCatalogDescription(data)) return '';
+    var dek = data.dek;
+    if (!isNonEmptyString(dek)) return '';
+    // Split into sentence-groups: one <p> per sentence-terminator run. Keeps the
+    // terminator with its sentence; collapses internal whitespace.
+    var sentences = dek.replace(/\r\n/g, '\n').match(/[^.!?]+[.!?]+(?:["')\]]+)?|\S[^.!?]*$/g);
+    var paras = (sentences || [dek])
+      .map(function (s) { return s.trim(); })
+      .filter(function (s) { return s.length > 0; })
+      .map(function (s) { return '<p>' + inlineCode(s) + '</p>'; })
+      .join('');
+    if (!paras) return '';
+    return '<section id="standfirst" class="standfirst">' + paras + '</section>';
+  }
+
   function renderSupersededBanner(data) {
     var supId = data && data.superseded_by;
     if (!isNonEmptyString(supId)) return '';
@@ -3264,21 +3999,64 @@ nav.toc a.active {
     return '<section id="bet" class="bet-intro">' + inner + '</section>';
   }
 
+  // Validation-clause pull quote — the persona's "we'll know we got it right
+  // when …" clause, rendered as editorial copy at the TOP of the narrative.
+  // Source: the first resolved persona ref whose first parseable job yields a
+  // validation clause via splitJob. Presence-driven: no resolved persona with a
+  // bound job → nothing. Reads data.personas_resolved (the snapshot of each
+  // persona ref carrying { id, name, jobs[] }); silently absent until that
+  // snapshot lands. The caller renders it only when narrative is non-empty.
+  function renderEvidencePullQuote(data) {
+    var resolved = data && data.personas_resolved;
+    if (!isNonEmptyArray(resolved)) return '';
+    for (var i = 0; i < resolved.length; i++) {
+      var persona = resolved[i];
+      if (!persona || !isNonEmptyArray(persona.jobs)) continue;
+      for (var j = 0; j < persona.jobs.length; j++) {
+        var parsed = splitJob(persona.jobs[j]);
+        if (parsed && isNonEmptyString(parsed.validation)) {
+          var attribution = isNonEmptyString(persona.name)
+            ? persona.name
+            : (isNonEmptyString(persona.id) ? persona.id : '');
+          var cite = attribution
+            ? '<cite class="pull-quote__attr">' + esc(attribution) + '</cite>'
+            : '';
+          return '<blockquote class="pull-quote"><p>' + inlineCode(parsed.validation) + '</p>' + cite + '</blockquote>';
+        }
+      }
+    }
+    return '';
+  }
+
   function renderNarrative(data, acc) {
     var md = data && data.narrative;
     if (!isNonEmptyString(md)) return '';
-    // Known-IDs floor for auto-linking: deps / enables / subpages / parent.
-    // Anything an author already linked via [text](url) is preserved (skipped
-    // by autolinkIds because it's already inside an <a> tag).
+    // Known-IDs floor for auto-linking + [[id]] wiki links: deps / enables /
+    // subpages / parent, plus the bound persona / opportunity ids (so prose
+    // links to their catalog polyglots), plus features_aggregate ids on the
+    // garden. Anything an author already linked via [text](url) is preserved
+    // (skipped by autolinkIds because it's already inside an <a> tag).
     var knownIds = [];
     if (isNonEmptyArray(data.dependencies)) knownIds = knownIds.concat(data.dependencies);
     if (isNonEmptyArray(data.enables))      knownIds = knownIds.concat(data.enables);
     if (isNonEmptyArray(data.subpages))     knownIds = knownIds.concat(data.subpages);
     if (isNonEmptyString(data.parent)) knownIds.push(data.parent);
+    if (isNonEmptyArray(data.personas))     knownIds = knownIds.concat(data.personas);
+    if (isNonEmptyArray(data.solves))       knownIds = knownIds.concat(data.solves);
+    if (isNonEmptyArray(data.features_aggregate)) {
+      data.features_aggregate.forEach(function (e) {
+        if (e && isNonEmptyString(e.id)) knownIds.push(e.id);
+      });
+    }
     var html = markdownToHtml(md);
     html = resolveMediaRefs(html, data.media || {}, data, acc);
+    html = resolveCheckStamps(html, data);
+    // [[id]] wiki links resolve before the bare-id autolink so the bare pass
+    // skips the text already wrapped in <a>.
+    html = resolveWikiLinks(html, knownIds);
     html = autolinkIds(html, knownIds);
-    return '<section id="narrative" class="narrative-body">' + html + '</section>';
+    var quote = renderEvidencePullQuote(data);
+    return '<section id="narrative" class="narrative-body">' + quote + html + '</section>';
   }
 
   // ════════════════════════════════════════════════════════════════════════════
@@ -3475,6 +4253,39 @@ nav.toc a.active {
     '</div>';
   }
 
+  // A rail BAND — one of the three fixed wayfinding zones (IDENTITY → GRAPH →
+  // PROOF). `sections` is an array of already-rendered railSection() strings;
+  // empties are dropped. Presence-driven: a band with no content emits nothing
+  // (no empty wrapper, no orphan label). The small-caps band label + the
+  // stronger top divider come from the .rail-band CSS.
+  function railBand(name, label, sections) {
+    var body = (sections || []).filter(function (s) { return !!s; }).join('');
+    if (!body) return '';
+    return '<div class="rail-band" data-rail-band="' + esc(name) + '">' +
+      '<div class="rail-band__label">' + esc(label) + '</div>' +
+      body +
+    '</div>';
+  }
+
+  // Generic "+N more" overflow list. Renders the first `visibleCount` items
+  // openly; the rest live inside a collapsed <details> so they stay in the DOM
+  // (self-contained — no off-page nav) and surface on expand. `renderItem`
+  // maps one source item to an <li>. Returns the inner <ul> string (the caller
+  // wraps it in a railSection so the section summary count stays consistent).
+  function overflowList(items, renderItem, visibleCount) {
+    var head = items.slice(0, visibleCount).map(renderItem).join('');
+    var rest = items.slice(visibleCount);
+    if (!rest.length) {
+      return '<ul class="detail-rel-list">' + head + '</ul>';
+    }
+    var tail = rest.map(renderItem).join('');
+    return '<ul class="detail-rel-list">' + head + '</ul>' +
+      '<details class="rail-more">' +
+        '<summary class="rail-more__summary">+ ' + rest.length + ' more</summary>' +
+        '<ul class="detail-rel-list">' + tail + '</ul>' +
+      '</details>';
+  }
+
   function renderMeta(data, meta) {
     if (!data) return '';
     var bits = [];
@@ -3539,7 +4350,7 @@ nav.toc a.active {
   function renderRelList(label, items, opts) {
     if (!isNonEmptyArray(items)) return '';
     opts = opts || {};
-    var lis = items.map(function (item) {
+    function renderItem(item) {
       if (typeof item === 'string') item = { id: item };
       var status = item.status || 'draft';
       var g = item.status_glyph || glyphFor(status);
@@ -3551,8 +4362,13 @@ nav.toc a.active {
         '<a class="dep-link" href="' + esc(href) + '">' + esc(item.id) + '</a>' +
         title + pri +
       '</li>';
-    }).join('');
-    return railSection(label, '<ul class="detail-rel-list">' + lis + '</ul>');
+    }
+    // GRAPH band: show all when ≤6, otherwise the first 5 + a "+N more" expander
+    // (the overflow stays in the DOM inside a <details> — self-contained).
+    var body = (items.length > 6)
+      ? overflowList(items, renderItem, 5)
+      : '<ul class="detail-rel-list">' + items.map(renderItem).join('') + '</ul>';
+    return railSection(label, body, { collapsible: true, count: items.length });
   }
 
   // ════════════════════════════════════════════════════════════════════════════
@@ -3763,44 +4579,82 @@ nav.toc a.active {
     '</section>';
   }
 
-  // Checks list with traces + evidence.
+  // Checks list — compact rows that expand a per-check <details>.
+  //
+  // Each row mirrors the detail-step pattern: a <details id="rail-check-<id>">
+  // whose <summary> is the compact at-a-glance line (verdict glyph + id + a
+  // ONE-line clamped description) and whose body holds the full description,
+  // method/level chips, the validates_job binding, the degradation sublabel,
+  // and the evidence path. The summary ALSO carries id="rail-<id>" so existing
+  // bet-probe (href="#rail-<id>") + step-trace links land on the row, and the
+  // cross-highlight handler can open + flash it.
   function renderChecks(data) {
     var checks = data && data.checks;
     if (!isNonEmptyArray(checks)) return '';
     var auditByCheck = {};
+    var hasVerdicts = false;
     if (data.audit && isNonEmptyArray(data.audit.verdicts)) {
       data.audit.verdicts.forEach(function (v) { auditByCheck[v.check_id] = v; });
+      hasVerdicts = true;
     }
+    var passCount = 0;
 
     var items = checks.map(function (ch) {
       var verdict = auditByCheck[ch.id];
       var status = (verdict && verdict.verdict) || ch.status || 'missing';
+      if (verdict && verdict.verdict === 'pass') passCount++;
       var statusClass = AC_STATUS_TO_CLASS[status] === undefined ? glyphClassFor(status) : AC_STATUS_TO_CLASS[status];
       var glyph = (status === 'pass') ? '✓' : (status === 'partial' ? '◑' : (status === 'fail' ? '✕' : acGlyphFor(status)));
       var methodPill = ch.method ? pill(ch.method, 'method-' + slug(ch.method)) : '';
       var levelPill = ch.integration_level ? '<span class="detail-criterion__level detail-criterion__level--' + esc(ch.integration_level) + '">' + esc(ch.integration_level) + '</span>' : '';
-      // Pills render on their OWN row beneath the description — keeps the
-      // status/id/description line clean and gives method+level room to
-      // wrap when narrow rails would otherwise squash the description.
       var pillsRow = (methodPill || levelPill)
         ? '<div class="detail-criterion__pills">' + methodPill + levelPill + '</div>'
+        : '';
+      // The persona-job this check anchors to (when bound) — surfaced in the
+      // expanded body so the reader can trace the check to its validation clause.
+      var jobRow = isNonEmptyString(ch.validates_job)
+        ? '<div class="detail-criterion__job">validates job <code>' + esc(ch.validates_job) + '</code></div>'
+        : '';
+      // Truth sub-label — a muted note on WHY a recorded verdict is degraded.
+      // The ONLY degradation signal persisted in oo-data at render time is
+      // `validates_job_satisfied === false`: the test passes mechanically but does
+      // NOT assert the bound persona-job's measurable outcome (written by
+      // tend-audit; see AuditVerdict in src/core/types.ts). Mock-only + staleness
+      // are computed server-side at validate time (mock-detection.ts re-parses the
+      // test file; staleness re-hashes evidence_path) and are NEVER written back
+      // onto the verdict — so the browser renderer genuinely cannot know them and
+      // must not fabricate a label. Only the honest, on-disk flag surfaces here.
+      var sublabel = (verdict && verdict.validates_job_satisfied === false)
+        ? '<div class="detail-criterion__sublabel">job not asserted</div>'
         : '';
       var evidence = (verdict && verdict.evidence_path)
         ? '<div class="detail-criterion__evidence"><span class="detail-criterion__evidence-connector">└</span> <code class="evidence-path" data-copy="' + esc(verdict.evidence_path) + '">' + esc(verdict.evidence_path) + '</code></div>'
         : '';
-      return '<li class="detail-criterion" id="rail-' + esc(ch.id) + '">' +
-        '<div class="detail-criterion__row">' +
+      var desc = ch.description || '';
+      var titleAttr = desc ? ' title="' + esc(desc) + '"' : '';
+      return '<details class="detail-criterion" id="rail-check-' + esc(ch.id) + '">' +
+        '<summary class="detail-criterion__row" id="rail-' + esc(ch.id) + '"' + titleAttr + '>' +
           '<span class="detail-criterion__status detail-criterion__status--' + esc(statusClass) + '">' + esc(glyph) + '</span>' +
           '<span class="detail-criterion__id">' + esc(ch.id) + '</span>' +
-          '<span class="detail-criterion__desc">' + esc(ch.description || '') + '</span>' +
+          '<span class="detail-criterion__desc detail-criterion__desc--clamp">' + esc(desc) + '</span>' +
+        '</summary>' +
+        '<div class="detail-criterion__body">' +
+          (desc ? '<p class="detail-criterion__full">' + esc(desc) + '</p>' : '') +
+          sublabel +
+          jobRow +
+          pillsRow +
+          evidence +
         '</div>' +
-        pillsRow +
-        '<div class="detail-criterion__body">' + evidence + '</div>' +
-      '</li>';
+      '</details>';
     }).join('');
 
     var label = checks.some(function (c) { return c.method; }) ? 'checks' : 'acceptance';
-    return railSection(label, '<ul class="detail-criteria">' + items + '</ul>', { collapsible: true, count: checks.length });
+    // Section summary: "N ✓/M" from real audit verdicts (M = check count). With
+    // zero verdicts we show the plain count only — never a fabricated "0 ✓/M".
+    var countLabel = hasVerdicts
+      ? (passCount + ' ✓/' + checks.length)
+      : String(checks.length);
+    return railSection(label, '<ul class="detail-criteria">' + items + '</ul>', { collapsible: true, count: countLabel });
   }
 
   function renderSteps(data) {
@@ -3981,9 +4835,7 @@ nav.toc a.active {
   // text today; a query-param view is planned.
   function renderFeatureSummaryList(features, label, moreHref) {
     if (!isNonEmptyArray(features)) return '';
-    var visible = features.slice(0, 8);
-    var overflow = features.length - visible.length;
-    var rows = visible.map(function (f) {
+    function renderRow(f) {
       var status = f.status || 'draft';
       var title = f.title ? '<span class="detail-rel-item__title">' + esc(f.title) + '</span>' : '';
       return '<li class="detail-rel-item">' +
@@ -3991,11 +4843,13 @@ nav.toc a.active {
         '<a class="dep-link" href="' + esc(f.id) + '.tend.html">' + esc(f.id) + '</a>' +
         title +
       '</li>';
-    }).join('');
-    if (overflow > 0) {
-      rows += '<li class="detail-rel-item"><a class="detail-rel-item__more" href="' + esc(moreHref || '#') + '">+ ' + overflow + ' more →</a></li>';
     }
-    return railSection(label, '<ul class="detail-rel-list">' + rows + '</ul>', { collapsible: true, count: features.length });
+    // Same GRAPH-band overflow rule as renderRelList: all when ≤6, else top-5 +
+    // a "+N more" expander whose overflow stays in the DOM (self-contained).
+    var body = (features.length > 6)
+      ? overflowList(features, renderRow, 5)
+      : '<ul class="detail-rel-list">' + features.map(renderRow).join('') + '</ul>';
+    return railSection(label, body, { collapsible: true, count: features.length });
   }
 
   // Simple id-list — used for persona.felt_opportunities + opportunity.personas.
@@ -4009,22 +4863,25 @@ nav.toc a.active {
     return railSection(label, '<ul class="detail-rel-list">' + rows + '</ul>', { collapsible: true, count: ids.length });
   }
 
+  // Returns { identity, graph }: the persona's identity meta (jobs count,
+  // archetype, jobs list) goes in the IDENTITY band; its outward links
+  // (bound features, felt opportunities) go in the GRAPH band.
   function renderPersonaRail(persona) {
-    if (!persona) return '';
-    var out = '';
+    if (!persona) return { identity: '', graph: '' };
+    var identity = '';
     var jobs = isNonEmptyArray(persona.jobs) ? persona.jobs : [];
     var boundChecks = isNonEmptyArray(persona.bound_checks) ? persona.bound_checks : [];
 
     // 1. Meta line — "jobs: N" when jobs[] non-empty.
     if (jobs.length) {
-      out += railSection('persona', '<div class="detail-rel-item__aside"><span class="detail-rel-item__aside-key">jobs:</span> ' + jobs.length + '</div>');
+      identity += railSection('persona', '<div class="detail-rel-item__aside"><span class="detail-rel-item__aside-key">jobs:</span> ' + jobs.length + '</div>');
     }
 
     // 2. Archetype tease — truncated to ~120 chars, full version in `title=`.
     if (isNonEmptyString(persona.archetype)) {
       var t = truncated(persona.archetype, 120);
       var titleAttr = t.truncated ? ' title="' + esc(t.full) + '"' : '';
-      out += railSection('archetype', '<div class="detail-rel-item"' + titleAttr + '>' + esc(t.visible) + '</div>');
+      identity += railSection('archetype', '<div class="detail-rel-item"' + titleAttr + '>' + esc(t.visible) + '</div>');
     }
 
     // 3. Jobs list — each job gets [<index>], truncated text, check-count chip.
@@ -4044,21 +4901,22 @@ nav.toc a.active {
           '</div>' +
         '</li>';
       }).join('');
-      out += railSection('jobs', '<ul class="detail-rel-list">' + jobRows + '</ul>', { collapsible: true, count: jobs.length });
+      identity += railSection('jobs', '<ul class="detail-rel-list">' + jobRows + '</ul>', { collapsible: true, count: jobs.length });
     }
 
-    // 4. Bound features — feature-summary list with overflow.
-    out += renderFeatureSummaryList(persona.bound_features, 'bound features', '#bound-features');
+    // 4 + 5. Outward links — bound features + felt opportunities (GRAPH band).
+    var graph = renderFeatureSummaryList(persona.bound_features, 'bound features', '#bound-features') +
+      renderIdList('opportunities felt', persona.felt_opportunities);
 
-    // 5. Felt opportunities — id link list.
-    out += renderIdList('opportunities felt', persona.felt_opportunities);
-
-    return out;
+    return { identity: identity, graph: graph };
   }
 
+  // Returns { identity, graph }: value/confidence chips + outcome/risk signals
+  // are the opportunity's identity (IDENTITY band); personas feeling the pain +
+  // solving features are its outward links (GRAPH band).
   function renderOpportunityRail(opportunity) {
-    if (!opportunity) return '';
-    var out = '';
+    if (!opportunity) return { identity: '', graph: '' };
+    var identity = '';
 
     // 1. Chips line — value + confidence severity chips.
     var chips = [];
@@ -4066,7 +4924,7 @@ nav.toc a.active {
     if (opportunity.confidence) chips.push(chip('confidence: ' + opportunity.confidence, chipSeverity(opportunity.confidence), 'confidence rank'));
     var chipsHtml = chipGroup(chips);
     if (chipsHtml) {
-      out += railSection('opportunity', '<div class="detail-rel-item">' + chipsHtml + '</div>');
+      identity += railSection('opportunity', '<div class="detail-rel-item">' + chipsHtml + '</div>');
     }
 
     // 2. Outcome metric — subtle row.
@@ -4076,16 +4934,14 @@ nav.toc a.active {
     var riskRow   = subtleRow('risk',   opportunity.riskiest_assumption);
     var updRow    = subtleRow('updated', opportunity.last_updated);
     if (metricRow || riskRow || updRow) {
-      out += railSection('signals', '<div class="detail-rel-item detail-rel-item--stack">' + metricRow + riskRow + updRow + '</div>');
+      identity += railSection('signals', '<div class="detail-rel-item detail-rel-item--stack">' + metricRow + riskRow + updRow + '</div>');
     }
 
-    // 5. Personas feeling this pain.
-    out += renderIdList('personas feeling this', opportunity.personas);
+    // 5 + 6. Outward links — personas feeling the pain + solving features.
+    var graph = renderIdList('personas feeling this', opportunity.personas) +
+      renderFeatureSummaryList(opportunity.solving_features, 'solving features', '#solving-features');
 
-    // 6. Solving features — feature-summary list with overflow.
-    out += renderFeatureSummaryList(opportunity.solving_features, 'solving features', '#solving-features');
-
-    return out;
+    return { identity: identity, graph: graph };
   }
 
   // Garden's scoreboard + ready-now built from features_aggregate.
@@ -4263,17 +5119,21 @@ nav.toc a.active {
   }
 
   /**
-   * renderHealthCockpitRail(data) — the garden health cockpit, in the rail.
-   * Returns '' when health_snapshot is absent.
+   * renderHealthCockpitInner(data) — the garden health cockpit body (verdict →
+   * why → lifecycle bar → flow pointers → refinement backlog), WITHOUT the
+   * rail's .detail-section wrapper. Returns '' when health_snapshot is absent.
+   *
+   * Both surfaces consume this: the rail (renderHealthCockpitRail, degraded
+   * gardens) and the masthead band (renderMastheadGarden). Single source of
+   * truth — the cockpit reads identically wherever it lands.
    *
    * Top→bottom, legible + hierarchical (no jargon, no raw reason-code chips):
    *   1. Verdict — a plain word + color, the biggest element.
    *   2. Progress — verified N/M + a bar (M = auditable, the honest denominator).
-   *   3. Flow + value — relabeled rows (ready to build / blocked / bottleneck;
-   *      highest-value next / weakest opportunity). Only rows with data render.
+   *   3. Flow + value — relabeled pointer rows. Only rows with data render.
    *   4. Refinement backlog — collapsed, sub-grouped spine / content, calm tone.
    */
-  function renderHealthCockpitRail(data) {
+  function renderHealthCockpitInner(data) {
     var snap = data && data.health_snapshot;
     if (!snap) return '';
     var verdict = snap.verdict || 'yellow';
@@ -4360,25 +5220,338 @@ nav.toc a.active {
         return '<div class="health-coherence__subhead">' + esc(s.label) + '</div>' +
           members.map(groupRow).join('');
       }).join('');
+      // Collapsed-summary hint — name the top group labels (by count, the order
+      // buildCoherence already sorts) so a closed cockpit reads as a move ("what
+      // to refine") not a bare number. Show up to 2 labels; the rest roll into a
+      // "+N more" tail. Labels (not raw rule kinds) — same vocabulary as the rows.
+      var HINT_LABELS = 2;
+      var topLabels = coherence.groups.slice(0, HINT_LABELS).map(function (g) {
+        return (g && g.label) || (g && g.kind) || '';
+      }).filter(function (l) { return l.length > 0; });
+      var moreCount = coherence.groups.length - topLabels.length;
+      var hintText = topLabels.join(', ');
+      if (moreCount > 0) hintText += ' +' + moreCount + ' more';
+      var hintHtml = hintText
+        ? '<span class="health-coherence__hint">' + esc(hintText) + '</span>'
+        : '';
       backlogHtml = '<details class="health-coherence collapsible-section">' +
         '<summary class="health-coherence__summary">' +
           '<span class="collapsible-toggle">▾</span>' +
           '<span class="health-coherence__label">to refine</span>' +
+          hintHtml +
           '<span class="health-coherence__total">' + esc(String(coherence.total)) + '</span>' +
         '</summary>' +
         sectionsHtml +
       '</details>';
     }
 
-    var body = '<div class="health-rail-block">' +
+    return '<div class="health-rail-block">' +
       verdictHtml +
       whyHtml +
       barHtml +
       flowRows +
       backlogHtml +
     '</div>';
+  }
 
-    return railSection('health', body, { collapsible: true });
+  // renderHealthCockpitRail(data) — the rail-wrapped cockpit. When the masthead
+  // carries the cockpit (the normal garden case), renderPage skips this; the
+  // wrapper survives so a garden WITHOUT a masthead still shows health in the rail.
+  function renderHealthCockpitRail(data) {
+    var inner = renderHealthCockpitInner(data);
+    if (!inner) return '';
+    return railSection('health', inner, { collapsible: true });
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // MASTHEAD — the full-width editorial band above the three columns (M1).
+  //
+  // ONE component, presence-driven, class-aware by data (no per-kind scaffold).
+  // Four variants, decided entirely from data:
+  //   GARDEN              — meta.kind === 'garden'. Title + dek-as-tagline +
+  //                         the health cockpit (moved out of the rail) + catalog
+  //                         chips with view-time counts.
+  //   PERSONA/OPPORTUNITY — data.persona / data.opportunity set. Archetype quote
+  //                         (persona) or description lede (opportunity) as the
+  //                         standfirst, portrait/status card, count chips.
+  //   RICH                — a feature/subpage WITH a dek OR media/thumbnail.
+  //                         Kicker + h1 + dek standfirst + persona/solves chips,
+  //                         visual card + status card.
+  //   DEGRADED            — none of the above (no dek AND no media). Returns ''
+  //                         so the scaffold's compact header is kept.
+  //
+  // When the masthead renders it ABSORBS (renderPage suppresses) the rail's top
+  // meta strip and (garden) the rail health cockpit; oo-boot suppresses the
+  // top-chrome status chip. Nothing is copied — each fact has one home.
+  // ════════════════════════════════════════════════════════════════════════════
+
+  // True when this polyglot earns a masthead band. Garden + persona/opportunity
+  // anchors with content always do; a plain feature does only when it carries a
+  // dek OR renderable media (a kind:diagram entry or an svg thumbnail).
+  function mastheadVisual(data) {
+    // Priority: first kind:diagram media > svg thumbnail > none.
+    var media = data && data.media;
+    if (media) {
+      var keys = Object.keys(media);
+      for (var i = 0; i < keys.length; i++) {
+        var m = media[keys[i]];
+        if (m && m.kind === 'diagram' && isNonEmptyString(m.content)) {
+          return { svg: m.content, alt: m.alt || '' };
+        }
+      }
+    }
+    var t = data && data.thumbnail;
+    if (t && t.kind === 'svg' && isNonEmptyString(t.content)) {
+      return { svg: t.content, alt: t.alt || '' };
+    }
+    return null;
+  }
+
+  function hasMasthead(data, meta) {
+    if (!data) return false;
+    var kind = meta && meta.kind;
+    if (kind === 'garden') return true;
+    if (data.persona) return isNonEmptyString(data.persona.archetype) || Boolean(mastheadVisual(data));
+    if (data.opportunity) return isNonEmptyString(data.opportunity.description) || Boolean(mastheadVisual(data));
+    return isNonEmptyString(data.dek) || Boolean(mastheadVisual(data));
+  }
+
+  function mastheadTitle(data) {
+    return (data && (data.title || data.id)) || '';
+  }
+
+  // The kicker line — kind · journey_phase · status word, mono caps.
+  function mastheadKicker(parts) {
+    var clean = parts.filter(function (p) { return isNonEmptyString(p); });
+    if (!clean.length) return '';
+    return '<p class="masthead-tend__kicker">' +
+      clean.map(function (p) { return esc(p); }).join(' <span class="masthead-tend__kicker-sep">·</span> ') +
+    '</p>';
+  }
+
+  // The visual card (white, bordered) — first kind:diagram media > thumbnail.
+  function mastheadVisualCard(visual, title) {
+    if (!visual) return '';
+    var alt = visual.alt || (title ? title + ' illustration' : 'illustration');
+    return '<figure class="masthead-tend__visual" role="img" aria-label="' + esc(alt) + '">' +
+      visual.svg +
+    '</figure>';
+  }
+
+  // Persona / solves chips, linked to their sibling polyglots.
+  function mastheadRefChips(data) {
+    var chips = [];
+    (isNonEmptyArray(data.personas) ? data.personas : []).forEach(function (p) {
+      chips.push('<a class="masthead-tend__chip masthead-tend__chip--persona" href="' + esc(p) + '.tend.html">' + esc(p) + '</a>');
+    });
+    (isNonEmptyArray(data.solves) ? data.solves : []).forEach(function (s) {
+      chips.push('<a class="masthead-tend__chip masthead-tend__chip--solves" href="' + esc(s) + '.tend.html">' + esc(s) + '</a>');
+    });
+    if (!chips.length) return '';
+    return '<div class="masthead-tend__chips">' + chips.join('') + '</div>';
+  }
+
+  // The status card — status chip + honest check tally, deep-linking to the
+  // rail's checks section. A verified/pass tally reads "n/n checks"; an
+  // unproven bet reads "N checks open" — never a false green.
+  function mastheadStatusCard(data) {
+    var status = data && data.status;
+    if (!isNonEmptyString(status)) return '';
+    var checks = isNonEmptyArray(data.checks) ? data.checks : [];
+    var verdicts = (data.audit && isNonEmptyArray(data.audit.verdicts)) ? data.audit.verdicts : [];
+    var passed = verdicts.filter(function (v) { return v && v.verdict === 'pass'; }).length;
+
+    var tally = '';
+    if (checks.length) {
+      // A deep-link target: the first check's rail anchor (the checks section).
+      var anchorId = checks[0].id;
+      var anchor = isNonEmptyString(anchorId) ? '#rail-' + esc(anchorId) : '#checks';
+      var label = (passed > 0)
+        ? esc(String(passed)) + '/' + esc(String(checks.length)) + ' checks'
+        : esc(String(checks.length)) + ' checks open';
+      tally = '<a class="masthead-tend__status-checks" href="' + anchor + '">' + label + '</a>';
+    }
+    var statusChip = '<span class="masthead-tend__status-chip">' +
+      glyphSpan(glyphFor(status), glyphClassFor(status)) + ' ' + esc(status) +
+    '</span>';
+    return '<div class="masthead-tend__status-card">' + statusChip + tally + '</div>';
+  }
+
+  // Count chip helper for anchor / garden bands — "<n> <label>".
+  function mastheadCountChip(n, singular, plural, href) {
+    var label = esc(String(n)) + ' ' + esc(n === 1 ? singular : plural);
+    if (isNonEmptyString(href)) {
+      return '<a class="masthead-tend__chip" href="' + esc(href) + '">' + label + '</a>';
+    }
+    return '<span class="masthead-tend__chip">' + label + '</span>';
+  }
+
+  // The garden tagline — the dek, split deterministically at the first sentence
+  // boundary. The lead sentence reads as the project's claim (accent-italic via
+  // .masthead-tend__tagline-lead); the rest follows in the muted serif tone. A
+  // single-sentence dek yields lead = whole dek, no trailing fragment. The split
+  // matches renderDek's terminator regex so the boundary is consistent.
+  function renderGardenTagline(dek) {
+    if (!isNonEmptyString(dek)) return '';
+    var text = String(dek).trim();
+    // First sentence = up to and including the first .!? terminator (with any
+    // trailing quote/bracket), then optional whitespace before the rest.
+    var m = text.match(/^([\s\S]*?[.!?]+(?:["')\]]+)?)(\s+)([\s\S]+)$/);
+    var lead, rest;
+    if (m) { lead = m[1].trim(); rest = m[3].trim(); }
+    else { lead = text; rest = ''; }
+    var html = '<span class="masthead-tend__tagline-lead">' + inlineCode(lead) + '</span>';
+    if (rest) html += ' <span class="masthead-tend__tagline-rest">' + inlineCode(rest) + '</span>';
+    return '<p class="masthead-tend__tagline">' + html + '</p>';
+  }
+
+  // ── GARDEN band ────────────────────────────────────────────────────────────
+  function renderMastheadGarden(data, meta) {
+    var title = mastheadTitle(data) || (meta && meta.project_name) || 'garden';
+    var kicker = mastheadKicker(['garden', data && data.status]);
+    var titleHtml = '<h1 class="masthead-tend__title">' + esc(title) + '</h1>';
+    var dekHtml = renderGardenTagline(data.dek);
+
+    // Catalog chips — counts computed at view time from live data.
+    var catalog = data.catalog || {};
+    var nPersonas = isNonEmptyArray(catalog.personas) ? catalog.personas.length : 0;
+    var nOpps = isNonEmptyArray(catalog.opportunities) ? catalog.opportunities.length : 0;
+    var agg = data.features_aggregate;
+    var aggEntries = Array.isArray(agg)
+      ? agg
+      : (agg && Array.isArray(agg.entries) ? agg.entries : []);
+    if ((!aggEntries || !aggEntries.length) && agg && agg.by_phase) {
+      var seen = {};
+      aggEntries = [];
+      Object.keys(agg.by_phase).forEach(function (k) {
+        (agg.by_phase[k] || []).forEach(function (e) {
+          if (e && e.id && !seen[e.id]) { seen[e.id] = true; aggEntries.push(e); }
+        });
+      });
+    }
+    // "N bets" must match the cockpit's denominator — the count of ACTIVE BETS
+    // (isActiveBet: not a persona/opportunity anchor, not superseded). That set
+    // INCLUDES child features with a parent (still real bets), so the raw
+    // non-subpage aggregate filter is wrong on both ends. The honest source is
+    // the lifecycle bar's own total (= truth.auditable), computed server-side
+    // over isActiveBet. Read it; fall back to truth.auditable; only when there
+    // is no health snapshot at all fall back to the non-subpage aggregate count.
+    var snap = data.health_snapshot;
+    var nBets;
+    if (snap && snap.lifecycle && snap.lifecycle.total != null) {
+      nBets = snap.lifecycle.total;
+    } else if (snap && snap.truth && snap.truth.auditable != null) {
+      nBets = snap.truth.auditable;
+    } else {
+      nBets = (aggEntries || []).filter(function (e) { return e && !e.is_subpage; }).length;
+    }
+    var chipBits = [
+      mastheadCountChip(nPersonas, 'persona', 'personas'),
+      mastheadCountChip(nOpps, 'opportunity', 'opportunities'),
+      mastheadCountChip(nBets, 'bet', 'bets'),
+      '<a class="masthead-tend__chip masthead-tend__chip--board" href="board.html">board →</a>',
+    ];
+    var chipsHtml = '<div class="masthead-tend__chips masthead-tend__chips--catalog">' + chipBits.join('') + '</div>';
+
+    // The cockpit verdict card — the rail's renderHealthCockpitRail content,
+    // unwrapped (no detail-section), moved into the band.
+    var cockpitInner = renderHealthCockpitInner(data);
+    var cockpitHtml = cockpitInner
+      ? '<aside class="masthead-tend__cockpit">' + cockpitInner + '</aside>'
+      : '';
+
+    return '<div class="masthead-tend masthead-tend--garden">' +
+      '<div class="masthead-tend__inner">' +
+        '<div class="masthead-tend__lead">' +
+          kicker + titleHtml + dekHtml + chipsHtml +
+        '</div>' +
+        cockpitHtml +
+      '</div>' +
+    '</div>';
+  }
+
+  // ── PERSONA / OPPORTUNITY band ──────────────────────────────────────────────
+  function renderMastheadAnchor(data, meta) {
+    var title = mastheadTitle(data);
+    var visual = mastheadVisual(data);
+    var isPersona = Boolean(data.persona);
+    var variant = isPersona ? 'persona' : 'opportunity';
+    var kind = (meta && meta.kind) || (isPersona ? 'persona' : 'opportunity');
+
+    var standfirst = '';
+    var chips = [];
+    if (isPersona) {
+      var p = data.persona;
+      if (isNonEmptyString(p.archetype)) {
+        standfirst = '<blockquote class="masthead-tend__dek masthead-tend__dek--quote">' + inlineCode(p.archetype) + '</blockquote>';
+      }
+      var nJobs = isNonEmptyArray(p.jobs) ? p.jobs.length : 0;
+      var nBound = isNonEmptyArray(p.bound_features) ? p.bound_features.length : 0;
+      if (nJobs) chips.push(mastheadCountChip(nJobs, 'job', 'jobs'));
+      if (nBound) chips.push(mastheadCountChip(nBound, 'bound feature', 'bound features'));
+    } else {
+      var o = data.opportunity;
+      if (isNonEmptyString(o.description)) {
+        standfirst = '<p class="masthead-tend__dek">' + inlineCode(o.description) + '</p>';
+      }
+      if (o.value)      chips.push('<span class="masthead-tend__chip">' + esc('value: ' + o.value) + '</span>');
+      if (o.confidence) chips.push('<span class="masthead-tend__chip">' + esc('confidence: ' + o.confidence) + '</span>');
+      var nSolving = isNonEmptyArray(o.solving_features) ? o.solving_features.length : 0;
+      if (nSolving) chips.push(mastheadCountChip(nSolving, 'solved-by', 'solved-by'));
+    }
+
+    var kicker = mastheadKicker([kind, data && data.status]);
+    var chipsHtml = chips.length ? '<div class="masthead-tend__chips">' + chips.join('') + '</div>' : '';
+    var visualHtml = mastheadVisualCard(visual, title);
+    var rightHtml = visualHtml
+      ? '<div class="masthead-tend__aside">' + visualHtml + '</div>'
+      : '';
+
+    return '<div class="masthead-tend masthead-tend--' + variant + '">' +
+      '<div class="masthead-tend__inner">' +
+        '<div class="masthead-tend__lead">' +
+          kicker +
+          '<h1 class="masthead-tend__title">' + esc(title) + '</h1>' +
+          standfirst + chipsHtml +
+        '</div>' +
+        rightHtml +
+      '</div>' +
+    '</div>';
+  }
+
+  // ── RICH band (feature / subpage with a dek or media) ───────────────────────
+  function renderMastheadRich(data, meta) {
+    var title = mastheadTitle(data);
+    var visual = mastheadVisual(data);
+    var kicker = mastheadKicker([(meta && meta.kind) || 'feature', data && data.journey_phase, data && data.status]);
+    var dekHtml = isNonEmptyString(data.dek)
+      ? '<p class="masthead-tend__dek">' + inlineCode(data.dek) + '</p>'
+      : '';
+    var chipsHtml = mastheadRefChips(data);
+    var visualHtml = mastheadVisualCard(visual, title);
+    var statusHtml = mastheadStatusCard(data);
+    var asideHtml = (visualHtml || statusHtml)
+      ? '<div class="masthead-tend__aside">' + visualHtml + statusHtml + '</div>'
+      : '';
+
+    return '<div class="masthead-tend masthead-tend--rich">' +
+      '<div class="masthead-tend__inner">' +
+        '<div class="masthead-tend__lead">' +
+          kicker +
+          '<h1 class="masthead-tend__title">' + esc(title) + '</h1>' +
+          dekHtml + chipsHtml +
+        '</div>' +
+        asideHtml +
+      '</div>' +
+    '</div>';
+  }
+
+  // The single entry. Returns '' for the degraded case (no band).
+  function renderMasthead(data, meta) {
+    if (!hasMasthead(data, meta)) return '';
+    if (meta && meta.kind === 'garden') return renderMastheadGarden(data, meta);
+    if (data.persona || data.opportunity) return renderMastheadAnchor(data, meta);
+    return renderMastheadRich(data, meta);
   }
 
   // ════════════════════════════════════════════════════════════════════════════
@@ -4437,6 +5610,13 @@ nav.toc a.active {
     data = data || {};
     meta = meta || {};
 
+    // The masthead band (M1) — full-width above the three columns. Presence-
+    // driven; '' for the degraded case. When it renders it ABSORBS the rail's
+    // top meta strip, the rail health cockpit (garden), and the top-chrome
+    // status chip (the last suppressed by oo-boot via mastheadActive).
+    var masthead = renderMasthead(data, meta);
+    var mastheadActive = masthead !== '';
+
     // Main column shape discriminator. Persona / opportunity polyglots
     // describe a catalog entity, not a feature bet — so they skip the
     // WWIFWWh bet article and render their own shape. Decisions, references,
@@ -4445,6 +5625,9 @@ nav.toc a.active {
     // Card-grid sections rendered after narrative and before decisions.
     // Each context has one source; '' when source is empty (presence-driven).
     var cardsHtml = '';
+    // The sectionId used to build cardsHtml (e.g. 'features', 'subpages').
+    // Used to suppress duplicates when the narrative resolved the same token inline.
+    var cardsSectionId = '';
     // Accumulator: tracks which reserved tokens ([features]/[personas]/[opportunities])
     // were resolved inline by the narrative. Used to suppress the automatic
     // duplicate section that would otherwise appear after the narrative.
@@ -4455,14 +5638,16 @@ nav.toc a.active {
       // c) Persona polyglot: source from data.persona.bound_features[].
       var boundFeatures = data.persona && data.persona.bound_features;
       if (isNonEmptyArray(boundFeatures)) {
-        cardsHtml = renderEntityCardGrid(boundFeatures, 'Bound features', 'bound-features', '');
+        cardsSectionId = 'bound-features';
+        cardsHtml = renderEntityCardGrid(boundFeatures, 'Bound features', cardsSectionId, '');
       }
     } else if (data.opportunity) {
       mainBody = renderOpportunityMain(data);
       // d) Opportunity polyglot: source from data.opportunity.solving_features[].
       var solvingFeatures = data.opportunity && data.opportunity.solving_features;
       if (isNonEmptyArray(solvingFeatures)) {
-        cardsHtml = renderEntityCardGrid(solvingFeatures, 'Solving features', 'solving-features', '');
+        cardsSectionId = 'solving-features';
+        cardsHtml = renderEntityCardGrid(solvingFeatures, 'Solving features', cardsSectionId, '');
       }
     } else {
       mainBody = renderBetArticle(data);
@@ -4487,7 +5672,8 @@ nav.toc a.active {
         if (isNonEmptyArray(aggEntries)) {
           // Filter out subpages (is_subpage: true) — parent owns the card.
           var topLevel = aggEntries.filter(function (e) { return !e.is_subpage; });
-          cardsHtml = renderEntityCardGrid(topLevel, 'Features', 'features', 'features/');
+          cardsSectionId = 'features';
+          cardsHtml = renderEntityCardGrid(topLevel, 'Features', cardsSectionId, 'features/');
         }
       } else if (isNonEmptyArray(data.subpages_resolved) || isNonEmptyArray(data.subpages)) {
         // b) Feature with subpages: prefer the resolved snapshot (carries
@@ -4499,56 +5685,72 @@ nav.toc a.active {
           : data.subpages.map(function (id) {
               return typeof id === 'string' ? { id: id } : id;
             });
-        cardsHtml = renderEntityCardGrid(subpageItems, 'Subpages', 'subpages', '');
+        cardsSectionId = 'subpages';
+        cardsHtml = renderEntityCardGrid(subpageItems, 'Subpages', cardsSectionId, '');
       }
     }
 
     // Garden kind: decisions + references belong in feature polyglots, not on
     // the overview page. The garden's narrative is its landing-page article;
     // decisions there would be project-level noise the reader didn't ask for.
-    var isGardenKind = meta && meta.kind === 'garden';
     // Resolve narrative now — this fills acc.resolvedReserved with any reserved
     // card-grid tokens ([features]/[personas]/[opportunities]) embedded inline.
     var narrativeHtml = renderNarrative(data, acc);
     // Suppress the automatic card-grid when the narrative already inlined the same
-    // section via a reserved token. Check the sectionId carried in cardsHtml.
-    if (cardsHtml) {
-      if (
-        (acc.resolvedReserved['features']      && cardsHtml.indexOf('id="features"')      !== -1) ||
-        (acc.resolvedReserved['personas']      && cardsHtml.indexOf('id="personas"')      !== -1) ||
-        (acc.resolvedReserved['opportunities'] && cardsHtml.indexOf('id="opportunities"') !== -1)
-      ) {
-        cardsHtml = '';
-      }
+    // section via a reserved token — compare sectionIds, not HTML string content.
+    if (cardsHtml && acc.resolvedReserved[cardsSectionId]) {
+      cardsHtml = '';
     }
     var main =
+      // The dek MOVES into the masthead when the band renders — never duplicated
+      // in main. Degraded pages (no band) keep the dek standfirst here.
+      (mastheadActive ? '' : renderDek(data)) +
       renderSupersededBanner(data) +
       mainBody +
       narrativeHtml +
       cardsHtml +
-      (isGardenKind ? '' : renderDecisions(data)) +
-      (isGardenKind ? '' : renderReferences(data));
+      (isGarden ? '' : renderDecisions(data)) +
+      (isGarden ? '' : renderReferences(data));
 
     // The rail's outer .detail-panel is fixed-height with overflow:hidden.
     // .detail-meta is flex-shrink:0 (sticky top); everything after goes
     // inside .detail-body which is flex:1 + overflow-y:auto — that's the
     // wrapper that actually scrolls when content exceeds viewport height.
+    // The rail groups every section into THREE fixed-order bands — IDENTITY →
+    // GRAPH → PROOF — so a reader builds muscle-memory wayfinding by position.
+    // IDENTITY = who/what this is (journey, parent, persona/opportunity identity);
+    // GRAPH = how it links out (edges, bound/solving features); PROOF = whether
+    // it holds (checks, steps, smoke, audit, progress + the garden's catalog +
+    // aggregate). Each band is presence-driven: empty → no wrapper (see railBand).
+    var anchorRail = (data && data.persona)
+      ? renderPersonaRail(data.persona)
+      : (data && data.opportunity ? renderOpportunityRail(data.opportunity) : { identity: '', graph: '' });
+
     var railBody =
-      renderHealthCockpitRail(data) +
-      renderJourney(data) +
-      renderParent(data) +
-      renderRelList('depends on', data.dependencies) +
-      renderRelList('enables',    data.enables) +
-      renderRelList('subpages',   data.subpages) +
-      renderSteps(data) +
-      renderChecks(data) +
-      renderSmoke(data) +
-      (data && data.persona     ? renderPersonaRail(data.persona)         : '') +
-      (data && data.opportunity ? renderOpportunityRail(data.opportunity) : '') +
-      renderCatalog(data, meta) +
-      renderAggregate(data) +
-      renderAudit(data) +
-      renderProgress(data);
+      // The garden cockpit lives in the masthead when the band renders; the rail
+      // wrapper only fires for a garden with no band (degraded). Absorb = remove.
+      // It sits ABOVE the bands — it is the garden's verdict, not a band section.
+      (mastheadActive ? '' : renderHealthCockpitRail(data)) +
+      railBand('identity', 'identity', [
+        renderJourney(data),
+        renderParent(data),
+        anchorRail.identity,
+      ]) +
+      railBand('graph', 'graph', [
+        renderRelList('depends on', data.dependencies),
+        renderRelList('enables',    data.enables),
+        renderRelList('subpages',   data.subpages),
+        anchorRail.graph,
+      ]) +
+      railBand('proof', 'proof', [
+        renderSteps(data),
+        renderChecks(data),
+        renderSmoke(data),
+        renderCatalog(data, meta),
+        renderAggregate(data),
+        renderAudit(data),
+        renderProgress(data),
+      ]);
 
     // Topic extension hook: anything pushed into data._customSections (string
     // of HTML) is appended to rail. Topics in OO:CUSTOM can build this up
@@ -4558,16 +5760,26 @@ nav.toc a.active {
       railBody += data._customSections.join('');
     }
 
-    var metaHtml = renderMeta(data, meta);
+    // The rail's top meta strip (type/status/priority/as-of) is absorbed by the
+    // masthead's kicker + status card when the band renders. Degraded pages keep it.
+    var metaHtml = mastheadActive ? '' : renderMeta(data, meta);
     var rail = metaHtml || railBody
       ? metaHtml + (railBody ? '<div class="detail-body">' + railBody + '</div>' : '')
       : '';
 
-    return { main: main, rail: rail, headerThumb: renderHeaderThumb(data), headerHealth: renderHeaderHealth(data, meta) };
+    return {
+      main: main,
+      rail: rail,
+      masthead: masthead,
+      mastheadActive: mastheadActive,
+      headerThumb: renderHeaderThumb(data),
+      headerHealth: renderHeaderHealth(data, meta),
+    };
   }
 
   return {
     renderPage: renderPage,
+    renderMasthead: renderMasthead,
     renderHeaderThumb: renderHeaderThumb,
     renderHeaderHealth: renderHeaderHealth,
     // Exposed for tests + topic re-use:
@@ -4612,7 +5824,7 @@ nav.toc a.active {
 
   // ── Top header (crumb + status glyph + document title) ────────────────────
 
-  function applyTopHeader(data, meta) {
+  function applyTopHeader(data, meta, mastheadActive) {
     // Three-segment breadcrumb: tend / <garden-name> / <this page>.
     // Each polyglot kind sits at a different filesystem depth, so the
     // relative paths to index.html and overview.html differ. We resolve from
@@ -4660,8 +5872,10 @@ nav.toc a.active {
       if (crumb) crumb.textContent = pageTitle;
     }
 
+    // Top-chrome status chip — absorbed by the masthead's status card when the
+    // band renders (the de-duplication rule). Degraded pages keep the chip.
     var statusEl = document.querySelector('[data-top-header-status]');
-    if (statusEl && data && data.status) {
+    if (statusEl && data && data.status && !mastheadActive) {
       var helpers = window.OoHelpers || {};
       var glyph = helpers.glyphFor ? helpers.glyphFor(data.status) : '○';
       var cls   = helpers.glyphClassFor ? helpers.glyphClassFor(data.status) : 'draft';
@@ -4672,6 +5886,37 @@ nav.toc a.active {
     if (titleEl && pageTitle) titleEl.textContent = pageTitle;
 
     if (pageTitle) document.title = pageTitle + (kind ? ' · ' + kind : '') + ' · tend';
+  }
+
+  // ── Favicon traffic light ──────────────────────────────────────────────────
+  // The tab icon mirrors the page's state, deterministically, at view time:
+  // features show their status (verified green / in-progress amber / planned
+  // grey), the garden shows its health verdict, catalog anchors show the brand
+  // clay (they are descriptions, not bets). With many polyglots open, the tab
+  // bar reads as a status dashboard. Colors mirror the --glyph-* tokens
+  // (literals — a favicon cannot resolve CSS vars).
+
+  function applyFavicon(data, meta) {
+    var color = '#8a8a86'; // draft/planned grey
+    if (meta && meta.kind === 'garden') {
+      var v = data && data.health_snapshot && data.health_snapshot.verdict;
+      color = v === 'green' ? '#4F7942' : v === 'yellow' ? '#C9923C' : v === 'red' ? '#B85C3E' : '#8a8a86';
+    } else if (data && (data.persona || data.opportunity)) {
+      color = '#D97757';
+    } else if (data && data.status) {
+      color = data.status === 'verified' ? '#4F7942'
+        : data.status === 'in-progress' ? '#C9923C'
+        : '#8a8a86';
+    }
+    var svg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='10' fill='" + color + "'/></svg>";
+    var link = document.querySelector('link[rel="icon"]');
+    if (!link) {
+      link = document.createElement('link');
+      link.setAttribute('rel', 'icon');
+      document.head.appendChild(link);
+    }
+    link.setAttribute('type', 'image/svg+xml');
+    link.setAttribute('href', 'data:image/svg+xml,' + encodeURIComponent(svg));
   }
 
   // ── TOC from rendered h2 / h3 in main ─────────────────────────────────────
@@ -4697,7 +5942,11 @@ nav.toc a.active {
         h.id = u;
       }
       var cls = h.tagName === 'H3' ? 'toc-item toc-item--h3' : 'toc-item toc-item--h2';
-      html += '<li class="' + cls + '"><a href="#' + h.id + '">' + (h.textContent || '') + '</a></li>';
+      var txt = h.textContent || '';
+      // The link clamps to 2 lines (CSS); the full heading lives on title= so a
+      // truncated entry stays readable on hover.
+      var titleAttr = txt ? ' title="' + txt.replace(/"/g, '&quot;') + '"' : '';
+      html += '<li class="' + cls + '"><a href="#' + h.id + '"' + titleAttr + '>' + txt + '</a></li>';
     }
     html += '</ul>';
     mount.innerHTML = html;
@@ -4723,6 +5972,87 @@ nav.toc a.active {
     }
     update();
     window.addEventListener('scroll', update, { passive: true });
+  }
+
+  // ── Cross-highlight: main check refs → rail rows ──────────────────────────
+  // Clicking a "probed by" link in the bet article (a.bet-probe → #rail-<id>)
+  // or a resolved [check:id] stamp (span.verified-stamp[data-check]) scrolls the
+  // rail to that check's row, opens its <details>, and flashes it (~1s CSS
+  // animation). Step traces (a.trace-step → #rail-<id>) work the same way. One
+  // delegated handler, so it survives the view-time HTML splice with zero
+  // per-element wiring.
+
+  function highlightRailRow(checkId) {
+    if (!checkId) return;
+    var row = document.getElementById('rail-' + checkId);
+    if (!row) return;
+    // The row id sits on the <summary>; the flashing + scroll target is the
+    // enclosing <details> (the check) so the whole card lights up and opens.
+    var card = row.closest ? (row.closest('.detail-criterion') || row.closest('.detail-step') || row) : row;
+    if (card.tagName === 'DETAILS') card.open = true;
+    if (card.scrollIntoView) card.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    card.classList.remove('rail-flash');
+    // Force reflow so re-adding the class restarts the animation on repeat clicks.
+    void card.offsetWidth;
+    card.classList.add('rail-flash');
+  }
+
+  function wireCrossHighlight() {
+    document.addEventListener('click', function (e) {
+      var t = e.target;
+      if (!t || !t.closest) return;
+      // [check:id] verified stamp.
+      var stamp = t.closest('[data-check]');
+      if (stamp) {
+        e.preventDefault();
+        highlightRailRow(stamp.getAttribute('data-check'));
+        return;
+      }
+      // probe / trace anchor pointing at a rail row (#rail-<id>), but NOT a
+      // rail-check details id (#rail-check-<id>) — those are the rows themselves.
+      var a = t.closest('a[href^="#rail-"]');
+      if (a) {
+        var href = a.getAttribute('href') || '';
+        var id = href.slice(1); // drop '#'
+        // map #rail-<id> → check id; leave #rail-check-/#rail-step- alone.
+        if (id.indexOf('rail-check-') === 0 || id.indexOf('rail-step-') === 0) return;
+        var checkId = id.slice('rail-'.length);
+        e.preventDefault();
+        highlightRailRow(checkId);
+      }
+    });
+  }
+
+  // ── Rail collapse memory (optional, cheap) ────────────────────────────────
+  // Persist each rail section's open/closed state in localStorage, keyed by its
+  // section LABEL (not per page) — so a returning reader's preferred rail shape
+  // (e.g. "steps collapsed, checks open") survives navigation between pages.
+  // Degrades silently where storage is unavailable (private mode, file://).
+
+  function wireRailCollapseMemory() {
+    var KEY = 'tend-rail-collapsed';
+    var rail = document.querySelector('[data-rail-mount]');
+    if (!rail) return;
+    var store;
+    try { store = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { return; }
+    var sections = rail.querySelectorAll('details.collapsible-section');
+    for (var i = 0; i < sections.length; i++) {
+      (function (sec) {
+        var titleEl = sec.querySelector('.collapsible-title');
+        var label = titleEl ? (titleEl.textContent || '').trim() : '';
+        if (!label) return;
+        // Apply the saved state (only when a preference was recorded).
+        if (Object.prototype.hasOwnProperty.call(store, label)) {
+          sec.open = !store[label];
+        }
+        sec.addEventListener('toggle', function () {
+          try {
+            store[label] = !sec.open; // store the COLLAPSED flag
+            localStorage.setItem(KEY, JSON.stringify(store));
+          } catch (e) { /* silent degrade */ }
+        });
+      })(sections[i]);
+    }
   }
 
   // ── Graph icon — link to board.html ───────────────────────────────────────
@@ -4817,17 +6147,30 @@ nav.toc a.active {
     var rendered = window.OoRender.renderPage(data, meta);
     setMount('#article > [data-render-mount="body-flow"]', rendered.main);
     setMount('[data-rail-mount]', rendered.rail);
+    setMount('[data-masthead-mount]', rendered.masthead || '');
     setMount('[data-article-thumb]', rendered.headerThumb || '');
-    // Garden-only health headline (renderHeaderHealth returns '' off-garden),
-    // distinct from the bet-status glyph wired in applyTopHeader.
-    setMount('[data-top-header-health]', rendered.headerHealth || '');
 
-    applyTopHeader(data, meta);
+    // When the masthead band renders, it carries the title + status — so the
+    // compact .article-head and the top-chrome status chip are absorbed (the
+    // de-duplication rule). Degraded pages keep both. We flag the document so
+    // CSS hides the compact header, and tell applyTopHeader to skip the chip.
+    var mastheadActive = !!rendered.mastheadActive;
+    if (mastheadActive) document.documentElement.setAttribute('data-masthead', 'on');
+
+    // Garden-only health headline (renderHeaderHealth returns '' off-garden),
+    // distinct from the bet-status glyph wired in applyTopHeader. Absorbed by
+    // the garden masthead's cockpit card when the band renders (same rule).
+    setMount('[data-top-header-health]', mastheadActive ? '' : (rendered.headerHealth || ''));
+
+    applyTopHeader(data, meta, mastheadActive);
+    applyFavicon(data, meta);
     populateToc();
     wireGraph();
     wireTheme();
     wireCopy();
     wireScrollSpy();
+    wireCrossHighlight();
+    wireRailCollapseMemory();
   }
 
   // Defer to next macrotask. We can't rely on DOMContentLoaded because the
@@ -4847,7 +6190,7 @@ nav.toc a.active {
 OO_HTML
 
 # OO:SHELL:START
-# template_version: 2
+# template_version: 3
 #
 # Tend polyglot shell core.
 #
@@ -4884,8 +6227,8 @@ SELF_BASE="$(basename "$SELF")"
 _extract_block() {
   local file="$1" block_id="$2"
   awk -v id="$block_id" '
-    $0 == "<script id=\"" id "\" type=\"application/json\">" { in_block=1; next }
-    in_block && /^<\/script>$/ { exit }
+    $0 ~ "^[[:space:]]*<script id=\"" id "\" type=\"application/json\">$" { in_block=1; next }
+    in_block && /^[[:space:]]*<\/script>$/ { exit }
     in_block { print }
   ' "$file"
 }
@@ -5023,19 +6366,21 @@ cmd_run() {
     return 1
   fi
   local data agent_cmd step step_id step_desc step_first_line
+  local -a agent_arr
   data="$(_extract_block "$SELF" "oo-data")"
 
   agent_cmd="$(printf '%s' "$data" | jq -r '.execute.agent_cmd // empty')"
   if [ -z "$agent_cmd" ]; then
     agent_cmd="${TEND_AGENT_CMD:-claude -p}"
   fi
+  read -ra agent_arr <<< "$agent_cmd"
 
   while IFS= read -r step; do
     step_id="$(printf '%s' "$step" | jq -r '.id')"
     step_desc="$(printf '%s' "$step" | jq -r '.description // .title // ""')"
     step_first_line="$(printf '%s' "$step_desc" | head -1)"
     echo "[step ${step_id}] ${step_first_line}"
-    if ! printf '%s' "$step_desc" | $agent_cmd; then
+    if ! printf '%s' "$step_desc" | "${agent_arr[@]}"; then
       echo "error: step ${step_id} failed" >&2
       return 1
     fi

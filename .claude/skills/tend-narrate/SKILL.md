@@ -96,16 +96,32 @@ The structured fields provide the section headings; narrative fills the bodies. 
 
 ## Writes
 
+- `oo-data.dek` — 2–3 authored sentences: the standfirst. Who hurts, what
+  this does, what changed — the story the slots can't tell as a form. The
+  renderer places it deterministically: as the standfirst above the bet
+  article AND as the lead copy of the page's masthead band (the full-width
+  header carrying title, status card, and hero visual). You never write
+  masthead HTML — the band is a pure render-time projection of fields you
+  author here; a page without a dek keeps the compact header, and authoring
+  one is what upgrades it. The dek is staleness-tracked against the six
+  slots (`dek_stale` surfaces in the refinement backlog when slots drift;
+  rewrite the dek to clear it).
 - `oo-data.narrative` — markdown string. Article body. Renders in main
   between bet article and decisions section. Renderer parses `## h2` and
   `### h3` to populate the left TOC at view time.
-- `oo-data.media` — `{ <media_id>: { kind: "svg" | "image_base64", content,
-  alt?, caption? } }`. Inline SVG or base64 data URI for diagrams.
-  Referenced from narrative via `[diagram_id]` (renderer resolves) or
-  embedded directly as raw `<svg>` if the diagram is one-off.
+- `oo-data.media` — `{ <media_id>: { kind: "diagram" | "svg" |
+  "image_base64", ... } }`. Prefer `kind: "diagram"`: author a typed `spec`
+  (flow / layers / journey / compare / anatomy) and the write side-effect
+  renders it to deterministic, on-palette SVG — never hand-write SVG for
+  shapes the specs cover. The FIRST media entry also becomes the masthead's
+  hero visual, so lead with the diagram that best orients a cold reader.
+  Freehand `svg` / `image_base64` remain for shapes the typed specs can't
+  express (the visual-consistency contract + preview loop govern them).
+  Referenced from narrative via `[diagram_id]` (renderer resolves).
 
-Both fields are written via `tend_update_feature` (atomic; MCP runs the
-schema validate + auto-side-effects).
+All fields are written via `tend_update_feature` (atomic; MCP runs the
+schema validate + auto-side-effects, renders diagram specs, and stamps
+`dek_sha` / `spec_sha`).
 
 ## Quality bar — what makes a narrative good
 
@@ -268,10 +284,17 @@ for (const c of ctx.feature.checks ?? []) {
 
 ### 2. Outline sections
 
-Decide which themes this narrative genuinely needs. Most features land
-at 2–4 sections. Subpages often just 1. Gardens often 4–6. See
+Decide which themes this narrative genuinely needs. **First detect the
+page class** (capability bet / child / garden / persona / opportunity) and
+read its shape in
+[`references/narrative-shapes.md`](references/narrative-shapes.md) — the
+five shapes are reader contracts and defaults, *not* mandatory headings
+(the anti-uniformity caveat there is binding: write the sections this
+specific page earns, and let the cold-entry test be the bar, not heading
+conformance). Most features land at 2–4 sections. Subpages often just 1.
+Gardens often 4–6. See
 [`references/section-themes.md`](references/section-themes.md) for the
-full theme menu and garden-specific guidance.
+headline-rewrite table and garden-specific guidance.
 
 Write the outline as **working titles** first ("How it works", "Why this
 shape"). You'll rewrite to headlines after the prose is drafted (step 3.5).
@@ -282,7 +305,26 @@ Note `→ needs [diagram_id]` beside any section that warrants an SVG.
 Diagrams identified during outline are load-bearing; those added after
 prose tend to be decorative or skipped entirely.
 
-The user can push back on the outline before you write 500 lines of prose.
+### 2.5. Draft gate — get approval before writing the full narrative
+
+**Do not write 500 lines of prose unreviewed.** After outlining, present
+two things for approval and stop:
+
+1. **The proposed section list** — the working titles you'll write, in
+   order, one line each, with a phrase on what each covers and any
+   `→ needs [diagram]` notes.
+2. **The opening paragraph** — actually draft the lede (the first
+   paragraph the reader meets). It sets the voice and the entry; if the
+   lede is wrong, the whole article is wrong. Per the lede rules in
+   [`references/narrative-shapes.md`](references/narrative-shapes.md), the
+   first sentence names a person, a pain, or a consequence — not a file
+   path or a line count.
+
+Then ask: *"Here's the shape and the opening — does the structure fit,
+and does the lede land? Sections to add, drop, or reorder before I write
+the bodies?"* Wait for approval (or revisions) before drafting the full
+narrative in step 3. The cheapest moment to fix an article's shape is
+before its body exists.
 
 ### 3. Write each section
 
@@ -345,10 +387,10 @@ SVG's viewBox width so a 560×240 viewBox produces a 2240px-wide PNG.
 
 1. Draft SVG markup (inline in your context, not yet written to the polyglot).
 2. Run draft check via `--svg`:
-   `node skills/tend-narrate/scripts/preview-thumbnail.mjs --svg "<draft-svg>"`
+   `npx tend-cli preview-thumbnail --svg "<draft-svg>"`
 3. After writing via `tend_update_feature`, confirm the disk write then run:
-   `node skills/tend-narrate/scripts/preview-thumbnail.mjs --diagram <media_id> --feature <feature-id>`
-4. The script prints two PNG paths (light + dark).
+   `npx tend-cli preview-thumbnail --diagram <media_id> --feature <feature-id>`
+4. The command prints two PNG paths (light + dark).
 5. **Read both PNGs via your Read tool.**
 6. Apply the 5-item visual checklist in
    [`references/thumbnail-authoring.md`](references/thumbnail-authoring.md)
@@ -374,11 +416,11 @@ didn't persist — diagnose + retry. Do NOT proceed to visual verify
 until the field exists on disk.
 
 1. During DRAFT iteration (before writing to the polyglot):
-   `node skills/tend-narrate/scripts/preview-thumbnail.mjs --svg "<draft-svg>"`
+   `npx tend-cli preview-thumbnail --svg "<draft-svg>"`
 2. After writing the thumbnail via `mcp__tend__tend_update_feature` AND
    confirming the disk write (step 0 above):
-   `node skills/tend-narrate/scripts/preview-thumbnail.mjs --id <feature-id>`
-3. The script prints two PNG paths (light + dark themes).
+   `npx tend-cli preview-thumbnail --id <feature-id>`
+3. The command prints two PNG paths (light + dark themes).
 4. **Read both PNGs via your Read tool.** Claude views images directly
    when given a PNG path.
 5. Apply the 5-item visual checklist in
@@ -393,7 +435,7 @@ card grid (garden's features, a feature's subpages, a persona's bound
 features, an opportunity's solving features), the shuffle test is
 REQUIRED before the set is considered done:
 
-1. `node skills/tend-narrate/scripts/preview-cards.mjs --parent <parent-id>`
+1. `npx tend-cli preview-cards --parent <parent-id>`
 2. Output is a composite PNG showing all sibling cards side-by-side.
 3. **Read the PNG via your Read tool.**
 4. Apply the shuffle test described in
@@ -462,15 +504,26 @@ verified-tight section than three sections of padding.
 - `bash <file>.tend.html data | jq '.narrative | length'` returns a
   number > 200 (a meaningful narrative, not a placeholder)
 
-## Suggested Next Steps
+## Next move
 
-After narrating a feature, consider:
+Close the loop — don't leave the user guessing what comes next.
 
-- `/tend narrate` on its subpages (if it has any) — the parent's story
-  often references the deep-dives; the deep-dives need their own focus
-- `/tend audit` if the narrative surfaced a check that's actually unmet
-- `/tend change` if the narrative surfaced a structural issue (e.g., a
-  slot claim that doesn't match the code)
+1. **Compute it.** Call `tend_get_next` (MCP preferred; CLI fallback
+   `node dist/bin/tend.js next --json`). It reads on-disk state and
+   returns the highest-leverage action with reason codes.
+2. **Present it plainly.** State the recommended `action` verbatim and the
+   reason in plain words (paraphrase the reason code, don't paste it).
+   Example: *"Next: `/tend narrate order-pipeline` — its subpage still
+   reads as a form, and your story here references it."*
+3. **Offer to chain — never auto-execute.** Ask before continuing:
+   *"Want me to narrate the subpage now?"* Only proceed on the user's yes.
+   If they decline, route to whichever sub-skill matches their intent.
+
+Common moves after a narrative: `/tend narrate` on its subpages (the
+parent's story often references deep-dives that need their own focus);
+`/tend audit` if narrating surfaced a check that's actually unmet;
+`/tend change` if it surfaced a slot claim that doesn't match the code.
+Let `tend_get_next` confirm rather than assuming.
 
 ## Anti-patterns
 
@@ -507,5 +560,5 @@ After narrating a feature, consider:
   your narrative, ask "does this name appear in `project_index`? If yes,
   is it a link?"
 - **Thumbnails shipped without visual verification.** Running
-  `preview-thumbnail.mjs` and reading the PNGs via the Read tool isn't
+  `npx tend-cli preview-thumbnail` and reading the PNGs via the Read tool isn't
   optional. See `references/thumbnail-authoring.md`.

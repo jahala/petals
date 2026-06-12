@@ -45,7 +45,15 @@ Beyond explicitly forbidden terms, flag patterns that violate tone rules:
 
 Note: Tone rule violations are **warnings**, not errors. They suggest improvement without blocking a clean check.
 
-### 5. Provide Replacements
+### 5. Check Terminology
+
+If `.brand/voice.md` has a "Terminology" table: for each banned synonym, search case-insensitively; a match is a **warning** naming the canonical term. A capitalized product name where the rules require lowercase is a **warning**.
+
+### 6. Check Capitalization & Microcopy
+
+If the rules exist in `.brand/voice.md`: flag as **warnings** headings/buttons/labels in Title Case where sentence case is required, button labels that are not verb-first or exceed the stated word limit, and exclamation marks in interface copy if forbidden.
+
+### 7. Provide Replacements
 
 For each forbidden term violation, provide the preferred alternative from the voice guide:
 
@@ -59,7 +67,7 @@ If the voice guide does not list a specific alternative for a flagged term, prov
 WARNING [voice] "utilize" is overly formal. Consider "use".
 ```
 
-### 6. Report Results
+### 8. Report Results
 
 For each violation, report:
 - **Dimension**: `voice`
@@ -83,7 +91,7 @@ If zero violations:
 PASS [voice] Text follows brand voice guidelines.
 ```
 
-### 7. Handle Missing Context
+### 9. Handle Missing Context
 
 If `.brand/voice.md` does not exist:
 - Report as a setup issue: "Voice guide not found. Skipping voice audit."
@@ -93,4 +101,4 @@ If `.brand/voice.md` does not exist:
 ### Reference
 
 - Canonical voice source: `.brand/voice.md`
-- This guide is used by: `/petal voice <text>` and `/petal check <file>` (voice audit dimension)
+- This guide is used by: `/petals voice <text>` and `/petals check <file>` (voice audit dimension)

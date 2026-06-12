@@ -10,6 +10,12 @@ user-invocable: false
 / `fit` / `where` / `how`), `checks[]`, `smoke`, `personas` / `solves` /
 `journey_phase`, `entry_condition` / `exit_condition`, and the
 project-level catalog (components, personas, opportunities, journey_phases).
+Optionally offer a `dek` after the slots land — 2–3 sentences weaving
+what/why/impact into prose. It renders as the page's standfirst and as the
+lead of the masthead band (the full-width header), both populated
+deterministically at render time — never write masthead HTML. tend-narrate
+owns revisiting the dek at polish; offering it at creation is a courtesy,
+not a gate.
 
 ## What this skill assumes
 
@@ -121,13 +127,21 @@ Use the polyglot's data verb to read the garden:
 bash docs/tend/overview.html data | jq '.catalog'
 ```
 
-If the catalog is empty or missing major pieces, fold them into the
-clarification step below:
+**Empty-catalog boundary — redirect, don't collect inline.** If
+`catalog.personas` is empty (or has only `name`-shells with no `archetype`
+/ `jobs[]`), **stop and redirect to `/tend position`.** Do not collect
+personas inside brainstorm: checks anchor to persona-jobs via
+`validates_job`, and an unbound check is missing its human-grounded spec.
+`/tend position` owns the spine (ICP archetypes + Klement Job Stories);
+brainstorm reads it, never authors it. Say:
 
-- "Who are the main users of this product?" -> populate `catalog.personas` with `[{ id, name, description }]`
-- "What are the key stages of the user experience?" -> populate `catalog.journey_phases` as an ordered array
+> "The catalog has no personas with jobs yet. Checks need a persona-job
+> to anchor to. Run `/tend position` first to plant the ICPs and Job
+> Stories, then come back to `/tend brainstorm` for this feature."
 
-Only ask these once. Skip if already defined.
+Journey phases are the same: if `catalog.journey_phases` is unset, seed it
+once with the six user-task verbs (`orient | author | plan | build |
+verify | review`) via `tend_update_catalog`. Skip when already defined.
 
 ### 2. Identify components
 
@@ -186,7 +200,114 @@ end-to-end, what would it be?" Capture as `smoke.cmd` (and optional
 `verify` regex). For features with no runtime to smoke-test, log the
 decision in `decisions[]` and move on.
 
+### 6.5. Push back before you write
+
+At the pre-write junction — slots drafted, checks shaped, smoke decided —
+**interrogate the bet before committing it.** This is coaching pressure,
+not a gate: ask the discriminability questions that apply to what's
+filled, push back with the *specific* criterion when an answer is weak,
+and let the user revise OR deliberately accept. Never block the write.
+
+Ask only the questions whose target fields are filled:
+
+- **Would this check FAIL if the feature were broken?** Walk each check.
+  If it would pass on a stub, an empty handler, or any input, it
+  discriminates nothing — sharpen the assertion or drop the check.
+- **Does WHAT relieve the pain WHY names — for THIS persona's job, not in
+  general?** If WHAT serves a different pain than WHY states, or serves
+  "users" abstractly rather than the bound persona-job, the bet is
+  incoherent. Name the gap.
+- **If this persona were swapped for another, would anything change?** If
+  the feature reads the same for any persona, the persona is decoration —
+  either bind the design to that persona's constraint or fix the ref.
+- **Is this ONE bet, or several smuggled into one feature?** If the checks
+  split cleanly into two unrelated groups, it's two features — surface the
+  split (route to `/tend change` after creation).
+- **Does IMPACT name an observable change in the world — and does a check
+  measure that quantity?** "Faster", "better" with no number and no check
+  measuring it is a wish, not an impact. Demand the observable + the check.
+
+Present each weak answer as a coaching prompt anchored to the criterion
+("c003 passes on an empty array — it doesn't discriminate; tighten it to
+assert the seeded row is returned"). The user revises or says "accept it
+as-is" — both are fine. Generic examples only; never pressure with
+another project's ids.
+
+#### Record the verdicts (the record IS the value)
+
+After the coaching conversation, **write down what you judged** — a
+`judgments[]` entry per applicable question, carried in the **same
+`tend_update_feature` call** that writes the feature's slots / checks (one
+write, not two). The cached verdict is what keeps the next junction from
+re-asking and what surfaces drift later when the judged text changes.
+
+Each entry is `{ question_id, target, verdict, rationale }`:
+
+| `question_id` | when to ask (applicable) | `target` (canonical key) |
+|---|---|---|
+| `what_relieves_why` | WHAT and WHY both filled | `slots:what+why` |
+| `persona_load_bearing` | feature has ≥1 bound persona | `persona:<persona_id>` (one entry per bound persona) |
+| `one_bet` | the bet is shaped (always, at brainstorm) | `feature` |
+| `impact_measurable` | IMPACT filled | `slots:impact` |
+| `check_discriminates` | a check exists AND is not already proven by a discriminating negctrl | `check:<check_id>` (one per check) |
+
+`verdict` is `pass | push_back | n_a`:
+
+- `pass` — the honest answer holds. Rationale says *why* it holds, not
+  "looks good" (e.g. "WHAT routes the failing audit a returning user hits;
+  WHY names that same lost-context pain").
+- `push_back` — a real gap the deterministic layer is blind to. **Record
+  it even when the user accepts the gap as-is** — the record is the value;
+  it's what a future reader and the next junction see. Rationale names the
+  specific gap ("IMPACT says 'faster' with no number and no check measures
+  latency").
+- `n_a` — the question doesn't apply here, and you want the next junction
+  to **stop re-asking**. The canonical `n_a` case is `check_discriminates`
+  on a check already proven by a discriminating negctrl (the mechanical
+  proof subsumes the semantic question — rationale: "negctrl already
+  proves discrimination; semantic check redundant"). Record ONE such entry
+  documenting the skip-reason, not one per already-proven check.
+
+**Never supply `judged_sha`** — the write side-effect stamps it from the
+feature's own current text (a caller-supplied value is overwritten). You
+supply only `question_id` / `target` / `verdict` / `rationale`.
+
+Generic shape (own ids only — never another project's):
+
+```
+tend_update_feature({
+  id: "auth-login",
+  changes: {
+    /* ...slots, checks, smoke... */
+    judgments: [
+      { question_id: "what_relieves_why", target: "slots:what+why",
+        verdict: "pass",
+        rationale: "WHAT lets a returning user resume; WHY names that lost-session pain — same job." },
+      { question_id: "persona_load_bearing", target: "persona:new-user",
+        verdict: "push_back",
+        rationale: "Nothing in the design depends on new-user vs returning-user — the persona reads as decoration." },
+      { question_id: "one_bet", target: "feature", verdict: "pass",
+        rationale: "All checks anchor to the single login capability; no clean split." },
+      { question_id: "impact_measurable", target: "slots:impact",
+        verdict: "pass",
+        rationale: "IMPACT names sign-in under 5s; c003 measures p95 latency." },
+      { question_id: "check_discriminates", target: "check:c001",
+        verdict: "n_a",
+        rationale: "negctrl already proves discrimination; semantic check redundant for negctrl-proven checks." }
+    ]
+  }
+})
+```
+
+This is advisory, never a gate — a `push_back` does not block the write
+and does not move the health verdict; it lands in the refinement backlog.
+
 ### 7. Create the feature polyglot
+
+**Two calls, not one.** `tend_create_feature` writes identity + slots; it
+does **not** persist `journey_phase` / `personas` / `solves` — pass those
+in a follow-up `tend_update_feature`. Sending them to create drops them
+silently, so always create first, then update with the spine refs:
 
 ```
 tend_create_feature({
@@ -196,9 +317,6 @@ tend_create_feature({
   priority: "high",
   dependencies: [],
   enables: ["dashboard"],
-  journey_phase: "orient",
-  personas: ["new-user"],
-  solves: ["opp-secure-access"],
   entry_condition: "User has created an account",
   exit_condition: "User reaches their dashboard with an active session",
   what: "Allow users to log in with email and password.",
@@ -207,6 +325,21 @@ tend_create_feature({
   fit: "Foundational for every authenticated feature in the roadmap.",
   where: "src/auth/handlers/login.ts; src/db/users.ts.",
   how: "POST /auth/login validates credentials with bcrypt, signs JWT, returns to client; session cookie set on success."
+})
+```
+
+Immediately after, write the spine refs (and any checks / smoke) via
+`tend_update_feature` — `journey_phase`, `personas`, and `solves` land
+here, not in the create call:
+
+```
+tend_update_feature({
+  id: "auth-login",
+  changes: {
+    journey_phase: "orient",
+    personas: ["new-user"],
+    solves: ["opp-secure-access"]
+  }
 })
 ```
 
@@ -401,8 +534,23 @@ After all features are created:
 - User confirmed all checks (with `validates` / `integration_level` / `recipe`) and `smoke` before any writes
 - Unknowns are explicitly marked, not silently skipped
 
-## Suggested Next Steps
+## Next move
 
-- To plan implementation steps with test-first descriptions: `/tend plan`
-- To verify what's already built (if any): `/tend audit`
-- To map an existing codebase to features instead: `/tend discover`
+Close the loop — don't leave the user guessing what comes next.
+
+1. **Compute it.** Call `tend_get_next` (MCP preferred; CLI fallback
+   `node dist/bin/tend.js next --json`). It reads on-disk state and
+   returns the highest-leverage action with reason codes.
+2. **Present it plainly.** State the recommended `action` verbatim and the
+   reason in plain words (paraphrase the reason code, don't paste it).
+   Example: *"Next: `/tend plan auth-login` — the feature has slots and
+   checks but no steps yet, so it can't be executed."*
+3. **Offer to chain — never auto-execute.** Ask before continuing:
+   *"Want me to run `/tend plan auth-login` now?"* Only proceed on the
+   user's yes. If they decline or want something else, route to whichever
+   sub-skill matches their intent.
+
+After a fresh feature, the usual move is `/tend plan` (steps with
+test-first descriptions); `/tend audit` if code already exists, or
+`/tend discover` to map an existing codebase instead. Let
+`tend_get_next` confirm rather than assuming.

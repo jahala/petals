@@ -116,6 +116,6 @@ silently — no empty section is emitted. These tokens are only meaningful in
 garden narratives; they work in feature narratives too but will find no data to
 render (the card grid section is omitted).
 
-**Diagram preview** — `preview-thumbnail.mjs` supports both `--id` (thumbnails, 120×80 viewBox)
+**Diagram preview** — `npx tend-cli preview-thumbnail` supports both `--id` (thumbnails, 120×80 viewBox)
 and `--diagram <media_id> --feature <id>` (any viewBox — renders at 4× the SVG's viewBox width).
 Use the `--diagram` mode to visually verify any `oo-data.media` SVG before shipping.

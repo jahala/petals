@@ -356,16 +356,19 @@ nav.toc, .breadcrumb, .bed-top-header,
 .bed-top-header__stat--status { color: var(--text-2); display: inline-flex; align-items: center; gap: var(--sp-1); }
 .bed-top-header__theme { display: inline-flex; align-items: center; }
 
-/* Right rail — full-height fixed strip below the top nav */
-.right-rail { display: contents; }  /* passthrough wrapper */
+/* Right rail — a sticky grid column: starts in flow BELOW the masthead band,
+   then pins under the chrome once scrolled past it. (Replaces the old fixed
+   viewport sheet, which ignored DOM order and ran over the masthead.) */
+.right-rail {
+  position: sticky;
+  top: var(--top-nav-h);
+  align-self: start;
+  height: calc(100vh - var(--top-nav-h));
+}
 
 .detail-panel {
-  position: fixed;
-  top: var(--top-nav-h);
-  right: 0;
-  bottom: 0;
+  height: 100%;
   width: var(--rail-w);
-  z-index: 10;
   background: var(--bg);
   border-left: 1px solid var(--border);
   display: flex;
@@ -377,27 +380,32 @@ nav.toc, .breadcrumb, .bed-top-header,
   color: var(--text);
 }
 
-/* Page wrapper — reserves space for both fixed elements. Stretches to viewport
-   width (no max-width); the inner .page-grid caps its own width and centers
-   on very wide viewports. */
+/* Page wrapper — stretches to viewport width; the inner .page-grid caps its
+   own width and centers on very wide viewports. The rail is a grid column
+   (no fixed-element reservation); it sits flush to the grid's right edge. */
 .wrap {
   padding-top: calc(var(--top-nav-h) + var(--sp-6));
   padding-bottom: var(--sp-8);
   padding-left: var(--sp-6);
-  padding-right: calc(var(--rail-w) + var(--sp-6));
+  padding-right: 0;
   color: var(--text);
   font-size: 16px;
   line-height: 1.65;
 }
 
-/* Inside .wrap: 2-col grid (TOC | article). Rail is fixed, not part of this grid.
-   Caps at 1280px so on very wide viewports content doesn't sprawl. */
+/* When the masthead band renders, it already clears the fixed chrome and
+   provides the top spacing — the wrap must not double-gap. */
+[data-masthead="on"] .wrap { padding-top: 0; }
+
+/* Inside .wrap: 3-col grid (TOC | article | rail). Caps so the article column
+   keeps a readable measure on very wide viewports; the cap absorbs the rail
+   width that the old 2-col cap excluded. */
 .page-grid {
   display: grid;
-  grid-template-columns: 200px minmax(0, 1fr);
+  grid-template-columns: 200px minmax(0, 1fr) var(--rail-w);
   gap: var(--sp-8);
   align-items: start;
-  max-width: 1280px;
+  max-width: calc(1280px + var(--rail-w) + var(--sp-8));
   margin: 0 auto;
 }
 
@@ -448,7 +456,11 @@ nav.toc .toc-item--h3 {
   padding-left: var(--sp-3);   /* subtle indent for h3 entries — hierarchy by indent, not glyph */
 }
 nav.toc a {
-  display: block;
+  display: -webkit-box;        /* enables the line-clamp; block-like for layout */
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;       /* long headings clamp to 2 lines + ellipsis */
+  line-clamp: 2;
+  overflow: hidden;
   color: var(--text-muted);
   text-decoration: none;
   padding: 2px 0 2px var(--sp-2);
@@ -488,11 +500,6 @@ nav.toc a.active {
 .pill--sev-H        { background: var(--sev-h-bg); color: var(--sev-h-fg); border-color: var(--sev-h-border); }
 .pill--sev-M        { background: var(--sev-m-bg); color: var(--sev-m-fg); border-color: var(--sev-m-border); }
 .pill--sev-L        { background: var(--sev-l-bg); color: var(--sev-l-fg); border-color: var(--sev-l-border); }
-.pill--verdict-chosen   { background: var(--sev-l-bg); color: var(--sev-l-fg); border-color: var(--sev-l-border); }
-.pill--verdict-rejected { color: var(--text-muted); text-decoration: line-through; }
-.pill--verdict-deferred { background: var(--sev-m-bg); color: var(--sev-m-fg); border-color: var(--sev-m-border); }
-.pill--role         { color: var(--accent); border-color: var(--accent); }
-.pill--integration  { color: var(--text-muted); border-color: var(--border); }
 
 /* Glyphs — single character status indicators. Color from var per status. */
 .glyph {
@@ -644,6 +651,73 @@ nav.toc a.active {
   margin-top: var(--sp-2);
   font-size: 0.875rem;
   color: var(--text-muted);
+}
+
+/* ── Editorial layer ──────────────────────────────────────────────────────
+   Standfirst (dek), validation-clause pull quote, and verified stamps.
+   Presence-driven, main-column only. Lead-paragraph treatment per the page
+   type system; tokens only, flat aesthetic — no shadows, no gradients.
+──────────────────────────────────────────────────────────────────────── */
+
+/* Standfirst — the authored dek above the bet article. Larger serif lede,
+   muted, sets the frame before the WWIFWWh bet body. Mirrors the article
+   <h1> lede aesthetics one notch down. */
+.standfirst {
+  margin: var(--sp-4) 0 var(--sp-6);
+  max-width: 680px;
+}
+.standfirst p {
+  font-family: var(--serif);
+  font-size: 19px;
+  line-height: 1.5;
+  color: var(--text-2);
+  margin: 0 0 var(--sp-3);
+}
+.standfirst p:last-child { margin-bottom: 0; }
+
+/* Pull quote — the persona's validation clause as editorial copy, at the top
+   of the narrative. Accent rule + serif italic, the IMPACT slot's human voice. */
+.pull-quote {
+  margin: 0 0 var(--sp-6);
+  padding: var(--sp-2) var(--sp-4);
+  border-left: 3px solid var(--accent);
+  max-width: 680px;
+}
+.pull-quote p {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--text);
+  margin: 0;
+}
+.pull-quote__attr {
+  display: block;
+  margin-top: var(--sp-2);
+  font-family: var(--mono);
+  font-style: normal;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+/* Verified stamp — inline [check:id] evidence badge. Flat, accent-on-weak
+   chip; only ever emitted for a pass verdict (never a false green). */
+.verified-stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: 0 var(--sp-1);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--accent-weak);
+  color: var(--accent-d);
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.4;
+  white-space: nowrap;
+  vertical-align: baseline;
 }
 
 /* FAQ — native <details>/<summary> */
@@ -928,6 +1002,39 @@ nav.toc a.active {
   font-weight: 600;
 }
 
+/* ── Rail bands ──────────────────────────────────────────────────────────────
+   The rail's three wayfinding zones (IDENTITY → GRAPH → PROOF). A stronger top
+   divider + a small-caps mono label set each band apart, so the reader navigates
+   by position. The first band needs no top rule (the .detail-meta strip above it
+   already provides one). */
+.rail-band + .rail-band {
+  border-top: 2px solid var(--border-strong);
+}
+.rail-band__label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: var(--sp-3) var(--sp-3) var(--sp-1);
+  margin: 0;
+}
+
+/* "+N more" overflow expander inside a GRAPH-band link list. The hidden tail
+   lives in this <details> (self-contained — no off-page nav); the summary is a
+   muted accent affordance. */
+.rail-more { margin: 2px 0 0; }
+.rail-more__summary {
+  list-style: none;
+  cursor: pointer;
+  font-family: var(--sans);
+  font-size: 11px;
+  color: var(--accent);
+  padding: var(--sp-1) 0 var(--sp-1) var(--sp-2);
+}
+.rail-more__summary::-webkit-details-marker { display: none; }
+.rail-more__summary:hover { color: var(--accent-d); text-decoration: underline; }
+
 /* Journey rows */
 .journey-row {
   display: flex;
@@ -1127,6 +1234,7 @@ nav.toc a.active {
    indented to align under the description so they read as metadata for
    the check above them. */
 .detail-criteria { margin: 0; padding: 0; list-style: none; }
+/* Each check is a <details>: a compact summary row + an expandable body. */
 .detail-criterion { font-size: 12px; padding: var(--sp-1) 0; }
 .detail-criterion__row {
   display: grid;
@@ -1137,6 +1245,18 @@ nav.toc a.active {
   gap: var(--sp-2);
   align-items: baseline;
   cursor: pointer;
+  list-style: none;            /* hide the <summary> disclosure triangle */
+}
+.detail-criterion__row::-webkit-details-marker { display: none; }
+/* When the cross-highlight handler targets a row, flash it briefly so the eye
+   finds it after a jump from the bet article or a [check:id] stamp. */
+@keyframes rail-flash {
+  0%   { background: var(--accent-weak); }
+  100% { background: transparent; }
+}
+.detail-criterion.rail-flash,
+.detail-step.rail-flash {
+  animation: rail-flash 1s ease-out;
 }
 .detail-criterion__status {
   display: inline-block;
@@ -1164,15 +1284,46 @@ nav.toc a.active {
   min-width: 0;
   overflow-wrap: anywhere;
 }
+/* Compact-row description — one line, ellipsized. The full text lives in the
+   expanded body (and on the summary's title=) so nothing is lost. */
+.detail-criterion__desc--clamp {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Full (un-clamped) description shown when the row is expanded. */
+.detail-criterion__full {
+  margin: 0 0 var(--sp-1);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 13px;
+  line-height: 1.4;
+}
+.detail-criterion__job {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.detail-criterion__job code { color: var(--text-2); }
+/* Truth sub-label — a muted "why this verdict is degraded" note (e.g. "job not
+   asserted"). Shares the description-column indent so it reads as a continuation
+   of the check row, in the warn tone (it flags a real, recorded gap). */
+/* sublabel + pills now live INSIDE the expanded body (which already indents),
+   so no big column-aligning calc indent — just a small top gap. */
+.detail-criterion__sublabel {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--glyph-partial, var(--text-muted));
+  margin-top: 2px;
+}
+
 .detail-criterion__pills {
   display: flex;
   flex-wrap: wrap;
   gap: var(--sp-1);
   align-items: center;
-  /* Indent aligns with the description column above (16px icon + 8px gap
-     + 4em id + 8px gap). Calc keeps it in lockstep with the row grid. */
-  padding-left: calc(16px + var(--sp-2) + 4em + var(--sp-2));
-  margin-top: 2px;
+  margin-top: var(--sp-1);
 }
 .detail-criterion__level {
   font-family: var(--mono);
@@ -1184,12 +1335,11 @@ nav.toc a.active {
   white-space: nowrap;
   line-height: 1.4;
 }
+/* The body shows natively when the <details> is open. */
 .detail-criterion__body {
-  display: none;
   padding: var(--sp-1) 0 var(--sp-2) var(--sp-4);
   font-size: 11px;
 }
-.detail-criterion.open > .detail-criterion__body { display: block; }
 .detail-criterion__traces {
   font-size: 11px;
   color: var(--text-muted);
@@ -1479,47 +1629,7 @@ nav.toc a.active {
   border-top: 1px solid var(--border);
 }
 
-/* Kept for backwards compat — older renderers used the grid format */
-.bet-block {
-  margin: var(--sp-4) 0 var(--sp-6);
-  font-size: 15px;
-  line-height: 1.55;
-}
-.bet-block__slot {
-  display: grid;
-  grid-template-columns: 110px 1fr;
-  gap: var(--sp-3);
-  padding: var(--sp-1) 0;
-}
-.bet-block__slot + .bet-block__slot {
-  border-top: 1px solid var(--border);
-  margin-top: var(--sp-2);
-  padding-top: var(--sp-3);
-}
-.bet-block__key {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--text-muted);
-  text-transform: lowercase;
-  letter-spacing: 0.02em;
-  padding-top: 3px;
-}
-.bet-block__val {
-  font-family: var(--sans);
-  color: var(--text);
-}
-.bet-block__val a.dep-link { font-weight: 600; }
-.bet-block__val em { font-style: italic; color: var(--text-2); }
-.bet-block__probes {
-  margin-top: var(--sp-2);
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--text-muted);
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sp-3);
-  align-items: center;
-}
+
 /* Probe references — inline text, no chip box. Status-tinted color is the
    only signal; method-info lives in the rail's Eval Cases card. */
 .bet-probe {
@@ -1533,34 +1643,6 @@ nav.toc a.active {
 .bet-probe--missing   { color: var(--text-muted); }
 .bet-probe--failed    { color: var(--glyph-failed); }
 
-/* ── Eval score header — strip above the eval cases table ──────────────── */
-.eval-score {
-  font-family: var(--mono);
-  font-size: 13px;
-  color: var(--text-muted);
-  margin: var(--sp-2) 0 var(--sp-4);
-  display: flex;
-  gap: var(--sp-3);
-  flex-wrap: wrap;
-  align-items: center;
-}
-.eval-score strong { color: var(--text); font-weight: 600; }
-.eval-score__ships {
-  padding: 2px var(--sp-2);
-  border-radius: var(--radius-pill);
-  background: var(--glyph-verified);
-  color: white;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-left: var(--sp-2);
-}
-.eval-score__ships--not { background: var(--glyph-failed); }
-
-/* Headline case row in eval-cases table */
-.bed-table tr.is-headline td:first-child {
-  border-left: 2px solid var(--accent);
-}
 
 /* Eval-case method pills — one variant per AI-runnable method.
    `manual-judgment` is deliberately absent; the small-team + AI workflow
@@ -1602,14 +1684,6 @@ nav.toc a.active {
   color: var(--text-2);
 }
 
-/* Attention flag modifier on .bed-block — used inline above an opportunity
-   that has no feature solving it, and in the rail's "Attention" card. */
-.bed-block--attention .bed-block__lead {
-  color: var(--glyph-failed);
-}
-.bed-block--attention .bed-block__lead::before {
-  content: "⚠ ";
-}
 
 /* ── 9. tend-card — universal card component ─────────────────────────────
    A bordered surface card used anywhere inside a polyglot's center-col.
@@ -1780,11 +1854,12 @@ nav.toc a.active {
 }
 
 @media (max-width: 1023px) {
-  .detail-panel { display: none; }
+  .right-rail { display: none; }
   .wrap {
     padding-right: var(--sp-6);
     padding-top: calc(var(--top-nav-h) + var(--sp-4));
   }
+  [data-masthead="on"] .wrap { padding-top: 0; }
   .page-grid {
     grid-template-columns: 1fr;
     gap: 18px;
@@ -1999,6 +2074,20 @@ nav.toc a.active {
   font-weight: 600;
 }
 
+/* Collapsed-summary hint — the top group labels ("persona-job anchors, slot
+   checks +1 more"). Sits between the label and the count; truncates rather than
+   wraps so the summary stays one calm line. */
+.health-coherence__hint {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-faint, var(--text-muted));
+}
+
 .health-coherence__total {
   margin-left: auto;
   font-family: var(--mono);
@@ -2059,6 +2148,236 @@ nav.toc a.active {
   color: var(--text-2);
 }
 
+/* ── 11b. Masthead band (M1) ─────────────────────────────────────────────────
+   The full-width editorial band above the three columns. Information beautifully
+   set, never promotion: a bg-2 band with a bottom rule, height-capped (~280px of
+   content), every element functional. Tokens only — dark mode free.
+
+   Layout: a max-width inner that aligns with .page-grid (1280px), a two-column
+   split (lead ~60% | aside ~40%). The aside holds the visual card + status card
+   (feature) or the cockpit (garden) or the portrait (anchor). The .wrap already
+   reserves the fixed rail's width via padding-right, so the band never underlaps
+   the rail. Responsive polish is M2; here a cheap stack keeps narrow widths sane.
+──────────────────────────────────────────────────────────────────────────── */
+
+/* When the masthead carries the title + status, the compact .article-head and
+   the chrome status chip are absorbed (de-duplication). oo-boot sets data-masthead. */
+[data-masthead="on"] .article-head { display: none; }
+
+.masthead-tend {
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--border);
+  /* The band lives OUTSIDE .wrap and spans the full viewport width; it clears
+     the fixed chrome itself and provides the gap into the page below. */
+  margin: var(--top-nav-h) 0 var(--sp-8);
+  padding: var(--sp-8) var(--sp-6);
+}
+.masthead-tend__inner {
+  /* Mirror .page-grid's ensemble cap so the band's content aligns with the
+     columns below it on very wide viewports. */
+  max-width: calc(1280px + var(--rail-w) + var(--sp-8));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: var(--sp-8);
+  align-items: start;
+}
+/* No aside present (degraded-rich / no visual) → lead takes the full width. */
+.masthead-tend__inner:not(:has(.masthead-tend__aside)):not(:has(.masthead-tend__cockpit)) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.masthead-tend__lead { min-width: 0; }
+
+.masthead-tend__kicker {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 var(--sp-3);
+}
+.masthead-tend__kicker-sep { opacity: 0.5; }
+
+.masthead-tend__title {
+  font-family: var(--serif);
+  font-size: clamp(32px, 4.6vw, 52px);
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  color: var(--heading);
+  margin: 0 0 var(--sp-3);
+}
+
+.masthead-tend__dek,
+.masthead-tend__tagline {
+  font-family: var(--serif);
+  font-size: 19px;
+  line-height: 1.5;
+  color: var(--text-2);
+  max-width: 640px;
+  margin: 0 0 var(--sp-4);
+  /* Height-cap the band by clamping the lede to a few lines — ellipsizes at a
+     clean line boundary (never a mid-word hard cut). The full text lives in main
+     (anchor pages) or is the authored one-liner (bets); the band is the opener. */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  overflow: hidden;
+}
+.masthead-tend__dek--quote {
+  border-left: 2px solid var(--accent);
+  padding-left: var(--sp-4);
+  font-style: italic;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+/* Garden tagline — first sentence accent-italic (the project's claim), the rest
+   in the muted serif tone. The split happens in renderGardenTagline; here we
+   just color the two spans. */
+.masthead-tend--garden .masthead-tend__tagline {
+  color: var(--text-2);
+}
+.masthead-tend__tagline-lead {
+  font-style: italic;
+  color: var(--accent-d);
+}
+.masthead-tend__tagline-rest {
+  color: var(--text-2);
+}
+
+/* Chip row — persona / solves / counts. Compact, mono, linked. */
+.masthead-tend__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin: 0;
+}
+.masthead-tend__chip {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-2);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 2px var(--sp-2);
+  text-decoration: none;
+  white-space: nowrap;
+}
+a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-strong); }
+.masthead-tend__chip--persona { border-left: 2px solid var(--accent); }
+.masthead-tend__chip--board { color: var(--accent); }
+
+/* Right column — visual card + status card, or the cockpit / portrait. */
+.masthead-tend__aside {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  min-width: 0;
+}
+
+/* The visual card — white, bordered, soft shadow. Caps its own height so a tall
+   diagram doesn't blow the 280px band. */
+.masthead-tend__visual {
+  margin: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: var(--sp-3);
+  overflow: hidden;
+}
+.masthead-tend__visual svg,
+.masthead-tend__visual img {
+  display: block;
+  width: 100%;
+  max-height: 168px;
+  object-fit: contain;
+}
+/* The visual's typed-icon primitives (tc-*) need the same fill scoping the
+   header thumb gets, or the rects fall back to black. */
+.masthead-tend__visual svg .tc-bg    { fill: var(--bg-2); }
+.masthead-tend__visual svg .tc-wh    { fill: var(--surface); }
+.masthead-tend__visual svg .tc-frame { stroke: var(--border-strong); fill: none; }
+.masthead-tend__visual svg .tc-la    { stroke: var(--text-muted); }
+.masthead-tend__visual svg .tc-ln    { stroke: var(--text-2); }
+.masthead-tend__visual svg .tc-ac    { fill: var(--accent); stroke: var(--accent); }
+.masthead-tend__visual svg .tc-fg    { fill: var(--text); }
+
+/* The status card — status chip + honest check tally, deep-linking to the rail. */
+.masthead-tend__status-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--sp-2) var(--sp-3);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.masthead-tend__status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  color: var(--text-2);
+}
+.masthead-tend__status-checks {
+  color: var(--text-muted);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.masthead-tend__status-checks:hover { color: var(--accent); }
+
+/* The garden cockpit, moved into the band. Reuse the rail's health-* styles. */
+.masthead-tend__cockpit {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--sp-3) var(--sp-4);
+  min-width: 0;
+}
+.masthead-tend__cockpit .health-rail-block { display: block; }
+
+/* Persona portrait — the archetype quote is the page's strongest line, so its
+   portrait earns real presence: ~2× the old floating thumb, balanced against
+   the standfirst quote on the left. The card centers the SVG and lets it grow
+   to a generous max so a typed-portrait reads as a portrait, not an icon. */
+.masthead-tend--persona .masthead-tend__visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-4);
+}
+.masthead-tend--persona .masthead-tend__visual svg,
+.masthead-tend--persona .masthead-tend__visual img {
+  max-height: 320px;           /* ~2× the 168px shared cap */
+  max-width: 100%;
+}
+
+/* Responsive: under 900px the band stacks to a single column (lead over aside)
+   so the title/dek + portrait/status card read top-to-bottom on narrow screens.
+   Because the band lives ABOVE the grid, the status card it carries stays
+   visible even below 1024px where the rail (.right-rail) is hidden. */
+@media (max-width: 899px) {
+  .masthead-tend {
+    padding: var(--sp-6) var(--sp-3);
+  }
+  .masthead-tend__inner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--sp-5);
+    max-height: none;
+  }
+  /* The aside sits below the lead; cap the portrait so the stack stays compact. */
+  .masthead-tend--persona .masthead-tend__visual svg,
+  .masthead-tend--persona .masthead-tend__visual img {
+    max-height: 240px;
+  }
+}
+
 /* ── 12. Print ──────────────────────────────────────────────────────────── */
 @media print {
   .bed-top-header,
@@ -2070,6 +2389,7 @@ nav.toc a.active {
     max-width: none;
   }
   .center-col { max-width: none; }
+  .masthead-tend { margin-left: 0; margin-right: 0; max-height: none; }
 }
 
 </style>
@@ -2115,7 +2435,17 @@ nav.toc a.active {
   </div>
 </header>
 
+<!-- Masthead band (M1) — spans the FULL viewport width, above everything in
+     .wrap: TOC, main, and rail all begin below it. Presence-driven: the
+     renderer fills it for gardens, persona/opportunity anchors, and features
+     with a dek or media; degraded pages leave it empty (the compact
+     .article-head below carries the title instead). When filled it absorbs
+     the rail meta strip, the chrome status/health chips, and (garden) the
+     rail health cockpit. -->
+<div class="masthead-tend-mount" data-masthead-mount></div>
+
 <div class="wrap">
+
 <div class="page-grid">
 
   <aside class="left-rail">
@@ -2152,7 +2482,8 @@ nav.toc a.active {
   "kind": "feature",
   "tend_version": "0.4.0",
   "generated_at": "2026-06-04T12:41:55.706Z",
-  "project_name": "Petals"
+  "project_name": "Petals",
+  "dek_sha": "55af25d637510cd7c339872935c7770e678709d7"
 }
 </script>
 
@@ -2160,26 +2491,26 @@ nav.toc a.active {
 {
   "id": "brand-distribution",
   "title": "Brand Distribution",
-  "status": "planned",
+  "status": "verified",
   "priority": "high",
   "dependencies": [],
   "enables": [
     "brand-check"
   ],
-  "what": "/petal init --from <repo-url> connects a project to a central brand repository. /petal update syncs with new versions. Automatic drift detection warns when the central brand has moved ahead. Project overrides survive updates.",
+  "what": "/petals init --from <repo-url> connects a project to a central brand repository. /petals update syncs with new versions. Automatic drift detection warns when the central brand has moved ahead. Project overrides survive updates.",
   "why": "When the brand changes, every project has a fossilized copy. Three different brand versions exist across the org within months. New projects start by copy-pasting a colors.ts from another repo and hoping it's current. Distribution makes the brand as easy to get as git pull — one command, always current, never drifts silently.",
   "impact": "Six projects are connected. The central brand tags v1.3.0. Next agent session on each project detects the drift. Four update immediately. Two with campaign overrides update without losing their seasonal palette. Zero projects still silently using v1.2.0 two weeks later. A developer joining any project runs one command and their first agent session produces on-brand output.",
   "fit": "Distribution makes extraction useful beyond one project. Extraction creates the brand intelligence layer once. Distribution gets it everywhere. They share the .brand/ format contract — distribution works on any valid .brand/ regardless of how it was created.",
-  "where": "petals/scripts/fetch-brand.sh (HTTPS fetch or shallow clone logic). petals/SKILL.md (init --from and update subcommand surfaces). .petalrc (generated per-project config: source, version, overrides).",
-  "how": "Two fetch strategies, auto-selected: HTTPS API fetch (uses GITHUB_TOKEN from env) or shallow git clone (when SSH access detected). Public repos use raw.githubusercontent.com. .brand/ is gitignored — a cache, not source code. .petalrc records source, version, and optional overrides. Drift detection compares local version against central's latest tag. Overrides merge: set values win, null inherits from central.",
+  "where": "petals/scripts/fetch-brand.sh (HTTPS fetch or shallow clone logic). petals/SKILL.md (init --from and update subcommand surfaces). .petalsrc (generated per-project config: source, version, overrides).",
+  "how": "Two fetch strategies, auto-selected: HTTPS API fetch (uses GITHUB_TOKEN from env) or shallow git clone (when SSH access detected). Public repos use raw.githubusercontent.com. .brand/ is gitignored — a cache, not source code. .petalsrc records source, version, and optional overrides. Drift detection compares local version against central's latest tag. Overrides merge: set values win, null inherits from central. After applying an update: regenerate the derived machine views (tokens.css / tokens.json) and report the blast radius - files newly flagged under the new version, or an explicit clean line.",
   "progress": {
     "implementation": 100,
-    "verification": 67
+    "verification": 100
   },
   "checks": [
     {
       "id": "c001",
-      "description": "/petal init --from <repo-url> fetches .brand/ and populates it locally with all expected files matching the source.",
+      "description": "/petals init --from <repo-url> fetches .brand/ and populates it locally with all expected files matching the source.",
       "validates": "what",
       "validates_job": "brand-operator:1",
       "method": "synthetic-test",
@@ -2188,7 +2519,7 @@ nav.toc a.active {
     },
     {
       "id": "c002",
-      "description": "When local .brand/ is behind the central repo's latest tag, /petal check (or a dedicated drift subcommand) reports the version gap with both version numbers.",
+      "description": "When local .brand/ is behind the central repo's latest tag, /petals check (or a dedicated drift subcommand) reports the version gap with both version numbers.",
       "validates": "what",
       "validates_job": "brand-operator:2",
       "method": "synthetic-test",
@@ -2197,16 +2528,16 @@ nav.toc a.active {
     },
     {
       "id": "c003",
-      "description": "/petal update pulls the latest .brand/ while preserving project-level overrides. Values explicitly set in .petalrc survive; null-inherited values update to central's current.",
+      "description": "/petals update pulls the latest .brand/ while preserving project-level overrides. Values explicitly set in .petalsrc survive; null-inherited values update to central's current.",
       "validates": "what",
       "validates_job": "brand-operator:2",
       "method": "synthetic-test",
       "integration_level": "e2e",
-      "verification_recipe": "Local at v1.1.0 with .petalrc overriding colors.primary: '#OVERRIDE' and typography.body: null. Push v1.2.0 that changes both primary and body. Run update. Assert primary still #OVERRIDE. Assert body updated to v1.2.0."
+      "verification_recipe": "Local at v1.1.0 with .petalsrc overriding colors.primary: '#OVERRIDE' and typography.body: null. Push v1.2.0 that changes both primary and body. Run update. Assert primary still #OVERRIDE. Assert body updated to v1.2.0."
     },
     {
       "id": "c004",
-      "description": "/petal init --from when .brand/ already exists warns and asks for confirmation before overwriting.",
+      "description": "/petals init --from when .brand/ already exists warns and asks for confirmation before overwriting.",
       "validates": "what",
       "validates_job": "brand-operator:1",
       "method": "synthetic-test",
@@ -2238,11 +2569,11 @@ nav.toc a.active {
       "validates_job": "brand-operator:1",
       "method": "synthetic-test",
       "integration_level": "integration",
-      "verification_recipe": "Test 1: git+SSH available → assert shallow clone used (git clone --depth 1 executed). Test 2: no git, GITHUB_TOKEN set → assert API fetch used. Test 3: neither, public repo → assert raw.githubusercontent.com fetch used."
+      "verification_recipe": "Test 1: git+SSH available -> assert shallow clone used (git clone --depth 1 executed). Test 2: no git, GITHUB_TOKEN set -> assert API fetch used. Test 3: neither, public repo -> assert raw.githubusercontent.com fetch used."
     },
     {
       "id": "c008",
-      "description": ".brand/ is gitignored after fetch — it is a cache, not source code, and should not appear in git status.",
+      "description": ".brand/ is gitignored after fetch - it is a cache, not source code, and should not appear in git status.",
       "validates": "where",
       "validates_job": "brand-operator:1",
       "method": "synthetic-test",
@@ -2251,16 +2582,51 @@ nav.toc a.active {
     },
     {
       "id": "c009",
-      "description": "The .petalrc file is created with correct source URL, version, and overrides structure after init --from.",
+      "description": "The .petalsrc file is created with correct source URL, version, and overrides structure after init --from.",
       "validates": "where",
       "validates_job": "brand-operator:1",
       "method": "synthetic-test",
       "integration_level": "integration",
-      "verification_recipe": "Run init --from against a known repo. Assert .petalrc exists. Assert it contains source matching the repo URL. Assert version matches the fetched tag. Assert overrides section exists (empty)."
+      "verification_recipe": "Run init --from against a known repo. Assert .petalsrc exists. Assert it contains source matching the repo URL. Assert version matches the fetched tag. Assert overrides section exists (empty)."
+    },
+    {
+      "id": "c010",
+      "description": "The drift detection mechanism (check-brand-drift.sh) correctly identifies brand version mismatches across all four states - current, drift (local behind), ahead, and unreachable - each producing the correct exit code and JSON output, confirming the why claim that drift is detected before someone ships the wrong blue.",
+      "validates": "why",
+      "validates_job": "brand-operator:2",
+      "method": "synthetic-test",
+      "integration_level": "unit",
+      "verification_recipe": "Run check-brand-drift.sh in CLI mode against 4 states: v1.1.0-vs-v1.2.0 -> drift (exit 1), v1.2.0-vs-v1.2.0 -> current (exit 0), v1.3.0-vs-v1.2.0 -> ahead (exit 4), v1.1.0-vs-nonexistent -> unreachable (exit 2). Assert all produce correct exit codes and JSON with local_version, central_version, status, and message fields."
+    },
+    {
+      "id": "c011",
+      "description": "The fetch + override roundtrip works end-to-end - fetching from the central repo, applying project overrides, and preserving local divergence while syncing structural updates - confirming the impact claim of zero-human-propagation: one push, N projects sync, zero Slack messages.",
+      "validates": "impact",
+      "validates_job": "brand-operator:2",
+      "method": "synthetic-test",
+      "integration_level": "e2e",
+      "verification_recipe": "Full roundtrip: fetch v1.1.0 (primary=#2F99A4), fetch v1.2.0 to .brand.incoming (primary=#3DB8C4), apply overrides with colors.primary=#FF0000 and typography.body=null. Assert primary stays #FF0000 (override preserved). Assert body updates from central (null-inherited). Assert .petalsrc version updates to v1.2.0."
+    },
+    {
+      "id": "c012",
+      "description": "Distribution uses only filesystem and git primitives - no server, no database, no SaaS backend - confirming the fit claim that this is infrastructure as code for brand, not a dashboard or a service.",
+      "validates": "fit",
+      "validates_job": "brand-operator:1",
+      "method": "synthetic-test",
+      "integration_level": "unit",
+      "verification_recipe": "Inspect fetch-brand.sh: all four strategies (local, git, github-api, raw-http) are file-based operations. Inspect .petalsrc: YAML on disk, no server connection. Inspect check-brand-drift.sh: shell script, compares version strings, exits with status code. Assert zero references to databases, SaaS endpoints, or persistent servers."
+    },
+    {
+      "id": "c013",
+      "description": "The /petals update workflow instructs the agent, after applying a new version, to regenerate the derived machine views and report the blast radius - newly-flagged files under the new brand version, or an explicit clean line.",
+      "validates": "how",
+      "method": "code-review",
+      "integration_level": "unit",
+      "verification_recipe": "Behavioral: fetch a brand fixture, check an on-brand sample file (PASS), update to a version with a changed palette, re-check (FAIL naming the file) — see test/fixtures/blast-radius-run.txt. Also inspect SKILL.md /petals update steps 9-12 (regenerate views, blast-radius report with clean case, summary line)."
     }
   ],
   "smoke": {
-    "cmd": "/petal init --from <test-brand-repo-url>",
+    "cmd": "/petals init --from <test-brand-repo-url>",
     "verify": ".brand/DESIGN.md exists and colors.md contains expected primary hex"
   },
   "decisions": [
@@ -2291,7 +2657,7 @@ nav.toc a.active {
     "agent-off-brand"
   ],
   "journey_phase": "author",
-  "narrative": "Maria pushes the new brand to the central repo. Tags `v1.3.0`. Done.\n\nThree days later, she opens a session on the dashboard project. Before she types a word, the agent reports: *Brand drift detected. Local: v1.2.0. Central: v1.3.0.* The dashboard has a seasonal campaign override — a gold palette for the holiday push. She runs `/petal update`. The primary color updates to the new teal. The gold palette stays. The heading font updates. Nothing breaks.\n\nThis is distribution: the brand travels, not a Slack message.\n\n## One command wires a project to the brand\n\n`/petal init --from github.com/org/brand` pulls `.brand/` into the project. The agent reads it without being told. No hex codes in the prompt. No brand context pasted into the message. A developer joining the project — someone who has never heard of petals — opens a session, types \"build a contact page,\" and the agent produces output in the correct palette, the correct font, the correct voice. They don't know why. They don't need to.\n\nUnder the hood, the fetch strategy selects itself. If git and SSH are available, a shallow clone grabs `.brand/` and nothing else — fast, authenticated, no token to manage. If only `GITHUB_TOKEN` is set, the API fetches the directory contents over HTTPS. If neither, and the repo is public, raw.githubusercontent.com delivers the files. Three strategies, zero configuration. Petals reads the environment and picks the one that works.\n\nThe result lands in `.brand/` — a cache, not source code. It is immediately gitignored. The project never commits the brand; it commits `.petalrc`, which records the source URL, the version tag, and the override map. The brand lives in the central repo. The project knows where to find it.\n\n## Drift is detected, not announced\n\nWhen the central brand tags a new version, nobody Slacks anyone. Nobody files a ticket. Nobody pastes the hex codes into a shared document and hopes.\n\nThe next agent session on each connected project runs `/petal check` — a comparison of `.petalrc`'s `version` field against the central repo's latest tag. The comparison costs one API call. If they match, nothing happens. If they differ, the agent reports the gap: both version numbers, the tag date, a summary of what changed. No noise when there is no drift. No silence when there is.\n\nThe brand operator never has to remember which projects are connected or what version they are on. The infrastructure remembers. The agent surfaces drift at the moment it matters — when someone is about to do work that should use the current brand.\n\n## Overrides survive. Everything else updates.\n\nSome projects need to diverge. A campaign page uses a seasonal palette for six weeks. An experimental feature tests a new type scale. A regional variant swaps the primary typeface for a CJK font.\n\n`.petalrc` records overrides as a flat map: `colors.primary: '#GOLD'`, `typography.heading: null`. When `/petal update` runs, explicitly set values survive — the gold stays gold. Null-inherited values update to the central's current — the heading font moves forward with the brand. The merge is deterministic, visible in `.petalrc`, and reversible by clearing an override.\n\nThis is the critical distinction. Without it, overrides create frozen projects — the campaign page never gets the new primary color because updating would destroy the gold. With it, the project moves with the brand on everything it hasn't intentionally changed. The override map is the contract between what the project controls and what the brand controls.\n\n## The loop closes\n\n[Brand Extraction](brand-extraction.tend.html) creates the intelligence layer once — a `.brand/` directory from a PDF, a Figma export, a folder of assets. [Brand Check](brand-check.tend.html) catches what slips through — hardcoded colors, wrong fonts, off-brand voice — before it reaches review.\n\nDistribution sits between them. Extraction without distribution is a beautiful artifact that lives in one repo. Check without distribution catches drift on one project and leaves the other five oblivious. Distribution makes extraction useful beyond its birthplace and gives check something to verify against — a canonical source, kept current across every project where agents do work.\n\nThe central brand repo is just a git repository. `.brand/` at the root. Semantic version tags. Any project, any developer, any agent session — one command connects them to the same brand truth. No server. No database. No login page. Just files, git, and the skill that wires them together.",
+  "narrative": "Maria pushes the new brand to the central repo. Tags `v1.3.0`. Done.\n\nThree days later, she opens a session on the dashboard project. Before she types a word, the agent reports: *Brand drift detected. Local: v1.2.0. Central: v1.3.0.* The dashboard has a seasonal campaign override — a gold palette for the holiday push. She runs `/petals update`. The primary color updates to the new teal. The gold palette stays. The heading font updates. Nothing breaks.\n\nThis is distribution: the brand travels, not a Slack message.\n\n## One command wires a project to the brand\n\n`/petals init --from github.com/org/brand` pulls `.brand/` into the project. The agent reads it without being told. No hex codes in the prompt. No brand context pasted into the message. A developer joining the project — someone who has never heard of petals — opens a session, types \"build a contact page,\" and the agent produces output in the correct palette, the correct font, the correct voice. They don't know why. They don't need to.\n\nUnder the hood, the fetch strategy selects itself. If git and SSH are available, a shallow clone grabs `.brand/` and nothing else — fast, authenticated, no token to manage. If only `GITHUB_TOKEN` is set, the API fetches the directory contents over HTTPS. If neither, and the repo is public, raw.githubusercontent.com delivers the files. Three strategies, zero configuration. Petals reads the environment and picks the one that works.\n\nThe result lands in `.brand/` — a cache, not source code. It is immediately gitignored. The project never commits the brand; it commits `.petalsrc`, which records the source URL, the version tag, and the override map. The brand lives in the central repo. The project knows where to find it.\n\n## Drift is detected, not announced\n\nWhen the central brand tags a new version, nobody Slacks anyone. Nobody files a ticket. Nobody pastes the hex codes into a shared document and hopes.\n\nThe next agent session on each connected project runs `/petals check` — a comparison of `.petalsrc`'s `version` field against the central repo's latest tag. The comparison costs one API call. If they match, nothing happens. If they differ, the agent reports the gap: both version numbers, the tag date, a summary of what changed. No noise when there is no drift. No silence when there is.\n\nThe brand operator never has to remember which projects are connected or what version they are on. The infrastructure remembers. The agent surfaces drift at the moment it matters — when someone is about to do work that should use the current brand.\n\n## Overrides survive. Everything else updates.\n\nSome projects need to diverge. A campaign page uses a seasonal palette for six weeks. An experimental feature tests a new type scale. A regional variant swaps the primary typeface for a CJK font.\n\n`.petalsrc` records overrides as a flat map: `colors.primary: '#GOLD'`, `typography.heading: null`. When `/petals update` runs, explicitly set values survive — the gold stays gold. Null-inherited values update to the central's current — the heading font moves forward with the brand. The merge is deterministic, visible in `.petalsrc`, and reversible by clearing an override.\n\nThis is the critical distinction. Without it, overrides create frozen projects — the campaign page never gets the new primary color because updating would destroy the gold. With it, the project moves with the brand on everything it hasn't intentionally changed. The override map is the contract between what the project controls and what the brand controls.\n\n## What an update owes you\n\nAn update that lands silently is half an update. After the merge applies and the version bumps, the workflow regenerates the machine views — tokens.css and tokens.json are derived artifacts, so they move with the markdown — and then reports the blast radius: every file the new brand version flags that the old one did not. \"Updated to v1.3.0, three files now carry violations introduced by this update\" is actionable; a silent sync that leaves the campaign page in last year's palette is how drift started in the first place. A clean update says so in one line.\n\n## The loop closes\n\n[Brand Extraction](brand-extraction.tend.html) creates the intelligence layer once — a `.brand/` directory from a PDF, a Figma export, a folder of assets. [Brand Check](brand-check.tend.html) catches what slips through — hardcoded colors, wrong fonts, off-brand voice — before it reaches review.\n\nDistribution sits between them. Extraction without distribution is a beautiful artifact that lives in one repo. Check without distribution catches drift on one project and leaves the other five oblivious. Distribution makes extraction useful beyond its birthplace and gives check something to verify against — a canonical source, kept current across every project where agents do work.\n\nThe central brand repo is just a git repository. `.brand/` at the root. Semantic version tags. Any project, any developer, any agent session — one command connects them to the same brand truth. No server. No database. No login page. Just files, git, and the skill that wires them together.",
   "media": {
     "thumbnail": {
       "kind": "svg",
@@ -2310,7 +2676,7 @@ nav.toc a.active {
       "step_type": "command",
       "status": "done",
       "title": "Create test brand repository fixtures",
-      "description": "Create a public test brand repository with known .brand/ contents tagged as v1.1.0. The .brand/ directory contains DESIGN.md, colors.md (with primary: #2F99A4), typography.md, voice.md, and assets/ with logo.svg and hero.jpg. Later, push v1.2.0 changing the primary color and one asset. Create a second test repo without .brand/ (malformed).",
+      "description": "Test: bash petals/scripts/fetch-brand.sh test/fixtures/brand-repo-test-v1.1.0 → exit 0, JSON with strategy/version/files, .brand/ created with 7 files, colors.md contains correct hex values. Create a public test brand repository with known .brand/ contents tagged as v1.1.0. The .brand/ directory contains DESIGN.md, colors.md (with primary: #2F99A4), typography.md, voice.md, and assets/ with logo.svg and hero.jpg. Later, push v1.2.0 changing the primary color and one asset. Create a second test repo without .brand/ (malformed).",
       "traces_to": [
         "c001",
         "c002",
@@ -2323,6 +2689,21 @@ nav.toc a.active {
         "error_strategy": "fail"
       },
       "log": [
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Created test brand repository fixtures: brand-repo-test-v1.1.0 (primary #2F99A4), brand-repo-test-v1.2.0 (primary #3DB8C4, updated hero.jpg), and brand-repo-malformed (no .brand/ directory). Versioned as separate directories in test/fixtures/."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Created test brand repository fixtures: brand-repo-test-v1.1.0 (primary #2F99A4), brand-repo-test-v1.2.0 (primary #3DB8C4, updated hero.jpg), and brand-repo-malformed (no .brand/ directory). Versioned as separate directories in test/fixtures/."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Created test brand repository fixtures: brand-repo-test-v1.1.0 (primary #2F99A4), brand-repo-test-v1.2.0 (primary #3DB8C4, updated hero.jpg), and brand-repo-malformed (no .brand/ directory). Versioned as separate directories in test/fixtures/."
+        },
         {
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
@@ -2356,6 +2737,21 @@ nav.toc a.active {
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
           "text": "Implemented fetch-brand.sh with 3 auto-selecting strategies: (1) local directory copy for local paths, (2) git clone --depth 1 when git available, (3) GitHub API when GITHUB_TOKEN set, (4) raw.githubusercontent.com for public repos. JSON output with strategy, version, file count. Proper exit codes: 0=success, 1=no .brand/, 2=unreachable, 3=auth required, 4=no available strategy."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Implemented fetch-brand.sh with 3 auto-selecting strategies: (1) local directory copy for local paths, (2) git clone --depth 1 when git available, (3) GitHub API when GITHUB_TOKEN set, (4) raw.githubusercontent.com for public repos. JSON output with strategy, version, file count. Proper exit codes: 0=success, 1=no .brand/, 2=unreachable, 3=auth required, 4=no available strategy."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Implemented fetch-brand.sh with 3 auto-selecting strategies: (1) local directory copy for local paths, (2) git clone --depth 1 when git available, (3) GitHub API when GITHUB_TOKEN set, (4) raw.githubusercontent.com for public repos. JSON output with strategy, version, file count. Proper exit codes: 0=success, 1=no .brand/, 2=unreachable, 3=auth required, 4=no available strategy."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Implemented fetch-brand.sh with 3 auto-selecting strategies: (1) local directory copy for local paths, (2) git clone --depth 1 when git available, (3) GitHub API when GITHUB_TOKEN set, (4) raw.githubusercontent.com for public repos. JSON output with strategy, version, file count. Proper exit codes: 0=success, 1=no .brand/, 2=unreachable, 3=auth required, 4=no available strategy."
         }
       ]
     },
@@ -2364,7 +2760,7 @@ nav.toc a.active {
       "step_type": "agent",
       "status": "done",
       "title": "Add init --from and update subcommands to SKILL.md",
-      "description": "Test: test/init-from-subcommand.integration.test.ts\nAsserts: Invoke /petal init --from <test-repo-url>. Assert .brand/ directory exists with all expected files matching source. Assert .petalrc is created with source matching the repo URL, version matching the fetched tag, and an empty overrides section. Assert .gitignore contains .brand/. Run git status and assert .brand/ does not appear as untracked. Invoke /petal init --from <test-repo-url> a second time (existing .brand/) and assert the agent warns/prompts before overwriting.\nBoundary: real filesystem with test repo from i001.\nSetup: i001 (test fixtures), i002 (fetch script).\nRun: npm test -- init-from-subcommand.integration.\n\nImplement: Add init --from subcommand logic to SKILL.md dispatch. When invoked with a repo URL, the agent: (1) Runs fetch-brand.sh with the URL. (2) Reads the fetched version tag and records it in .petalrc. (3) Records the source URL in .petalrc. (4) Initializes an empty overrides map. (5) Appends .brand/ to .gitignore if not already present. (6) If .brand/ already exists, warns and asks for confirmation before overwriting. Do not modify existing .petalrc if it already exists without confirmation.",
+      "description": "Test: test/init-from-subcommand.integration.test.ts\nAsserts: Invoke /petals init --from <test-repo-url>. Assert .brand/ directory exists with all expected files matching source. Assert .petalsrc is created with source matching the repo URL, version matching the fetched tag, and an empty overrides section. Assert .gitignore contains .brand/. Run git status and assert .brand/ does not appear as untracked. Invoke /petals init --from <test-repo-url> a second time (existing .brand/) and assert the agent warns/prompts before overwriting.\nBoundary: real filesystem with test repo from i001.\nSetup: i001 (test fixtures), i002 (fetch script).\nRun: npm test -- init-from-subcommand.integration.\n\nImplement: Add init --from subcommand logic to SKILL.md dispatch. When invoked with a repo URL, the agent: (1) Runs fetch-brand.sh with the URL. (2) Reads the fetched version tag and records it in .petalsrc. (3) Records the source URL in .petalsrc. (4) Initializes an empty overrides map. (5) Appends .brand/ to .gitignore if not already present. (6) If .brand/ already exists, warns and asks for confirmation before overwriting. Do not modify existing .petalsrc if it already exists without confirmation.",
       "dependencies": [
         "i001",
         "i002"
@@ -2388,6 +2784,21 @@ nav.toc a.active {
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
           "text": "Added init --from and update subcommands to SKILL.md. Includes: 7-step init --from workflow (existing .brand/ check, fetch-brand.sh execution, .petalrc creation, .gitignore update, output verification), 10-step /petal update workflow (backup, override parsing, fetch, version comparison, override merge, atomic replace, cleanup), full .petalrc format definition with override key conventions and value semantics."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Added init --from and update subcommands to SKILL.md. Includes: 7-step init --from workflow (existing .brand/ check, fetch-brand.sh execution, .petalrc creation, .gitignore update, output verification), 10-step /petal update workflow (backup, override parsing, fetch, version comparison, override merge, atomic replace, cleanup), full .petalrc format definition with override key conventions and value semantics."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Added init --from and update subcommands to SKILL.md. Includes: 7-step init --from workflow (existing .brand/ check, fetch-brand.sh execution, .petalsrc creation, .gitignore update, output verification), 10-step /petals update workflow (backup, override parsing, fetch, version comparison, override merge, atomic replace, cleanup), full .petalsrc format definition with override key conventions and value semantics."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Added init --from and update subcommands to SKILL.md. Includes: 7-step init --from workflow (existing .brand/ check, fetch-brand.sh execution, .petalsrc creation, .gitignore update, output verification), 10-step /petals update workflow (backup, override parsing, fetch, version comparison, override merge, atomic replace, cleanup), full .petalsrc format definition with override key conventions and value semantics."
         }
       ]
     },
@@ -2396,7 +2807,7 @@ nav.toc a.active {
       "step_type": "agent",
       "status": "done",
       "title": "Implement drift detection",
-      "description": "Test: test/drift-detection.integration.test.ts\nAsserts: Set up local .brand/ at v1.1.0 (from .petalrc version field). Push v1.2.0 tag to the central test repo. Run drift detection. Assert output contains both version numbers (v1.1.0 and v1.2.0) and indicates a version gap. Assert output does not indicate drift when local and central versions match. Assert error message when central repo is unreachable (nonexistent URL) and local .brand/ is preserved unchanged.\nBoundary: real filesystem + network (test brand repo).\nSetup: i001 (test fixtures), i003 (init --from).\nRun: npm test -- drift-detection.integration.\n\nImplement: Add drift detection subcommand to SKILL.md dispatch. When /petal check runs without a file argument (drift-only mode), read .petalrc version, fetch the central repo's latest tag (one API call / git ls-remote), compare. If local < central: report the gap with both version numbers. If match: no output (no noise when current). If central unreachable: report connection error, preserve local state.",
+      "description": "Test: test/drift-detection.integration.test.ts\nAsserts: Set up local .brand/ at v1.1.0 (from .petalsrc version field). Push v1.2.0 tag to the central test repo. Run drift detection. Assert output contains both version numbers (v1.1.0 and v1.2.0) and indicates a version gap. Assert output does not indicate drift when local and central versions match. Assert error message when central repo is unreachable (nonexistent URL) and local .brand/ is preserved unchanged.\nBoundary: real filesystem + network (test brand repo).\nSetup: i001 (test fixtures), i003 (init --from).\nRun: npm test -- drift-detection.integration.\n\nImplement: Add drift detection subcommand to SKILL.md dispatch. When /petals check runs without a file argument (drift-only mode), read .petalsrc version, fetch the central repo's latest tag (one API call / git ls-remote), compare. If local < central: report the gap with both version numbers. If match: no output (no noise when current). If central unreachable: report connection error, preserve local state.",
       "dependencies": [
         "i001",
         "i003"
@@ -2406,7 +2817,7 @@ nav.toc a.active {
         "c006"
       ],
       "outputs": {
-        "drift_detection": "Drift detection logic comparing .petalrc version to central repo tags"
+        "drift_detection": "Drift detection logic comparing .petalsrc version to central repo tags"
       },
       "verification_profile": "standard",
       "agent_hint": {
@@ -2418,6 +2829,21 @@ nav.toc a.active {
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
           "text": "Implemented drift detection: added /petal check (drift-only mode) to SKILL.md dispatch, created check-brand-drift.sh with automatic version source detection (local path, git ls-remote, GitHub API, raw HTTP), proper semver comparison, 4 exit codes (0=current, 1=drift, 2=unreachable, 3=no source), JSON output with local/central versions and status message."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Implemented drift detection: added /petal check (drift-only mode) to SKILL.md dispatch, created check-brand-drift.sh with automatic version source detection (local path, git ls-remote, GitHub API, raw HTTP), proper semver comparison, 4 exit codes (0=current, 1=drift, 2=unreachable, 3=no source), JSON output with local/central versions and status message."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Implemented drift detection: added /petals check (drift-only mode) to SKILL.md dispatch, created check-brand-drift.sh with automatic version source detection (local path, git ls-remote, GitHub API, raw HTTP), proper semver comparison, 4 exit codes (0=current, 1=drift, 2=unreachable, 3=no source), JSON output with local/central versions and status message."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Implemented drift detection: added /petals check (drift-only mode) to SKILL.md dispatch, created check-brand-drift.sh with automatic version source detection (local path, git ls-remote, GitHub API, raw HTTP), proper semver comparison, 4 exit codes (0=current, 1=drift, 2=unreachable, 3=no source), JSON output with local/central versions and status message."
         }
       ]
     },
@@ -2425,8 +2851,8 @@ nav.toc a.active {
       "id": "i005",
       "step_type": "agent",
       "status": "done",
-      "title": "Implement /petal update with override preservation",
-      "description": "Test: test/update-with-overrides.integration.test.ts\nAsserts: Set up local .brand/ at v1.1.0 with .petalrc overriding colors.primary: '#OVERRIDE' and typography.body: null. Push v1.2.0 changing both primary color and body font in central. Run /petal update. Assert colors.md still contains #OVERRIDE (overridden value preserved). Assert typography.md contains the NEW central body font (null-inherited value updated). Assert .petalrc version field updates to v1.2.0. Run /petal update when already at latest: assert no-op with reasonable message.\nBoundary: real filesystem + network (test brand repo).\nSetup: i001 (test fixtures), i002 (fetch script), i003 (init --from).\nRun: npm test -- update-with-overrides.integration.\n\nImplement: Add /petal update subcommand to SKILL.md dispatch. Runs fetch-brand.sh to get the latest .brand/. Before overwriting, reads .petalrc overrides. For each override with a non-null value, preserves the overridden value in the updated .brand/ file. For null values, uses the central's current value. After merge, updates .petalrc version field to the new tag. Logs which values were preserved and which were updated.",
+      "title": "Implement /petals update with override preservation",
+      "description": "Test: test/update-with-overrides.integration.test.ts\nAsserts: Set up local .brand/ at v1.1.0 with .petalsrc overriding colors.primary: '#OVERRIDE' and typography.body: null. Push v1.2.0 changing both primary color and body font in central. Run /petals update. Assert colors.md still contains #OVERRIDE (overridden value preserved). Assert typography.md contains the NEW central body font (null-inherited value updated). Assert .petalsrc version field updates to v1.2.0. Run /petals update when already at latest: assert no-op with reasonable message.\nBoundary: real filesystem + network (test brand repo).\nSetup: i001 (test fixtures), i002 (fetch script), i003 (init --from).\nRun: npm test -- update-with-overrides.integration.\n\nImplement: Add /petals update subcommand to SKILL.md dispatch. Runs fetch-brand.sh to get the latest .brand/. Before overwriting, reads .petalsrc overrides. For each override with a non-null value, preserves the overridden value in the updated .brand/ file. For null values, uses the central's current value. After merge, updates .petalsrc version field to the new tag. Logs which values were preserved and which were updated.",
       "dependencies": [
         "i001",
         "i002",
@@ -2436,7 +2862,7 @@ nav.toc a.active {
         "c003"
       ],
       "outputs": {
-        "update_subcommand": "/petal update subcommand with override-preserving merge logic"
+        "update_subcommand": "/petals update subcommand with override-preserving merge logic"
       },
       "verification_profile": "thorough",
       "agent_hint": {
@@ -2448,6 +2874,21 @@ nav.toc a.active {
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
           "text": "Implemented /petal update with override preservation: created apply-overrides.sh with handlers for colors.primary, colors.accent, typography.heading, typography.body, typography.mono. Non-null overrides are applied via in-place sed to both table rows and CSS custom properties. Null overrides are tracked but skipped (inherit from central). JSON output reports applied/skipped counts. Tested with v1.1.0->v1.2.0 update preserving #FF0000 override while inheriting Inter body font."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Implemented /petal update with override preservation: created apply-overrides.sh with handlers for colors.primary, colors.accent, typography.heading, typography.body, typography.mono. Non-null overrides are applied via in-place sed to both table rows and CSS custom properties. Null overrides are tracked but skipped (inherit from central). JSON output reports applied/skipped counts. Tested with v1.1.0->v1.2.0 update preserving #FF0000 override while inheriting Inter body font."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Implemented /petals update with override preservation: created apply-overrides.sh with handlers for colors.primary, colors.accent, typography.heading, typography.body, typography.mono. Non-null overrides are applied via in-place sed to both table rows and CSS custom properties. Null overrides are tracked but skipped (inherit from central). JSON output reports applied/skipped counts. Tested with v1.1.0->v1.2.0 update preserving #FF0000 override while inheriting Inter body font."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Implemented /petals update with override preservation: created apply-overrides.sh with handlers for colors.primary, colors.accent, typography.heading, typography.body, typography.mono. Non-null overrides are applied via in-place sed to both table rows and CSS custom properties. Null overrides are tracked but skipped (inherit from central). JSON output reports applied/skipped counts. Tested with v1.1.0->v1.2.0 update preserving #FF0000 override while inheriting Inter body font."
         }
       ]
     },
@@ -2456,7 +2897,7 @@ nav.toc a.active {
       "step_type": "agent",
       "status": "done",
       "title": "Implement error handling for malformed and unreachable repos",
-      "description": "Test: test/error-handling.integration.test.ts\nAsserts: Point /petal init --from at a valid repo without .brand/ directory. Assert non-zero exit and error message indicating no .brand/ found. Assert no .brand/ created or modified locally. Point /petal init --from at a nonexistent repo URL with existing local .brand/. Assert error message identifies the connection failure. Assert local .brand/ is preserved unchanged. Assert .petalrc is not modified.\nBoundary: real filesystem + network.\nSetup: i001 (malformed test repo), i003 (init --from).\nRun: npm test -- error-handling.integration.\n\nImplement: Add error handling to fetch-brand.sh and init --from dispatch. When repo has no .brand/ directory: exit non-zero with clear error. When repo is unreachable (DNS failure, 404, private without auth): exit non-zero with specific error identifying the failure type. Never modify local .brand/ or .petalrc on failure. Always preserve existing state before attempting any network operation.",
+      "description": "Test: test/error-handling.integration.test.ts\nAsserts: Point /petals init --from at a valid repo without .brand/ directory. Assert non-zero exit and error message indicating no .brand/ found. Assert no .brand/ created or modified locally. Point /petals init --from at a nonexistent repo URL with existing local .brand/. Assert error message identifies the connection failure. Assert local .brand/ is preserved unchanged. Assert .petalsrc is not modified.\nBoundary: real filesystem + network.\nSetup: i001 (malformed test repo), i003 (init --from).\nRun: npm test -- error-handling.integration.\n\nImplement: Add error handling to fetch-brand.sh and init --from dispatch. When repo has no .brand/ directory: exit non-zero with clear error. When repo is unreachable (DNS failure, 404, private without auth): exit non-zero with specific error identifying the failure type. Never modify local .brand/ or .petalsrc on failure. Always preserve existing state before attempting any network operation.",
       "dependencies": [
         "i001",
         "i003"
@@ -2478,6 +2919,21 @@ nav.toc a.active {
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
           "text": "Error handling verified across all scenarios: (1) repo without .brand/ exits 1 with clear error, no local state modified. (2) nonexistent path exits 2 with 'Local path does not exist' error, no local state modified. (3) fetch-brand.sh never creates .petalrc, SKILL.md preserves-backup-then-modify pattern. All error paths are non-destructive."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Error handling verified across all scenarios: (1) repo without .brand/ exits 1 with clear error, no local state modified. (2) nonexistent path exits 2 with 'Local path does not exist' error, no local state modified. (3) fetch-brand.sh never creates .petalrc, SKILL.md preserves-backup-then-modify pattern. All error paths are non-destructive."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Error handling verified across all scenarios: (1) repo without .brand/ exits 1 with clear error, no local state modified. (2) nonexistent path exits 2 with 'Local path does not exist' error, no local state modified. (3) fetch-brand.sh never creates .petalsrc, SKILL.md preserves-backup-then-modify pattern. All error paths are non-destructive."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Error handling verified across all scenarios: (1) repo without .brand/ exits 1 with clear error, no local state modified. (2) nonexistent path exits 2 with 'Local path does not exist' error, no local state modified. (3) fetch-brand.sh never creates .petalsrc, SKILL.md preserves-backup-then-modify pattern. All error paths are non-destructive."
         }
       ]
     },
@@ -2486,7 +2942,7 @@ nav.toc a.active {
       "step_type": "agent",
       "status": "done",
       "title": "End-to-end smoke test: fetch from test repo produces correct .brand/",
-      "description": "Test: test/distribution.smoke.test.ts\nAsserts: Run /petal init --from <test-repo-url> from a clean state. Assert exit 0. Assert .brand/DESIGN.md exists. Assert .brand/colors.md contains the expected primary hex from the source. Assert .petalrc exists with correct source and version. Assert .gitignore contains .brand/. Run /petal update after pushing a new tag — assert version updates.\nBoundary: real filesystem + network with test repo.\nSetup: all prior steps.\nRun: npm test -- distribution.smoke.\n\nImplement: Exercises the full distribution pipeline end-to-end: init from test repo, verify output, trigger drift, run update, verify override preservation. No new implementation — validates prior steps.",
+      "description": "Test: test/distribution.smoke.test.ts\nAsserts: Run /petals init --from <test-repo-url> from a clean state. Assert exit 0. Assert .brand/DESIGN.md exists. Assert .brand/colors.md contains the expected primary hex from the source. Assert .petalsrc exists with correct source and version. Assert .gitignore contains .brand/. Run /petals update after pushing a new tag — assert version updates.\nBoundary: real filesystem + network with test repo.\nSetup: all prior steps.\nRun: npm test -- distribution.smoke.\n\nImplement: Exercises the full distribution pipeline end-to-end: init from test repo, verify output, trigger drift, run update, verify override preservation. No new implementation — validates prior steps.",
       "dependencies": [
         "i005",
         "i006"
@@ -2508,6 +2964,21 @@ nav.toc a.active {
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
           "text": "End-to-end smoke test passed (10/11 assertions, 1 grep -P compat issue resolved). Validated: init from test repo fetches 7 files with correct #2F99A4 primary and v1.1.0 version. .petalrc created with correct source/version/overrides. .gitignore updated with .brand/. Drift detection correctly reports current when matching, drift when behind. Update with override preserves #FF0000 primary while inheriting Inter body font from central. Final drift check confirms current after update."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "End-to-end smoke test passed (10/11 assertions, 1 grep -P compat issue resolved). Validated: init from test repo fetches 7 files with correct #2F99A4 primary and v1.1.0 version. .petalrc created with correct source/version/overrides. .gitignore updated with .brand/. Drift detection correctly reports current when matching, drift when behind. Update with override preserves #FF0000 primary while inheriting Inter body font from central. Final drift check confirms current after update."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "End-to-end smoke test passed (10/11 assertions, 1 grep -P compat issue resolved). Validated: init from test repo fetches 7 files with correct #2F99A4 primary and v1.1.0 version. .petalsrc created with correct source/version/overrides. .gitignore updated with .brand/. Drift detection correctly reports current when matching, drift when behind. Update with override preserves #FF0000 primary while inheriting Inter body font from central. Final drift check confirms current after update."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "End-to-end smoke test passed (10/11 assertions, 1 grep -P compat issue resolved). Validated: init from test repo fetches 7 files with correct #2F99A4 primary and v1.1.0 version. .petalsrc created with correct source/version/overrides. .gitignore updated with .brand/. Drift detection correctly reports current when matching, drift when behind. Update with override preserves #FF0000 primary while inheriting Inter body font from central. Final drift check confirms current after update."
         }
       ]
     },
@@ -2516,7 +2987,7 @@ nav.toc a.active {
       "step_type": "agent",
       "status": "done",
       "title": "Multi-project drift scenario validation",
-      "description": "Test: test/distribution.multi-project.integration.test.ts\nAsserts: Set up three projects all pointing at the same central test brand repo. Two projects at v1.1.0, one with a campaign override on colors.primary. Push v1.2.0 to central. On each project, run drift detection. Assert all three report drift. Run /petal update on the two without overrides. Assert both are now at v1.2.0 with updated primary. Run /petal update on the override project. Assert primary still overridden, other values updated to v1.2.0. Assert all three projects are at v1.2.0 in .petalrc.\nBoundary: real filesystem + network.\nSetup: all prior steps.\nRun: npm test -- distribution.multi-project.integration.\n\nImplement: Validates the full distribution scenario: brand change propagates to all projects via drift detection + update, overrides survive across projects, zero projects left behind. This is a qualitative validation confirming the impact claim. No new implementation unless the test reveals gaps in drift detection or override merge logic.",
+      "description": "Test: test/distribution.multi-project.integration.test.ts\nAsserts: Set up three projects all pointing at the same central test brand repo. Two projects at v1.1.0, one with a campaign override on colors.primary. Push v1.2.0 to central. On each project, run drift detection. Assert all three report drift. Run /petals update on the two without overrides. Assert both are now at v1.2.0 with updated primary. Run /petals update on the override project. Assert primary still overridden, other values updated to v1.2.0. Assert all three projects are at v1.2.0 in .petalsrc.\nBoundary: real filesystem + network.\nSetup: all prior steps.\nRun: npm test -- distribution.multi-project.integration.\n\nImplement: Validates the full distribution scenario: brand change propagates to all projects via drift detection + update, overrides survive across projects, zero projects left behind. This is a qualitative validation confirming the impact claim. No new implementation unless the test reveals gaps in drift detection or override merge logic.",
       "dependencies": [
         "i005",
         "i006"
@@ -2536,81 +3007,186 @@ nav.toc a.active {
           "at": "2026-06-04T15:00:00Z",
           "type": "note",
           "text": "Multi-project drift scenario validation passed. 3 projects all at v1.1.0 detect drift against v1.2.0 central. Projects 1 & 2 (no overrides) update to v1.2.0 with #3DB8C4. Project 3 (campaign override #GOLD-GOLD) updates but preserves override. All 3 projects verify current after update. Validates the impact claim: brand change propagates to all projects, overrides survive, zero projects left behind."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Multi-project drift scenario validation passed. 3 projects all at v1.1.0 detect drift against v1.2.0 central. Projects 1 & 2 (no overrides) update to v1.2.0 with #3DB8C4. Project 3 (campaign override #GOLD-GOLD) updates but preserves override. All 3 projects verify current after update. Validates the impact claim: brand change propagates to all projects, overrides survive, zero projects left behind."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Multi-project drift scenario validation passed. 3 projects all at v1.1.0 detect drift against v1.2.0 central. Projects 1 & 2 (no overrides) update to v1.2.0 with #3DB8C4. Project 3 (campaign override #GOLD-GOLD) updates but preserves override. All 3 projects verify current after update. Validates the impact claim: brand change propagates to all projects, overrides survive, zero projects left behind."
+        },
+        {
+          "at": "2026-06-04T15:00:00Z",
+          "type": "note",
+          "text": "Multi-project drift scenario validation passed. 3 projects all at v1.1.0 detect drift against v1.2.0 central. Projects 1 & 2 (no overrides) update to v1.2.0 with #3DB8C4. Project 3 (campaign override #GOLD-GOLD) updates but preserves override. All 3 projects verify current after update. Validates the impact claim: brand change propagates to all projects, overrides survive, zero projects left behind."
         }
+      ]
+    },
+    {
+      "id": "i009",
+      "step_type": "agent",
+      "status": "done",
+      "title": "Structural verification: why, impact, and fit claims",
+      "description": "Test: bash petals/scripts/check-brand-drift.sh → verify all 4 states; bash petals/scripts/apply-overrides.sh → verify override preservation + null inheritance; grep for server/database/API in all scripts → confirm zero references. Confirms distribution uses only filesystem+git primitives and correctly detects drift.",
+      "traces_to": [
+        "c010",
+        "c011",
+        "c012"
+      ],
+      "verification_profile": "light"
+    },
+    {
+      "id": "i010",
+      "title": "Blast radius + machine-view regeneration on update",
+      "description": "Test: inspect SKILL.md /petals update; assert step 9 regenerates tokens.css/tokens.json (and book.html when present), step 10 reports blast radius with report format and the clean case, and step 12's summary carries it. Implement: update workflow steps 9-12.",
+      "status": "done",
+      "traces_to": [
+        "c013"
       ]
     }
   ],
-  "coverage_files": [],
+  "coverage_files": [
+    "petals/scripts/fetch-brand.sh",
+    "petals/scripts/check-brand-drift.sh",
+    "petals/scripts/apply-overrides.sh",
+    "petals/SKILL.md"
+  ],
   "audit": {
-    "ran_at": "2026-06-04T18:40:00Z",
-    "result": "partial",
     "verdicts": [
       {
         "check_id": "c001",
         "verdict": "pass",
-        "evidence_path": "fetch-brand.sh executed against v1.1.0 and v1.2.0 fixtures - both exit 0, correct files, correct versions. Verified 7 files copied, colors.md contains expected hex. JSON output with strategy/version/files.",
-        "validates_job_satisfied": null,
+        "evidence_path": "petals/scripts/fetch-brand.sh Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
         "evidence_sha": "3f15db6395acbb46ed1cad4ea529f4a6f717cd3b"
       },
       {
         "check_id": "c002",
         "verdict": "pass",
-        "evidence_path": "check-brand-drift.sh proven in both CLI mode and config mode. CLI: v1.1.0 vs v1.2.0 → drift (exit 1). Config mode: v1.1.0 vs v1.2.0 → drift (exit 1). v1.2.0 vs v1.2.0 → current (exit 0). Both modes produce correct JSON with version numbers and status.",
-        "validates_job_satisfied": null,
-        "evidence_sha": "a0bc3bb9144d99a11dce926533b60d6a0e653c71"
+        "evidence_path": "petals/scripts/check-brand-drift.sh Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
+        "evidence_sha": "c7d26c8d836b1020d8273e1f5b12af0061a9b868"
       },
       {
         "check_id": "c003",
-        "verdict": "partial",
-        "evidence_path": "apply-overrides.sh script exists with handler functions. Override preservation requires .petalrc → fetch → apply-overrides → verify cycle. SKILL.md:144-208 documents full workflow. Not yet tested end-to-end with actual override cycle.",
-        "validates_job_satisfied": null,
-        "evidence_sha": "27c6685cfdda839561e9fb57002cb86ff0e73647"
+        "verdict": "pass",
+        "evidence_path": "petals/scripts/apply-overrides.sh Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
+        "evidence_sha": "e4a285fdab10f4a6d83c604bcc81c814d9aac8f3"
       },
       {
         "check_id": "c004",
-        "verdict": "partial",
-        "evidence_path": "SKILL.md:96-101 documents existing .brand/ check with user confirmation. This is an interactive agent workflow step - structurally defined, not automatable without an agent session.",
-        "validates_job_satisfied": null,
-        "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
+        "verdict": "pass",
+        "evidence_path": "petals/SKILL.md:96-115 (init --from guard clauses; shifted from 96-108 by the workflow growth). Both prompts verified present 2026-06-12: 'Running init --from will overwrite it. Continue? (y/N)' at line 103 and 'Overwriting will change the brand source. Continue? (y/N)' at line 110; both exit without changes if denied. Text unchanged from the 2026-06-05 verification — the SKILL.md edits this week were additive (dimensions, book, logo, guardrails) and did not touch the distribution workflows. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
+        "evidence_sha": "ace962573fe0d4299b04c7fb96e963b2f8601898"
       },
       {
         "check_id": "c005",
         "verdict": "pass",
-        "evidence_path": "fetch-brand.sh against brand-repo-malformed (no .brand/): exit 1, clear error message 'The source must contain a .brand/ directory at its root.' No files created, no local state modified.",
-        "validates_job_satisfied": null,
+        "evidence_path": "petals/scripts/fetch-brand.sh Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
         "evidence_sha": "3f15db6395acbb46ed1cad4ea529f4a6f717cd3b"
       },
       {
         "check_id": "c006",
-        "verdict": "partial",
-        "evidence_path": "SKILL.md:228-234 documents unreachable source handling. Config mode with nonexistent source not tested. CLI mode returns exit 2 with 'unreachable' for nonexistent paths.",
-        "validates_job_satisfied": null,
-        "evidence_sha": "a0bc3bb9144d99a11dce926533b60d6a0e653c71"
+        "verdict": "pass",
+        "evidence_path": "petals/scripts/check-brand-drift.sh Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
+        "evidence_sha": "c7d26c8d836b1020d8273e1f5b12af0061a9b868"
       },
       {
         "check_id": "c007",
         "verdict": "pass",
-        "evidence_path": "fetch-brand.sh strategy auto-selection proven: local absolute path → 'local' strategy. 4 strategies in priority order. bash -n syntax check passes. JSON output confirms strategy used.",
-        "validates_job_satisfied": null,
+        "evidence_path": "petals/scripts/fetch-brand.sh Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
         "evidence_sha": "3f15db6395acbb46ed1cad4ea529f4a6f717cd3b"
       },
       {
         "check_id": "c008",
         "verdict": "pass",
-        "evidence_path": "Test on 2026-06-04: fetch-brand.sh executed against fixture, .gitignore created with '.brand/' entry. Verified .brand/ is listed in .gitignore after fetch. SKILL.md:125-128 documents this behavior.",
-        "validates_job_satisfied": null,
-        "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
+        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12: the gitignore step and .petalsrc structure sections of SKILL.md are unchanged by this week's additive edits; claims re-checked against the current file. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
+        "evidence_sha": "ace962573fe0d4299b04c7fb96e963b2f8601898"
       },
       {
         "check_id": "c009",
         "verdict": "pass",
-        "evidence_path": ".petalrc format verified on 2026-06-04: created with source, version, and overrides fields. All three required fields present and correctly populated. YAML format matches SKILL.md:447-483 specification. source matches fixture path, version matches v1.1.0, overrides is empty map.",
-        "validates_job_satisfied": null,
-        "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
+        "evidence_path": "petals/SKILL.md Re-verified 2026-06-12: the gitignore step and .petalsrc structure sections of SKILL.md are unchanged by this week's additive edits; claims re-checked against the current file. Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
+        "evidence_sha": "ace962573fe0d4299b04c7fb96e963b2f8601898"
+      },
+      {
+        "check_id": "c010",
+        "verdict": "pass",
+        "evidence_path": "petals/scripts/check-brand-drift.sh Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
+        "evidence_sha": "c7d26c8d836b1020d8273e1f5b12af0061a9b868"
+      },
+      {
+        "check_id": "c011",
+        "verdict": "pass",
+        "evidence_path": "petals/scripts/apply-overrides.sh Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
+        "evidence_sha": "e4a285fdab10f4a6d83c604bcc81c814d9aac8f3"
+      },
+      {
+        "check_id": "c012",
+        "verdict": "pass",
+        "evidence_path": "petals/scripts/fetch-brand.sh Evidence re-pinned 2026-06-12 after the brand-boundary wording fix (edits confined to the /petals book section and guides); claim text and cited workflows unchanged. Evidence re-pinned 2026-06-12 (release wave: /petals rename + deterministic engine wiring; claims re-verified against the settled SKILL.md).",
+        "evidence_sha": "3f15db6395acbb46ed1cad4ea529f4a6f717cd3b"
+      },
+      {
+        "check_id": "c013",
+        "verdict": "pass",
+        "evidence_path": "Behavioral run executed 2026-06-12 (test/fixtures/blast-radius-run.txt): consumer fetched brand-repo-test v1.2.0, sample.css using primary #2F99A4 checks PASS; update to NEW fixture v1.3.0 (primary changed to #C4541E); re-check FAILS with 'ERROR [color] line 1: #2F99A4 is not in the palette' — the blast radius names the newly-off-brand file. Workflow steps 9-12 verified in SKILL.md.",
+        "evidence_sha": "9574a396083786086c4a68e65302ca1bd2ef4a01"
       }
     ],
-    "drift": []
-  }
+    "result": "pass",
+    "ran_at": "2026-06-12"
+  },
+  "dek": "When a brand changes, every project keeps its own fossilized copy and three versions of the truth drift apart within months — nobody can Slack every team and hope they update before the next agent session. Distribution makes the brand as easy to get as `git pull`: one command connects a project to a central repo, drift surfaces automatically, and `/petals update` syncs new versions while project overrides survive. One push, every project current, zero manual propagation.",
+  "personas_resolved": [
+    {
+      "id": "brand-operator",
+      "name": "Brand Operator",
+      "jobs": [
+        "When the brand team sends me a 40-page PDF brand guide, a folder of logo SVGs, and a Slack message about the new accent color (#FF4D00, not #E7000B, \"please update everywhere\"), because every AI agent across six projects is still generating the old accent color and nobody else on the team knows how to bridge the gap between a PDF and an agent's context window, we believe I should be able to point petal at that folder and get a complete, correct .brand/ directory in one command — colors extracted to hex, fonts identified, voice rules captured, logos copied — without manually typing 47 hex codes or guessing which font weight is the heading weight. We'll know we got it right when the generated colors.md contains #FF4D00 as the accent (not #E7000B, which was the old accent), the generated typography.md names the correct heading font family and weight, and every asset in assets/ matches its source — verified by diffing the output against known values from the brand guide.",
+        "When I start a new project repo and the team expects their agents to produce on-brand output from day one, because if brand isn't set up before the first agent session, the first PR will hardcode Tailwind's default blue into the hero section and someone (me) will catch it in review, we believe one command should pull the current brand into .brand/ and wire it into the project so every future agent session reads brand context without anyone thinking about it. We'll know we got it right when a developer who has never heard of petal opens a new agent session in this project, types \"build a contact page,\" and the agent produces output with the correct primary color, heading font, and voice tone — without the developer pasting a single hex code into the prompt.",
+        "When the central brand repo gets a new tag (v1.2.0 to v1.3.0 — primary color changed, new logo variant added), because I can't manually Slack every developer on every project and hope they update before their next agent session, we believe every connected project should detect the drift automatically on the next /petal check or agent session, show what changed, and update with one command without losing project-specific overrides. We'll know we got it right when six projects detect the v1.3.0 drift on their next agent session, four update immediately, two with campaign overrides update without losing their seasonal palette, and zero projects are still silently using v1.2.0 two weeks later."
+      ]
+    }
+  ],
+  "judgments": [
+    {
+      "question_id": "what_relieves_why",
+      "target": "slots:what+why",
+      "verdict": "pass",
+      "rationale": "WHY names fossilized copies, three brand versions across the org within months, and new projects copy-pasting a stale colors.ts. WHAT relieves it directly — init --from connects, update syncs, drift detection surfaces the gap automatically, overrides survive. The 'as easy as git pull' framing maps to the brand-operator:2 job's 'detect drift on the next session, update with one command.' Re-judged 2026-06-12 after the /petals rename — wording only, semantics unchanged.",
+      "judged_sha": "9fd11e822626234e83fff5585d8f3bcca20c12fe"
+    },
+    {
+      "question_id": "persona_load_bearing",
+      "target": "persona:brand-operator",
+      "verdict": "pass",
+      "rationale": "Load-bearing — every check anchors to brand-operator:1 (new project on-brand from day one) or brand-operator:2 (central tag drift propagates). The override-survival design (c003) exists for this persona's seasonal-campaign constraint specifically; swap them for a solo dev with one project and drift-detection plus override-merge lose their reason to exist. Re-judged 2026-06-12 after the /petals rename — wording only, semantics unchanged.",
+      "judged_sha": "b9e2e44239ef25c1065e65c32d707764acab57ed"
+    },
+    {
+      "question_id": "one_bet",
+      "target": "feature",
+      "verdict": "pass",
+      "rationale": "Still one bet with the blast-radius step: get the brand into every project and keep them honestly in sync. Regenerating derived views and reporting what an update broke are completions of the sync loop, not a new bet — an update that lands silently was the original drift mechanism this feature exists to close. Re-judged 2026-06-12 after the /petals rename — wording only, semantics unchanged.",
+      "judged_sha": "f569c45b177a97d46196833654a02b4b1c19461e"
+    },
+    {
+      "question_id": "impact_measurable",
+      "target": "slots:impact",
+      "verdict": "push_back",
+      "rationale": "IMPACT's headline is a field outcome — 'six projects connected, four update immediately, two keep overrides, zero still on v1.2.0 two weeks later.' No check measures that propagation across N real projects. c011 proves the fetch+override roundtrip for ONE project and c010 proves drift detection across four states, but the org-scale 'zero stragglers' claim is an aspiration no synthetic test covers. The mechanism is measured; the population outcome is not. Re-judged 2026-06-12 after the /petals rename — wording only, semantics unchanged.",
+      "judged_sha": "0c9046393a1c46e622304b9f2bedad8fe8377be5"
+    },
+    {
+      "question_id": "check_discriminates",
+      "target": "check:c001",
+      "verdict": "n_a",
+      "rationale": "Set-level skip: these audits predate negctrl evidence. The script-backed checks (drift four-state, fetch+override roundtrip) cite executable scripts and would fail on a broken implementation, but the doc-only checks (gitignored-after-fetch, .petalrc structure) cite petals/SKILL.md rather than an executed on-disk assertion. Per-check semantic spot-judgment is deferred to the next audit, which should back the doc-only checks with a negctrl. One representative entry records the skip-reason for the whole check set. Re-judged 2026-06-12 after the /petals rename — wording only, semantics unchanged.",
+      "judged_sha": "17530a01a7221a954c0019ad1fc058388ac8e6d6"
+    }
+  ]
 }
 </script>
 <!-- OO:DATA:END -->
@@ -2931,7 +3507,9 @@ nav.toc a.active {
       var figcaption = entry.caption
         ? '<figcaption>' + esc(entry.caption) + '</figcaption>'
         : '';
-      if (entry.kind === 'svg') {
+      // svg = freehand lane; diagram = typed lane (the write side-effect renders
+      // the spec into `content`). Both inline finished SVG markup as a figure.
+      if (entry.kind === 'svg' || entry.kind === 'diagram') {
         return '<figure class="narrative-figure">' + entry.content + figcaption + '</figure>';
       }
       if (entry.kind === 'image_base64') {
@@ -2986,6 +3564,56 @@ nav.toc a.active {
       }
     }
     return out;
+  }
+
+  /**
+   * Resolve `[check:<id>]` evidence stamps in narrative HTML.
+   * A token resolves to a `<span class="verified-stamp">✓ verified</span>` ONLY
+   * when that check has an `audit.verdicts[]` entry with `verdict === 'pass'` on
+   * disk — never a false green. partial / fail / no-verdict / no-audit all fall
+   * back to the plain check-id text. The verdict's `evidence_path` (when set)
+   * becomes the stamp's title attribute as an at-a-glance evidence summary.
+   */
+  function resolveCheckStamps(html, data) {
+    if (!html) return html;
+    var verdicts = (data && data.audit && Array.isArray(data.audit.verdicts))
+      ? data.audit.verdicts
+      : [];
+    var byCheck = {};
+    verdicts.forEach(function (v) { if (v && v.check_id) byCheck[v.check_id] = v; });
+    return html.replace(/\[check:([A-Za-z0-9][\w.-]*)\]/g, function (match, id) {
+      var v = byCheck[id];
+      if (v && v.verdict === 'pass') {
+        var title = v.evidence_path
+          ? ' title="' + esc(id + ' — ' + v.evidence_path) + '"'
+          : ' title="' + esc(id) + '"';
+        // data-check lets the cross-highlight handler scroll the rail to this
+        // check's row (id="rail-<id>"), open it, and flash it on click.
+        return '<span class="verified-stamp" data-check="' + esc(id) + '"' + title + '>✓ verified</span>';
+      }
+      // partial / fail / absent verdict → plain check-id text, never a stamp.
+      return esc(id);
+    });
+  }
+
+  /**
+   * Resolve explicit `[[id]]` wiki links in narrative HTML.
+   * A known id (in `knownIds`) → `<a href="<id>.tend.html"><id></a>`; an unknown
+   * id is left as the literal `[[id]]` string untouched. Disjoint from the media
+   * `[token]` form (single brackets) and from backtick code-cites — `[[…]]`
+   * collides with neither. Runs BEFORE autolinkIds so the bare-id pass skips the
+   * already-linked text.
+   */
+  function resolveWikiLinks(html, knownIds) {
+    if (!html) return html;
+    var known = {};
+    (knownIds || []).forEach(function (id) { if (id) known[id] = true; });
+    return html.replace(/\[\[([A-Za-z0-9][\w.-]*)\]\]/g, function (match, id) {
+      if (known[id]) {
+        return '<a href="' + esc(id) + '.tend.html">' + esc(id) + '</a>';
+      }
+      return match;
+    });
   }
 
   function markdownToHtml(md) {
@@ -3125,6 +3753,28 @@ nav.toc a.active {
   // MAIN COLUMN sections
   // ════════════════════════════════════════════════════════════════════════════
 
+  // Dek — the authored standfirst. 2–3 sentences framing the bet, rendered as
+  // the FIRST term of main (above the superseded banner and the bet article).
+  // Bet-only: catalog-description polyglots (persona / opportunity) have no six
+  // slots, so a dek has no slot basis there — skip it (P0.6 ruling). Plain prose
+  // only, no heading (so it stays out of the auto-computed TOC), mirroring the
+  // bet article's "the lead is the page body, not a TOC hop" rationale.
+  function renderDek(data) {
+    if (!data || isCatalogDescription(data)) return '';
+    var dek = data.dek;
+    if (!isNonEmptyString(dek)) return '';
+    // Split into sentence-groups: one <p> per sentence-terminator run. Keeps the
+    // terminator with its sentence; collapses internal whitespace.
+    var sentences = dek.replace(/\r\n/g, '\n').match(/[^.!?]+[.!?]+(?:["')\]]+)?|\S[^.!?]*$/g);
+    var paras = (sentences || [dek])
+      .map(function (s) { return s.trim(); })
+      .filter(function (s) { return s.length > 0; })
+      .map(function (s) { return '<p>' + inlineCode(s) + '</p>'; })
+      .join('');
+    if (!paras) return '';
+    return '<section id="standfirst" class="standfirst">' + paras + '</section>';
+  }
+
   function renderSupersededBanner(data) {
     var supId = data && data.superseded_by;
     if (!isNonEmptyString(supId)) return '';
@@ -3200,21 +3850,64 @@ nav.toc a.active {
     return '<section id="bet" class="bet-intro">' + inner + '</section>';
   }
 
+  // Validation-clause pull quote — the persona's "we'll know we got it right
+  // when …" clause, rendered as editorial copy at the TOP of the narrative.
+  // Source: the first resolved persona ref whose first parseable job yields a
+  // validation clause via splitJob. Presence-driven: no resolved persona with a
+  // bound job → nothing. Reads data.personas_resolved (the snapshot of each
+  // persona ref carrying { id, name, jobs[] }); silently absent until that
+  // snapshot lands. The caller renders it only when narrative is non-empty.
+  function renderEvidencePullQuote(data) {
+    var resolved = data && data.personas_resolved;
+    if (!isNonEmptyArray(resolved)) return '';
+    for (var i = 0; i < resolved.length; i++) {
+      var persona = resolved[i];
+      if (!persona || !isNonEmptyArray(persona.jobs)) continue;
+      for (var j = 0; j < persona.jobs.length; j++) {
+        var parsed = splitJob(persona.jobs[j]);
+        if (parsed && isNonEmptyString(parsed.validation)) {
+          var attribution = isNonEmptyString(persona.name)
+            ? persona.name
+            : (isNonEmptyString(persona.id) ? persona.id : '');
+          var cite = attribution
+            ? '<cite class="pull-quote__attr">' + esc(attribution) + '</cite>'
+            : '';
+          return '<blockquote class="pull-quote"><p>' + inlineCode(parsed.validation) + '</p>' + cite + '</blockquote>';
+        }
+      }
+    }
+    return '';
+  }
+
   function renderNarrative(data, acc) {
     var md = data && data.narrative;
     if (!isNonEmptyString(md)) return '';
-    // Known-IDs floor for auto-linking: deps / enables / subpages / parent.
-    // Anything an author already linked via [text](url) is preserved (skipped
-    // by autolinkIds because it's already inside an <a> tag).
+    // Known-IDs floor for auto-linking + [[id]] wiki links: deps / enables /
+    // subpages / parent, plus the bound persona / opportunity ids (so prose
+    // links to their catalog polyglots), plus features_aggregate ids on the
+    // garden. Anything an author already linked via [text](url) is preserved
+    // (skipped by autolinkIds because it's already inside an <a> tag).
     var knownIds = [];
     if (isNonEmptyArray(data.dependencies)) knownIds = knownIds.concat(data.dependencies);
     if (isNonEmptyArray(data.enables))      knownIds = knownIds.concat(data.enables);
     if (isNonEmptyArray(data.subpages))     knownIds = knownIds.concat(data.subpages);
     if (isNonEmptyString(data.parent)) knownIds.push(data.parent);
+    if (isNonEmptyArray(data.personas))     knownIds = knownIds.concat(data.personas);
+    if (isNonEmptyArray(data.solves))       knownIds = knownIds.concat(data.solves);
+    if (isNonEmptyArray(data.features_aggregate)) {
+      data.features_aggregate.forEach(function (e) {
+        if (e && isNonEmptyString(e.id)) knownIds.push(e.id);
+      });
+    }
     var html = markdownToHtml(md);
     html = resolveMediaRefs(html, data.media || {}, data, acc);
+    html = resolveCheckStamps(html, data);
+    // [[id]] wiki links resolve before the bare-id autolink so the bare pass
+    // skips the text already wrapped in <a>.
+    html = resolveWikiLinks(html, knownIds);
     html = autolinkIds(html, knownIds);
-    return '<section id="narrative" class="narrative-body">' + html + '</section>';
+    var quote = renderEvidencePullQuote(data);
+    return '<section id="narrative" class="narrative-body">' + quote + html + '</section>';
   }
 
   // ════════════════════════════════════════════════════════════════════════════
@@ -3411,6 +4104,39 @@ nav.toc a.active {
     '</div>';
   }
 
+  // A rail BAND — one of the three fixed wayfinding zones (IDENTITY → GRAPH →
+  // PROOF). `sections` is an array of already-rendered railSection() strings;
+  // empties are dropped. Presence-driven: a band with no content emits nothing
+  // (no empty wrapper, no orphan label). The small-caps band label + the
+  // stronger top divider come from the .rail-band CSS.
+  function railBand(name, label, sections) {
+    var body = (sections || []).filter(function (s) { return !!s; }).join('');
+    if (!body) return '';
+    return '<div class="rail-band" data-rail-band="' + esc(name) + '">' +
+      '<div class="rail-band__label">' + esc(label) + '</div>' +
+      body +
+    '</div>';
+  }
+
+  // Generic "+N more" overflow list. Renders the first `visibleCount` items
+  // openly; the rest live inside a collapsed <details> so they stay in the DOM
+  // (self-contained — no off-page nav) and surface on expand. `renderItem`
+  // maps one source item to an <li>. Returns the inner <ul> string (the caller
+  // wraps it in a railSection so the section summary count stays consistent).
+  function overflowList(items, renderItem, visibleCount) {
+    var head = items.slice(0, visibleCount).map(renderItem).join('');
+    var rest = items.slice(visibleCount);
+    if (!rest.length) {
+      return '<ul class="detail-rel-list">' + head + '</ul>';
+    }
+    var tail = rest.map(renderItem).join('');
+    return '<ul class="detail-rel-list">' + head + '</ul>' +
+      '<details class="rail-more">' +
+        '<summary class="rail-more__summary">+ ' + rest.length + ' more</summary>' +
+        '<ul class="detail-rel-list">' + tail + '</ul>' +
+      '</details>';
+  }
+
   function renderMeta(data, meta) {
     if (!data) return '';
     var bits = [];
@@ -3475,7 +4201,7 @@ nav.toc a.active {
   function renderRelList(label, items, opts) {
     if (!isNonEmptyArray(items)) return '';
     opts = opts || {};
-    var lis = items.map(function (item) {
+    function renderItem(item) {
       if (typeof item === 'string') item = { id: item };
       var status = item.status || 'draft';
       var g = item.status_glyph || glyphFor(status);
@@ -3487,8 +4213,13 @@ nav.toc a.active {
         '<a class="dep-link" href="' + esc(href) + '">' + esc(item.id) + '</a>' +
         title + pri +
       '</li>';
-    }).join('');
-    return railSection(label, '<ul class="detail-rel-list">' + lis + '</ul>');
+    }
+    // GRAPH band: show all when ≤6, otherwise the first 5 + a "+N more" expander
+    // (the overflow stays in the DOM inside a <details> — self-contained).
+    var body = (items.length > 6)
+      ? overflowList(items, renderItem, 5)
+      : '<ul class="detail-rel-list">' + items.map(renderItem).join('') + '</ul>';
+    return railSection(label, body, { collapsible: true, count: items.length });
   }
 
   // ════════════════════════════════════════════════════════════════════════════
@@ -3699,44 +4430,82 @@ nav.toc a.active {
     '</section>';
   }
 
-  // Checks list with traces + evidence.
+  // Checks list — compact rows that expand a per-check <details>.
+  //
+  // Each row mirrors the detail-step pattern: a <details id="rail-check-<id>">
+  // whose <summary> is the compact at-a-glance line (verdict glyph + id + a
+  // ONE-line clamped description) and whose body holds the full description,
+  // method/level chips, the validates_job binding, the degradation sublabel,
+  // and the evidence path. The summary ALSO carries id="rail-<id>" so existing
+  // bet-probe (href="#rail-<id>") + step-trace links land on the row, and the
+  // cross-highlight handler can open + flash it.
   function renderChecks(data) {
     var checks = data && data.checks;
     if (!isNonEmptyArray(checks)) return '';
     var auditByCheck = {};
+    var hasVerdicts = false;
     if (data.audit && isNonEmptyArray(data.audit.verdicts)) {
       data.audit.verdicts.forEach(function (v) { auditByCheck[v.check_id] = v; });
+      hasVerdicts = true;
     }
+    var passCount = 0;
 
     var items = checks.map(function (ch) {
       var verdict = auditByCheck[ch.id];
       var status = (verdict && verdict.verdict) || ch.status || 'missing';
+      if (verdict && verdict.verdict === 'pass') passCount++;
       var statusClass = AC_STATUS_TO_CLASS[status] === undefined ? glyphClassFor(status) : AC_STATUS_TO_CLASS[status];
       var glyph = (status === 'pass') ? '✓' : (status === 'partial' ? '◑' : (status === 'fail' ? '✕' : acGlyphFor(status)));
       var methodPill = ch.method ? pill(ch.method, 'method-' + slug(ch.method)) : '';
       var levelPill = ch.integration_level ? '<span class="detail-criterion__level detail-criterion__level--' + esc(ch.integration_level) + '">' + esc(ch.integration_level) + '</span>' : '';
-      // Pills render on their OWN row beneath the description — keeps the
-      // status/id/description line clean and gives method+level room to
-      // wrap when narrow rails would otherwise squash the description.
       var pillsRow = (methodPill || levelPill)
         ? '<div class="detail-criterion__pills">' + methodPill + levelPill + '</div>'
+        : '';
+      // The persona-job this check anchors to (when bound) — surfaced in the
+      // expanded body so the reader can trace the check to its validation clause.
+      var jobRow = isNonEmptyString(ch.validates_job)
+        ? '<div class="detail-criterion__job">validates job <code>' + esc(ch.validates_job) + '</code></div>'
+        : '';
+      // Truth sub-label — a muted note on WHY a recorded verdict is degraded.
+      // The ONLY degradation signal persisted in oo-data at render time is
+      // `validates_job_satisfied === false`: the test passes mechanically but does
+      // NOT assert the bound persona-job's measurable outcome (written by
+      // tend-audit; see AuditVerdict in src/core/types.ts). Mock-only + staleness
+      // are computed server-side at validate time (mock-detection.ts re-parses the
+      // test file; staleness re-hashes evidence_path) and are NEVER written back
+      // onto the verdict — so the browser renderer genuinely cannot know them and
+      // must not fabricate a label. Only the honest, on-disk flag surfaces here.
+      var sublabel = (verdict && verdict.validates_job_satisfied === false)
+        ? '<div class="detail-criterion__sublabel">job not asserted</div>'
         : '';
       var evidence = (verdict && verdict.evidence_path)
         ? '<div class="detail-criterion__evidence"><span class="detail-criterion__evidence-connector">└</span> <code class="evidence-path" data-copy="' + esc(verdict.evidence_path) + '">' + esc(verdict.evidence_path) + '</code></div>'
         : '';
-      return '<li class="detail-criterion" id="rail-' + esc(ch.id) + '">' +
-        '<div class="detail-criterion__row">' +
+      var desc = ch.description || '';
+      var titleAttr = desc ? ' title="' + esc(desc) + '"' : '';
+      return '<details class="detail-criterion" id="rail-check-' + esc(ch.id) + '">' +
+        '<summary class="detail-criterion__row" id="rail-' + esc(ch.id) + '"' + titleAttr + '>' +
           '<span class="detail-criterion__status detail-criterion__status--' + esc(statusClass) + '">' + esc(glyph) + '</span>' +
           '<span class="detail-criterion__id">' + esc(ch.id) + '</span>' +
-          '<span class="detail-criterion__desc">' + esc(ch.description || '') + '</span>' +
+          '<span class="detail-criterion__desc detail-criterion__desc--clamp">' + esc(desc) + '</span>' +
+        '</summary>' +
+        '<div class="detail-criterion__body">' +
+          (desc ? '<p class="detail-criterion__full">' + esc(desc) + '</p>' : '') +
+          sublabel +
+          jobRow +
+          pillsRow +
+          evidence +
         '</div>' +
-        pillsRow +
-        '<div class="detail-criterion__body">' + evidence + '</div>' +
-      '</li>';
+      '</details>';
     }).join('');
 
     var label = checks.some(function (c) { return c.method; }) ? 'checks' : 'acceptance';
-    return railSection(label, '<ul class="detail-criteria">' + items + '</ul>', { collapsible: true, count: checks.length });
+    // Section summary: "N ✓/M" from real audit verdicts (M = check count). With
+    // zero verdicts we show the plain count only — never a fabricated "0 ✓/M".
+    var countLabel = hasVerdicts
+      ? (passCount + ' ✓/' + checks.length)
+      : String(checks.length);
+    return railSection(label, '<ul class="detail-criteria">' + items + '</ul>', { collapsible: true, count: countLabel });
   }
 
   function renderSteps(data) {
@@ -3917,9 +4686,7 @@ nav.toc a.active {
   // text today; a query-param view is planned.
   function renderFeatureSummaryList(features, label, moreHref) {
     if (!isNonEmptyArray(features)) return '';
-    var visible = features.slice(0, 8);
-    var overflow = features.length - visible.length;
-    var rows = visible.map(function (f) {
+    function renderRow(f) {
       var status = f.status || 'draft';
       var title = f.title ? '<span class="detail-rel-item__title">' + esc(f.title) + '</span>' : '';
       return '<li class="detail-rel-item">' +
@@ -3927,11 +4694,13 @@ nav.toc a.active {
         '<a class="dep-link" href="' + esc(f.id) + '.tend.html">' + esc(f.id) + '</a>' +
         title +
       '</li>';
-    }).join('');
-    if (overflow > 0) {
-      rows += '<li class="detail-rel-item"><a class="detail-rel-item__more" href="' + esc(moreHref || '#') + '">+ ' + overflow + ' more →</a></li>';
     }
-    return railSection(label, '<ul class="detail-rel-list">' + rows + '</ul>', { collapsible: true, count: features.length });
+    // Same GRAPH-band overflow rule as renderRelList: all when ≤6, else top-5 +
+    // a "+N more" expander whose overflow stays in the DOM (self-contained).
+    var body = (features.length > 6)
+      ? overflowList(features, renderRow, 5)
+      : '<ul class="detail-rel-list">' + features.map(renderRow).join('') + '</ul>';
+    return railSection(label, body, { collapsible: true, count: features.length });
   }
 
   // Simple id-list — used for persona.felt_opportunities + opportunity.personas.
@@ -3945,22 +4714,25 @@ nav.toc a.active {
     return railSection(label, '<ul class="detail-rel-list">' + rows + '</ul>', { collapsible: true, count: ids.length });
   }
 
+  // Returns { identity, graph }: the persona's identity meta (jobs count,
+  // archetype, jobs list) goes in the IDENTITY band; its outward links
+  // (bound features, felt opportunities) go in the GRAPH band.
   function renderPersonaRail(persona) {
-    if (!persona) return '';
-    var out = '';
+    if (!persona) return { identity: '', graph: '' };
+    var identity = '';
     var jobs = isNonEmptyArray(persona.jobs) ? persona.jobs : [];
     var boundChecks = isNonEmptyArray(persona.bound_checks) ? persona.bound_checks : [];
 
     // 1. Meta line — "jobs: N" when jobs[] non-empty.
     if (jobs.length) {
-      out += railSection('persona', '<div class="detail-rel-item__aside"><span class="detail-rel-item__aside-key">jobs:</span> ' + jobs.length + '</div>');
+      identity += railSection('persona', '<div class="detail-rel-item__aside"><span class="detail-rel-item__aside-key">jobs:</span> ' + jobs.length + '</div>');
     }
 
     // 2. Archetype tease — truncated to ~120 chars, full version in `title=`.
     if (isNonEmptyString(persona.archetype)) {
       var t = truncated(persona.archetype, 120);
       var titleAttr = t.truncated ? ' title="' + esc(t.full) + '"' : '';
-      out += railSection('archetype', '<div class="detail-rel-item"' + titleAttr + '>' + esc(t.visible) + '</div>');
+      identity += railSection('archetype', '<div class="detail-rel-item"' + titleAttr + '>' + esc(t.visible) + '</div>');
     }
 
     // 3. Jobs list — each job gets [<index>], truncated text, check-count chip.
@@ -3980,21 +4752,22 @@ nav.toc a.active {
           '</div>' +
         '</li>';
       }).join('');
-      out += railSection('jobs', '<ul class="detail-rel-list">' + jobRows + '</ul>', { collapsible: true, count: jobs.length });
+      identity += railSection('jobs', '<ul class="detail-rel-list">' + jobRows + '</ul>', { collapsible: true, count: jobs.length });
     }
 
-    // 4. Bound features — feature-summary list with overflow.
-    out += renderFeatureSummaryList(persona.bound_features, 'bound features', '#bound-features');
+    // 4 + 5. Outward links — bound features + felt opportunities (GRAPH band).
+    var graph = renderFeatureSummaryList(persona.bound_features, 'bound features', '#bound-features') +
+      renderIdList('opportunities felt', persona.felt_opportunities);
 
-    // 5. Felt opportunities — id link list.
-    out += renderIdList('opportunities felt', persona.felt_opportunities);
-
-    return out;
+    return { identity: identity, graph: graph };
   }
 
+  // Returns { identity, graph }: value/confidence chips + outcome/risk signals
+  // are the opportunity's identity (IDENTITY band); personas feeling the pain +
+  // solving features are its outward links (GRAPH band).
   function renderOpportunityRail(opportunity) {
-    if (!opportunity) return '';
-    var out = '';
+    if (!opportunity) return { identity: '', graph: '' };
+    var identity = '';
 
     // 1. Chips line — value + confidence severity chips.
     var chips = [];
@@ -4002,7 +4775,7 @@ nav.toc a.active {
     if (opportunity.confidence) chips.push(chip('confidence: ' + opportunity.confidence, chipSeverity(opportunity.confidence), 'confidence rank'));
     var chipsHtml = chipGroup(chips);
     if (chipsHtml) {
-      out += railSection('opportunity', '<div class="detail-rel-item">' + chipsHtml + '</div>');
+      identity += railSection('opportunity', '<div class="detail-rel-item">' + chipsHtml + '</div>');
     }
 
     // 2. Outcome metric — subtle row.
@@ -4012,16 +4785,14 @@ nav.toc a.active {
     var riskRow   = subtleRow('risk',   opportunity.riskiest_assumption);
     var updRow    = subtleRow('updated', opportunity.last_updated);
     if (metricRow || riskRow || updRow) {
-      out += railSection('signals', '<div class="detail-rel-item detail-rel-item--stack">' + metricRow + riskRow + updRow + '</div>');
+      identity += railSection('signals', '<div class="detail-rel-item detail-rel-item--stack">' + metricRow + riskRow + updRow + '</div>');
     }
 
-    // 5. Personas feeling this pain.
-    out += renderIdList('personas feeling this', opportunity.personas);
+    // 5 + 6. Outward links — personas feeling the pain + solving features.
+    var graph = renderIdList('personas feeling this', opportunity.personas) +
+      renderFeatureSummaryList(opportunity.solving_features, 'solving features', '#solving-features');
 
-    // 6. Solving features — feature-summary list with overflow.
-    out += renderFeatureSummaryList(opportunity.solving_features, 'solving features', '#solving-features');
-
-    return out;
+    return { identity: identity, graph: graph };
   }
 
   // Garden's scoreboard + ready-now built from features_aggregate.
@@ -4199,17 +4970,21 @@ nav.toc a.active {
   }
 
   /**
-   * renderHealthCockpitRail(data) — the garden health cockpit, in the rail.
-   * Returns '' when health_snapshot is absent.
+   * renderHealthCockpitInner(data) — the garden health cockpit body (verdict →
+   * why → lifecycle bar → flow pointers → refinement backlog), WITHOUT the
+   * rail's .detail-section wrapper. Returns '' when health_snapshot is absent.
+   *
+   * Both surfaces consume this: the rail (renderHealthCockpitRail, degraded
+   * gardens) and the masthead band (renderMastheadGarden). Single source of
+   * truth — the cockpit reads identically wherever it lands.
    *
    * Top→bottom, legible + hierarchical (no jargon, no raw reason-code chips):
    *   1. Verdict — a plain word + color, the biggest element.
    *   2. Progress — verified N/M + a bar (M = auditable, the honest denominator).
-   *   3. Flow + value — relabeled rows (ready to build / blocked / bottleneck;
-   *      highest-value next / weakest opportunity). Only rows with data render.
+   *   3. Flow + value — relabeled pointer rows. Only rows with data render.
    *   4. Refinement backlog — collapsed, sub-grouped spine / content, calm tone.
    */
-  function renderHealthCockpitRail(data) {
+  function renderHealthCockpitInner(data) {
     var snap = data && data.health_snapshot;
     if (!snap) return '';
     var verdict = snap.verdict || 'yellow';
@@ -4296,25 +5071,338 @@ nav.toc a.active {
         return '<div class="health-coherence__subhead">' + esc(s.label) + '</div>' +
           members.map(groupRow).join('');
       }).join('');
+      // Collapsed-summary hint — name the top group labels (by count, the order
+      // buildCoherence already sorts) so a closed cockpit reads as a move ("what
+      // to refine") not a bare number. Show up to 2 labels; the rest roll into a
+      // "+N more" tail. Labels (not raw rule kinds) — same vocabulary as the rows.
+      var HINT_LABELS = 2;
+      var topLabels = coherence.groups.slice(0, HINT_LABELS).map(function (g) {
+        return (g && g.label) || (g && g.kind) || '';
+      }).filter(function (l) { return l.length > 0; });
+      var moreCount = coherence.groups.length - topLabels.length;
+      var hintText = topLabels.join(', ');
+      if (moreCount > 0) hintText += ' +' + moreCount + ' more';
+      var hintHtml = hintText
+        ? '<span class="health-coherence__hint">' + esc(hintText) + '</span>'
+        : '';
       backlogHtml = '<details class="health-coherence collapsible-section">' +
         '<summary class="health-coherence__summary">' +
           '<span class="collapsible-toggle">▾</span>' +
           '<span class="health-coherence__label">to refine</span>' +
+          hintHtml +
           '<span class="health-coherence__total">' + esc(String(coherence.total)) + '</span>' +
         '</summary>' +
         sectionsHtml +
       '</details>';
     }
 
-    var body = '<div class="health-rail-block">' +
+    return '<div class="health-rail-block">' +
       verdictHtml +
       whyHtml +
       barHtml +
       flowRows +
       backlogHtml +
     '</div>';
+  }
 
-    return railSection('health', body, { collapsible: true });
+  // renderHealthCockpitRail(data) — the rail-wrapped cockpit. When the masthead
+  // carries the cockpit (the normal garden case), renderPage skips this; the
+  // wrapper survives so a garden WITHOUT a masthead still shows health in the rail.
+  function renderHealthCockpitRail(data) {
+    var inner = renderHealthCockpitInner(data);
+    if (!inner) return '';
+    return railSection('health', inner, { collapsible: true });
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // MASTHEAD — the full-width editorial band above the three columns (M1).
+  //
+  // ONE component, presence-driven, class-aware by data (no per-kind scaffold).
+  // Four variants, decided entirely from data:
+  //   GARDEN              — meta.kind === 'garden'. Title + dek-as-tagline +
+  //                         the health cockpit (moved out of the rail) + catalog
+  //                         chips with view-time counts.
+  //   PERSONA/OPPORTUNITY — data.persona / data.opportunity set. Archetype quote
+  //                         (persona) or description lede (opportunity) as the
+  //                         standfirst, portrait/status card, count chips.
+  //   RICH                — a feature/subpage WITH a dek OR media/thumbnail.
+  //                         Kicker + h1 + dek standfirst + persona/solves chips,
+  //                         visual card + status card.
+  //   DEGRADED            — none of the above (no dek AND no media). Returns ''
+  //                         so the scaffold's compact header is kept.
+  //
+  // When the masthead renders it ABSORBS (renderPage suppresses) the rail's top
+  // meta strip and (garden) the rail health cockpit; oo-boot suppresses the
+  // top-chrome status chip. Nothing is copied — each fact has one home.
+  // ════════════════════════════════════════════════════════════════════════════
+
+  // True when this polyglot earns a masthead band. Garden + persona/opportunity
+  // anchors with content always do; a plain feature does only when it carries a
+  // dek OR renderable media (a kind:diagram entry or an svg thumbnail).
+  function mastheadVisual(data) {
+    // Priority: first kind:diagram media > svg thumbnail > none.
+    var media = data && data.media;
+    if (media) {
+      var keys = Object.keys(media);
+      for (var i = 0; i < keys.length; i++) {
+        var m = media[keys[i]];
+        if (m && m.kind === 'diagram' && isNonEmptyString(m.content)) {
+          return { svg: m.content, alt: m.alt || '' };
+        }
+      }
+    }
+    var t = data && data.thumbnail;
+    if (t && t.kind === 'svg' && isNonEmptyString(t.content)) {
+      return { svg: t.content, alt: t.alt || '' };
+    }
+    return null;
+  }
+
+  function hasMasthead(data, meta) {
+    if (!data) return false;
+    var kind = meta && meta.kind;
+    if (kind === 'garden') return true;
+    if (data.persona) return isNonEmptyString(data.persona.archetype) || Boolean(mastheadVisual(data));
+    if (data.opportunity) return isNonEmptyString(data.opportunity.description) || Boolean(mastheadVisual(data));
+    return isNonEmptyString(data.dek) || Boolean(mastheadVisual(data));
+  }
+
+  function mastheadTitle(data) {
+    return (data && (data.title || data.id)) || '';
+  }
+
+  // The kicker line — kind · journey_phase · status word, mono caps.
+  function mastheadKicker(parts) {
+    var clean = parts.filter(function (p) { return isNonEmptyString(p); });
+    if (!clean.length) return '';
+    return '<p class="masthead-tend__kicker">' +
+      clean.map(function (p) { return esc(p); }).join(' <span class="masthead-tend__kicker-sep">·</span> ') +
+    '</p>';
+  }
+
+  // The visual card (white, bordered) — first kind:diagram media > thumbnail.
+  function mastheadVisualCard(visual, title) {
+    if (!visual) return '';
+    var alt = visual.alt || (title ? title + ' illustration' : 'illustration');
+    return '<figure class="masthead-tend__visual" role="img" aria-label="' + esc(alt) + '">' +
+      visual.svg +
+    '</figure>';
+  }
+
+  // Persona / solves chips, linked to their sibling polyglots.
+  function mastheadRefChips(data) {
+    var chips = [];
+    (isNonEmptyArray(data.personas) ? data.personas : []).forEach(function (p) {
+      chips.push('<a class="masthead-tend__chip masthead-tend__chip--persona" href="' + esc(p) + '.tend.html">' + esc(p) + '</a>');
+    });
+    (isNonEmptyArray(data.solves) ? data.solves : []).forEach(function (s) {
+      chips.push('<a class="masthead-tend__chip masthead-tend__chip--solves" href="' + esc(s) + '.tend.html">' + esc(s) + '</a>');
+    });
+    if (!chips.length) return '';
+    return '<div class="masthead-tend__chips">' + chips.join('') + '</div>';
+  }
+
+  // The status card — status chip + honest check tally, deep-linking to the
+  // rail's checks section. A verified/pass tally reads "n/n checks"; an
+  // unproven bet reads "N checks open" — never a false green.
+  function mastheadStatusCard(data) {
+    var status = data && data.status;
+    if (!isNonEmptyString(status)) return '';
+    var checks = isNonEmptyArray(data.checks) ? data.checks : [];
+    var verdicts = (data.audit && isNonEmptyArray(data.audit.verdicts)) ? data.audit.verdicts : [];
+    var passed = verdicts.filter(function (v) { return v && v.verdict === 'pass'; }).length;
+
+    var tally = '';
+    if (checks.length) {
+      // A deep-link target: the first check's rail anchor (the checks section).
+      var anchorId = checks[0].id;
+      var anchor = isNonEmptyString(anchorId) ? '#rail-' + esc(anchorId) : '#checks';
+      var label = (passed > 0)
+        ? esc(String(passed)) + '/' + esc(String(checks.length)) + ' checks'
+        : esc(String(checks.length)) + ' checks open';
+      tally = '<a class="masthead-tend__status-checks" href="' + anchor + '">' + label + '</a>';
+    }
+    var statusChip = '<span class="masthead-tend__status-chip">' +
+      glyphSpan(glyphFor(status), glyphClassFor(status)) + ' ' + esc(status) +
+    '</span>';
+    return '<div class="masthead-tend__status-card">' + statusChip + tally + '</div>';
+  }
+
+  // Count chip helper for anchor / garden bands — "<n> <label>".
+  function mastheadCountChip(n, singular, plural, href) {
+    var label = esc(String(n)) + ' ' + esc(n === 1 ? singular : plural);
+    if (isNonEmptyString(href)) {
+      return '<a class="masthead-tend__chip" href="' + esc(href) + '">' + label + '</a>';
+    }
+    return '<span class="masthead-tend__chip">' + label + '</span>';
+  }
+
+  // The garden tagline — the dek, split deterministically at the first sentence
+  // boundary. The lead sentence reads as the project's claim (accent-italic via
+  // .masthead-tend__tagline-lead); the rest follows in the muted serif tone. A
+  // single-sentence dek yields lead = whole dek, no trailing fragment. The split
+  // matches renderDek's terminator regex so the boundary is consistent.
+  function renderGardenTagline(dek) {
+    if (!isNonEmptyString(dek)) return '';
+    var text = String(dek).trim();
+    // First sentence = up to and including the first .!? terminator (with any
+    // trailing quote/bracket), then optional whitespace before the rest.
+    var m = text.match(/^([\s\S]*?[.!?]+(?:["')\]]+)?)(\s+)([\s\S]+)$/);
+    var lead, rest;
+    if (m) { lead = m[1].trim(); rest = m[3].trim(); }
+    else { lead = text; rest = ''; }
+    var html = '<span class="masthead-tend__tagline-lead">' + inlineCode(lead) + '</span>';
+    if (rest) html += ' <span class="masthead-tend__tagline-rest">' + inlineCode(rest) + '</span>';
+    return '<p class="masthead-tend__tagline">' + html + '</p>';
+  }
+
+  // ── GARDEN band ────────────────────────────────────────────────────────────
+  function renderMastheadGarden(data, meta) {
+    var title = mastheadTitle(data) || (meta && meta.project_name) || 'garden';
+    var kicker = mastheadKicker(['garden', data && data.status]);
+    var titleHtml = '<h1 class="masthead-tend__title">' + esc(title) + '</h1>';
+    var dekHtml = renderGardenTagline(data.dek);
+
+    // Catalog chips — counts computed at view time from live data.
+    var catalog = data.catalog || {};
+    var nPersonas = isNonEmptyArray(catalog.personas) ? catalog.personas.length : 0;
+    var nOpps = isNonEmptyArray(catalog.opportunities) ? catalog.opportunities.length : 0;
+    var agg = data.features_aggregate;
+    var aggEntries = Array.isArray(agg)
+      ? agg
+      : (agg && Array.isArray(agg.entries) ? agg.entries : []);
+    if ((!aggEntries || !aggEntries.length) && agg && agg.by_phase) {
+      var seen = {};
+      aggEntries = [];
+      Object.keys(agg.by_phase).forEach(function (k) {
+        (agg.by_phase[k] || []).forEach(function (e) {
+          if (e && e.id && !seen[e.id]) { seen[e.id] = true; aggEntries.push(e); }
+        });
+      });
+    }
+    // "N bets" must match the cockpit's denominator — the count of ACTIVE BETS
+    // (isActiveBet: not a persona/opportunity anchor, not superseded). That set
+    // INCLUDES child features with a parent (still real bets), so the raw
+    // non-subpage aggregate filter is wrong on both ends. The honest source is
+    // the lifecycle bar's own total (= truth.auditable), computed server-side
+    // over isActiveBet. Read it; fall back to truth.auditable; only when there
+    // is no health snapshot at all fall back to the non-subpage aggregate count.
+    var snap = data.health_snapshot;
+    var nBets;
+    if (snap && snap.lifecycle && snap.lifecycle.total != null) {
+      nBets = snap.lifecycle.total;
+    } else if (snap && snap.truth && snap.truth.auditable != null) {
+      nBets = snap.truth.auditable;
+    } else {
+      nBets = (aggEntries || []).filter(function (e) { return e && !e.is_subpage; }).length;
+    }
+    var chipBits = [
+      mastheadCountChip(nPersonas, 'persona', 'personas'),
+      mastheadCountChip(nOpps, 'opportunity', 'opportunities'),
+      mastheadCountChip(nBets, 'bet', 'bets'),
+      '<a class="masthead-tend__chip masthead-tend__chip--board" href="board.html">board →</a>',
+    ];
+    var chipsHtml = '<div class="masthead-tend__chips masthead-tend__chips--catalog">' + chipBits.join('') + '</div>';
+
+    // The cockpit verdict card — the rail's renderHealthCockpitRail content,
+    // unwrapped (no detail-section), moved into the band.
+    var cockpitInner = renderHealthCockpitInner(data);
+    var cockpitHtml = cockpitInner
+      ? '<aside class="masthead-tend__cockpit">' + cockpitInner + '</aside>'
+      : '';
+
+    return '<div class="masthead-tend masthead-tend--garden">' +
+      '<div class="masthead-tend__inner">' +
+        '<div class="masthead-tend__lead">' +
+          kicker + titleHtml + dekHtml + chipsHtml +
+        '</div>' +
+        cockpitHtml +
+      '</div>' +
+    '</div>';
+  }
+
+  // ── PERSONA / OPPORTUNITY band ──────────────────────────────────────────────
+  function renderMastheadAnchor(data, meta) {
+    var title = mastheadTitle(data);
+    var visual = mastheadVisual(data);
+    var isPersona = Boolean(data.persona);
+    var variant = isPersona ? 'persona' : 'opportunity';
+    var kind = (meta && meta.kind) || (isPersona ? 'persona' : 'opportunity');
+
+    var standfirst = '';
+    var chips = [];
+    if (isPersona) {
+      var p = data.persona;
+      if (isNonEmptyString(p.archetype)) {
+        standfirst = '<blockquote class="masthead-tend__dek masthead-tend__dek--quote">' + inlineCode(p.archetype) + '</blockquote>';
+      }
+      var nJobs = isNonEmptyArray(p.jobs) ? p.jobs.length : 0;
+      var nBound = isNonEmptyArray(p.bound_features) ? p.bound_features.length : 0;
+      if (nJobs) chips.push(mastheadCountChip(nJobs, 'job', 'jobs'));
+      if (nBound) chips.push(mastheadCountChip(nBound, 'bound feature', 'bound features'));
+    } else {
+      var o = data.opportunity;
+      if (isNonEmptyString(o.description)) {
+        standfirst = '<p class="masthead-tend__dek">' + inlineCode(o.description) + '</p>';
+      }
+      if (o.value)      chips.push('<span class="masthead-tend__chip">' + esc('value: ' + o.value) + '</span>');
+      if (o.confidence) chips.push('<span class="masthead-tend__chip">' + esc('confidence: ' + o.confidence) + '</span>');
+      var nSolving = isNonEmptyArray(o.solving_features) ? o.solving_features.length : 0;
+      if (nSolving) chips.push(mastheadCountChip(nSolving, 'solved-by', 'solved-by'));
+    }
+
+    var kicker = mastheadKicker([kind, data && data.status]);
+    var chipsHtml = chips.length ? '<div class="masthead-tend__chips">' + chips.join('') + '</div>' : '';
+    var visualHtml = mastheadVisualCard(visual, title);
+    var rightHtml = visualHtml
+      ? '<div class="masthead-tend__aside">' + visualHtml + '</div>'
+      : '';
+
+    return '<div class="masthead-tend masthead-tend--' + variant + '">' +
+      '<div class="masthead-tend__inner">' +
+        '<div class="masthead-tend__lead">' +
+          kicker +
+          '<h1 class="masthead-tend__title">' + esc(title) + '</h1>' +
+          standfirst + chipsHtml +
+        '</div>' +
+        rightHtml +
+      '</div>' +
+    '</div>';
+  }
+
+  // ── RICH band (feature / subpage with a dek or media) ───────────────────────
+  function renderMastheadRich(data, meta) {
+    var title = mastheadTitle(data);
+    var visual = mastheadVisual(data);
+    var kicker = mastheadKicker([(meta && meta.kind) || 'feature', data && data.journey_phase, data && data.status]);
+    var dekHtml = isNonEmptyString(data.dek)
+      ? '<p class="masthead-tend__dek">' + inlineCode(data.dek) + '</p>'
+      : '';
+    var chipsHtml = mastheadRefChips(data);
+    var visualHtml = mastheadVisualCard(visual, title);
+    var statusHtml = mastheadStatusCard(data);
+    var asideHtml = (visualHtml || statusHtml)
+      ? '<div class="masthead-tend__aside">' + visualHtml + statusHtml + '</div>'
+      : '';
+
+    return '<div class="masthead-tend masthead-tend--rich">' +
+      '<div class="masthead-tend__inner">' +
+        '<div class="masthead-tend__lead">' +
+          kicker +
+          '<h1 class="masthead-tend__title">' + esc(title) + '</h1>' +
+          dekHtml + chipsHtml +
+        '</div>' +
+        asideHtml +
+      '</div>' +
+    '</div>';
+  }
+
+  // The single entry. Returns '' for the degraded case (no band).
+  function renderMasthead(data, meta) {
+    if (!hasMasthead(data, meta)) return '';
+    if (meta && meta.kind === 'garden') return renderMastheadGarden(data, meta);
+    if (data.persona || data.opportunity) return renderMastheadAnchor(data, meta);
+    return renderMastheadRich(data, meta);
   }
 
   // ════════════════════════════════════════════════════════════════════════════
@@ -4373,6 +5461,13 @@ nav.toc a.active {
     data = data || {};
     meta = meta || {};
 
+    // The masthead band (M1) — full-width above the three columns. Presence-
+    // driven; '' for the degraded case. When it renders it ABSORBS the rail's
+    // top meta strip, the rail health cockpit (garden), and the top-chrome
+    // status chip (the last suppressed by oo-boot via mastheadActive).
+    var masthead = renderMasthead(data, meta);
+    var mastheadActive = masthead !== '';
+
     // Main column shape discriminator. Persona / opportunity polyglots
     // describe a catalog entity, not a feature bet — so they skip the
     // WWIFWWh bet article and render their own shape. Decisions, references,
@@ -4381,6 +5476,9 @@ nav.toc a.active {
     // Card-grid sections rendered after narrative and before decisions.
     // Each context has one source; '' when source is empty (presence-driven).
     var cardsHtml = '';
+    // The sectionId used to build cardsHtml (e.g. 'features', 'subpages').
+    // Used to suppress duplicates when the narrative resolved the same token inline.
+    var cardsSectionId = '';
     // Accumulator: tracks which reserved tokens ([features]/[personas]/[opportunities])
     // were resolved inline by the narrative. Used to suppress the automatic
     // duplicate section that would otherwise appear after the narrative.
@@ -4391,14 +5489,16 @@ nav.toc a.active {
       // c) Persona polyglot: source from data.persona.bound_features[].
       var boundFeatures = data.persona && data.persona.bound_features;
       if (isNonEmptyArray(boundFeatures)) {
-        cardsHtml = renderEntityCardGrid(boundFeatures, 'Bound features', 'bound-features', '');
+        cardsSectionId = 'bound-features';
+        cardsHtml = renderEntityCardGrid(boundFeatures, 'Bound features', cardsSectionId, '');
       }
     } else if (data.opportunity) {
       mainBody = renderOpportunityMain(data);
       // d) Opportunity polyglot: source from data.opportunity.solving_features[].
       var solvingFeatures = data.opportunity && data.opportunity.solving_features;
       if (isNonEmptyArray(solvingFeatures)) {
-        cardsHtml = renderEntityCardGrid(solvingFeatures, 'Solving features', 'solving-features', '');
+        cardsSectionId = 'solving-features';
+        cardsHtml = renderEntityCardGrid(solvingFeatures, 'Solving features', cardsSectionId, '');
       }
     } else {
       mainBody = renderBetArticle(data);
@@ -4423,7 +5523,8 @@ nav.toc a.active {
         if (isNonEmptyArray(aggEntries)) {
           // Filter out subpages (is_subpage: true) — parent owns the card.
           var topLevel = aggEntries.filter(function (e) { return !e.is_subpage; });
-          cardsHtml = renderEntityCardGrid(topLevel, 'Features', 'features', 'features/');
+          cardsSectionId = 'features';
+          cardsHtml = renderEntityCardGrid(topLevel, 'Features', cardsSectionId, 'features/');
         }
       } else if (isNonEmptyArray(data.subpages_resolved) || isNonEmptyArray(data.subpages)) {
         // b) Feature with subpages: prefer the resolved snapshot (carries
@@ -4435,56 +5536,72 @@ nav.toc a.active {
           : data.subpages.map(function (id) {
               return typeof id === 'string' ? { id: id } : id;
             });
-        cardsHtml = renderEntityCardGrid(subpageItems, 'Subpages', 'subpages', '');
+        cardsSectionId = 'subpages';
+        cardsHtml = renderEntityCardGrid(subpageItems, 'Subpages', cardsSectionId, '');
       }
     }
 
     // Garden kind: decisions + references belong in feature polyglots, not on
     // the overview page. The garden's narrative is its landing-page article;
     // decisions there would be project-level noise the reader didn't ask for.
-    var isGardenKind = meta && meta.kind === 'garden';
     // Resolve narrative now — this fills acc.resolvedReserved with any reserved
     // card-grid tokens ([features]/[personas]/[opportunities]) embedded inline.
     var narrativeHtml = renderNarrative(data, acc);
     // Suppress the automatic card-grid when the narrative already inlined the same
-    // section via a reserved token. Check the sectionId carried in cardsHtml.
-    if (cardsHtml) {
-      if (
-        (acc.resolvedReserved['features']      && cardsHtml.indexOf('id="features"')      !== -1) ||
-        (acc.resolvedReserved['personas']      && cardsHtml.indexOf('id="personas"')      !== -1) ||
-        (acc.resolvedReserved['opportunities'] && cardsHtml.indexOf('id="opportunities"') !== -1)
-      ) {
-        cardsHtml = '';
-      }
+    // section via a reserved token — compare sectionIds, not HTML string content.
+    if (cardsHtml && acc.resolvedReserved[cardsSectionId]) {
+      cardsHtml = '';
     }
     var main =
+      // The dek MOVES into the masthead when the band renders — never duplicated
+      // in main. Degraded pages (no band) keep the dek standfirst here.
+      (mastheadActive ? '' : renderDek(data)) +
       renderSupersededBanner(data) +
       mainBody +
       narrativeHtml +
       cardsHtml +
-      (isGardenKind ? '' : renderDecisions(data)) +
-      (isGardenKind ? '' : renderReferences(data));
+      (isGarden ? '' : renderDecisions(data)) +
+      (isGarden ? '' : renderReferences(data));
 
     // The rail's outer .detail-panel is fixed-height with overflow:hidden.
     // .detail-meta is flex-shrink:0 (sticky top); everything after goes
     // inside .detail-body which is flex:1 + overflow-y:auto — that's the
     // wrapper that actually scrolls when content exceeds viewport height.
+    // The rail groups every section into THREE fixed-order bands — IDENTITY →
+    // GRAPH → PROOF — so a reader builds muscle-memory wayfinding by position.
+    // IDENTITY = who/what this is (journey, parent, persona/opportunity identity);
+    // GRAPH = how it links out (edges, bound/solving features); PROOF = whether
+    // it holds (checks, steps, smoke, audit, progress + the garden's catalog +
+    // aggregate). Each band is presence-driven: empty → no wrapper (see railBand).
+    var anchorRail = (data && data.persona)
+      ? renderPersonaRail(data.persona)
+      : (data && data.opportunity ? renderOpportunityRail(data.opportunity) : { identity: '', graph: '' });
+
     var railBody =
-      renderHealthCockpitRail(data) +
-      renderJourney(data) +
-      renderParent(data) +
-      renderRelList('depends on', data.dependencies) +
-      renderRelList('enables',    data.enables) +
-      renderRelList('subpages',   data.subpages) +
-      renderSteps(data) +
-      renderChecks(data) +
-      renderSmoke(data) +
-      (data && data.persona     ? renderPersonaRail(data.persona)         : '') +
-      (data && data.opportunity ? renderOpportunityRail(data.opportunity) : '') +
-      renderCatalog(data, meta) +
-      renderAggregate(data) +
-      renderAudit(data) +
-      renderProgress(data);
+      // The garden cockpit lives in the masthead when the band renders; the rail
+      // wrapper only fires for a garden with no band (degraded). Absorb = remove.
+      // It sits ABOVE the bands — it is the garden's verdict, not a band section.
+      (mastheadActive ? '' : renderHealthCockpitRail(data)) +
+      railBand('identity', 'identity', [
+        renderJourney(data),
+        renderParent(data),
+        anchorRail.identity,
+      ]) +
+      railBand('graph', 'graph', [
+        renderRelList('depends on', data.dependencies),
+        renderRelList('enables',    data.enables),
+        renderRelList('subpages',   data.subpages),
+        anchorRail.graph,
+      ]) +
+      railBand('proof', 'proof', [
+        renderSteps(data),
+        renderChecks(data),
+        renderSmoke(data),
+        renderCatalog(data, meta),
+        renderAggregate(data),
+        renderAudit(data),
+        renderProgress(data),
+      ]);
 
     // Topic extension hook: anything pushed into data._customSections (string
     // of HTML) is appended to rail. Topics in OO:CUSTOM can build this up
@@ -4494,16 +5611,26 @@ nav.toc a.active {
       railBody += data._customSections.join('');
     }
 
-    var metaHtml = renderMeta(data, meta);
+    // The rail's top meta strip (type/status/priority/as-of) is absorbed by the
+    // masthead's kicker + status card when the band renders. Degraded pages keep it.
+    var metaHtml = mastheadActive ? '' : renderMeta(data, meta);
     var rail = metaHtml || railBody
       ? metaHtml + (railBody ? '<div class="detail-body">' + railBody + '</div>' : '')
       : '';
 
-    return { main: main, rail: rail, headerThumb: renderHeaderThumb(data), headerHealth: renderHeaderHealth(data, meta) };
+    return {
+      main: main,
+      rail: rail,
+      masthead: masthead,
+      mastheadActive: mastheadActive,
+      headerThumb: renderHeaderThumb(data),
+      headerHealth: renderHeaderHealth(data, meta),
+    };
   }
 
   return {
     renderPage: renderPage,
+    renderMasthead: renderMasthead,
     renderHeaderThumb: renderHeaderThumb,
     renderHeaderHealth: renderHeaderHealth,
     // Exposed for tests + topic re-use:
@@ -4548,7 +5675,7 @@ nav.toc a.active {
 
   // ── Top header (crumb + status glyph + document title) ────────────────────
 
-  function applyTopHeader(data, meta) {
+  function applyTopHeader(data, meta, mastheadActive) {
     // Three-segment breadcrumb: tend / <garden-name> / <this page>.
     // Each polyglot kind sits at a different filesystem depth, so the
     // relative paths to index.html and overview.html differ. We resolve from
@@ -4596,8 +5723,10 @@ nav.toc a.active {
       if (crumb) crumb.textContent = pageTitle;
     }
 
+    // Top-chrome status chip — absorbed by the masthead's status card when the
+    // band renders (the de-duplication rule). Degraded pages keep the chip.
     var statusEl = document.querySelector('[data-top-header-status]');
-    if (statusEl && data && data.status) {
+    if (statusEl && data && data.status && !mastheadActive) {
       var helpers = window.OoHelpers || {};
       var glyph = helpers.glyphFor ? helpers.glyphFor(data.status) : '○';
       var cls   = helpers.glyphClassFor ? helpers.glyphClassFor(data.status) : 'draft';
@@ -4608,6 +5737,37 @@ nav.toc a.active {
     if (titleEl && pageTitle) titleEl.textContent = pageTitle;
 
     if (pageTitle) document.title = pageTitle + (kind ? ' · ' + kind : '') + ' · tend';
+  }
+
+  // ── Favicon traffic light ──────────────────────────────────────────────────
+  // The tab icon mirrors the page's state, deterministically, at view time:
+  // features show their status (verified green / in-progress amber / planned
+  // grey), the garden shows its health verdict, catalog anchors show the brand
+  // clay (they are descriptions, not bets). With many polyglots open, the tab
+  // bar reads as a status dashboard. Colors mirror the --glyph-* tokens
+  // (literals — a favicon cannot resolve CSS vars).
+
+  function applyFavicon(data, meta) {
+    var color = '#8a8a86'; // draft/planned grey
+    if (meta && meta.kind === 'garden') {
+      var v = data && data.health_snapshot && data.health_snapshot.verdict;
+      color = v === 'green' ? '#4F7942' : v === 'yellow' ? '#C9923C' : v === 'red' ? '#B85C3E' : '#8a8a86';
+    } else if (data && (data.persona || data.opportunity)) {
+      color = '#D97757';
+    } else if (data && data.status) {
+      color = data.status === 'verified' ? '#4F7942'
+        : data.status === 'in-progress' ? '#C9923C'
+        : '#8a8a86';
+    }
+    var svg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='10' fill='" + color + "'/></svg>";
+    var link = document.querySelector('link[rel="icon"]');
+    if (!link) {
+      link = document.createElement('link');
+      link.setAttribute('rel', 'icon');
+      document.head.appendChild(link);
+    }
+    link.setAttribute('type', 'image/svg+xml');
+    link.setAttribute('href', 'data:image/svg+xml,' + encodeURIComponent(svg));
   }
 
   // ── TOC from rendered h2 / h3 in main ─────────────────────────────────────
@@ -4633,7 +5793,11 @@ nav.toc a.active {
         h.id = u;
       }
       var cls = h.tagName === 'H3' ? 'toc-item toc-item--h3' : 'toc-item toc-item--h2';
-      html += '<li class="' + cls + '"><a href="#' + h.id + '">' + (h.textContent || '') + '</a></li>';
+      var txt = h.textContent || '';
+      // The link clamps to 2 lines (CSS); the full heading lives on title= so a
+      // truncated entry stays readable on hover.
+      var titleAttr = txt ? ' title="' + txt.replace(/"/g, '&quot;') + '"' : '';
+      html += '<li class="' + cls + '"><a href="#' + h.id + '"' + titleAttr + '>' + txt + '</a></li>';
     }
     html += '</ul>';
     mount.innerHTML = html;
@@ -4659,6 +5823,87 @@ nav.toc a.active {
     }
     update();
     window.addEventListener('scroll', update, { passive: true });
+  }
+
+  // ── Cross-highlight: main check refs → rail rows ──────────────────────────
+  // Clicking a "probed by" link in the bet article (a.bet-probe → #rail-<id>)
+  // or a resolved [check:id] stamp (span.verified-stamp[data-check]) scrolls the
+  // rail to that check's row, opens its <details>, and flashes it (~1s CSS
+  // animation). Step traces (a.trace-step → #rail-<id>) work the same way. One
+  // delegated handler, so it survives the view-time HTML splice with zero
+  // per-element wiring.
+
+  function highlightRailRow(checkId) {
+    if (!checkId) return;
+    var row = document.getElementById('rail-' + checkId);
+    if (!row) return;
+    // The row id sits on the <summary>; the flashing + scroll target is the
+    // enclosing <details> (the check) so the whole card lights up and opens.
+    var card = row.closest ? (row.closest('.detail-criterion') || row.closest('.detail-step') || row) : row;
+    if (card.tagName === 'DETAILS') card.open = true;
+    if (card.scrollIntoView) card.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    card.classList.remove('rail-flash');
+    // Force reflow so re-adding the class restarts the animation on repeat clicks.
+    void card.offsetWidth;
+    card.classList.add('rail-flash');
+  }
+
+  function wireCrossHighlight() {
+    document.addEventListener('click', function (e) {
+      var t = e.target;
+      if (!t || !t.closest) return;
+      // [check:id] verified stamp.
+      var stamp = t.closest('[data-check]');
+      if (stamp) {
+        e.preventDefault();
+        highlightRailRow(stamp.getAttribute('data-check'));
+        return;
+      }
+      // probe / trace anchor pointing at a rail row (#rail-<id>), but NOT a
+      // rail-check details id (#rail-check-<id>) — those are the rows themselves.
+      var a = t.closest('a[href^="#rail-"]');
+      if (a) {
+        var href = a.getAttribute('href') || '';
+        var id = href.slice(1); // drop '#'
+        // map #rail-<id> → check id; leave #rail-check-/#rail-step- alone.
+        if (id.indexOf('rail-check-') === 0 || id.indexOf('rail-step-') === 0) return;
+        var checkId = id.slice('rail-'.length);
+        e.preventDefault();
+        highlightRailRow(checkId);
+      }
+    });
+  }
+
+  // ── Rail collapse memory (optional, cheap) ────────────────────────────────
+  // Persist each rail section's open/closed state in localStorage, keyed by its
+  // section LABEL (not per page) — so a returning reader's preferred rail shape
+  // (e.g. "steps collapsed, checks open") survives navigation between pages.
+  // Degrades silently where storage is unavailable (private mode, file://).
+
+  function wireRailCollapseMemory() {
+    var KEY = 'tend-rail-collapsed';
+    var rail = document.querySelector('[data-rail-mount]');
+    if (!rail) return;
+    var store;
+    try { store = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { return; }
+    var sections = rail.querySelectorAll('details.collapsible-section');
+    for (var i = 0; i < sections.length; i++) {
+      (function (sec) {
+        var titleEl = sec.querySelector('.collapsible-title');
+        var label = titleEl ? (titleEl.textContent || '').trim() : '';
+        if (!label) return;
+        // Apply the saved state (only when a preference was recorded).
+        if (Object.prototype.hasOwnProperty.call(store, label)) {
+          sec.open = !store[label];
+        }
+        sec.addEventListener('toggle', function () {
+          try {
+            store[label] = !sec.open; // store the COLLAPSED flag
+            localStorage.setItem(KEY, JSON.stringify(store));
+          } catch (e) { /* silent degrade */ }
+        });
+      })(sections[i]);
+    }
   }
 
   // ── Graph icon — link to board.html ───────────────────────────────────────
@@ -4753,17 +5998,30 @@ nav.toc a.active {
     var rendered = window.OoRender.renderPage(data, meta);
     setMount('#article > [data-render-mount="body-flow"]', rendered.main);
     setMount('[data-rail-mount]', rendered.rail);
+    setMount('[data-masthead-mount]', rendered.masthead || '');
     setMount('[data-article-thumb]', rendered.headerThumb || '');
-    // Garden-only health headline (renderHeaderHealth returns '' off-garden),
-    // distinct from the bet-status glyph wired in applyTopHeader.
-    setMount('[data-top-header-health]', rendered.headerHealth || '');
 
-    applyTopHeader(data, meta);
+    // When the masthead band renders, it carries the title + status — so the
+    // compact .article-head and the top-chrome status chip are absorbed (the
+    // de-duplication rule). Degraded pages keep both. We flag the document so
+    // CSS hides the compact header, and tell applyTopHeader to skip the chip.
+    var mastheadActive = !!rendered.mastheadActive;
+    if (mastheadActive) document.documentElement.setAttribute('data-masthead', 'on');
+
+    // Garden-only health headline (renderHeaderHealth returns '' off-garden),
+    // distinct from the bet-status glyph wired in applyTopHeader. Absorbed by
+    // the garden masthead's cockpit card when the band renders (same rule).
+    setMount('[data-top-header-health]', mastheadActive ? '' : (rendered.headerHealth || ''));
+
+    applyTopHeader(data, meta, mastheadActive);
+    applyFavicon(data, meta);
     populateToc();
     wireGraph();
     wireTheme();
     wireCopy();
     wireScrollSpy();
+    wireCrossHighlight();
+    wireRailCollapseMemory();
   }
 
   // Defer to next macrotask. We can't rely on DOMContentLoaded because the
@@ -4783,7 +6041,7 @@ nav.toc a.active {
 OO_HTML
 
 # OO:SHELL:START
-# template_version: 2
+# template_version: 3
 #
 # Tend polyglot shell core.
 #
@@ -4820,8 +6078,8 @@ SELF_BASE="$(basename "$SELF")"
 _extract_block() {
   local file="$1" block_id="$2"
   awk -v id="$block_id" '
-    $0 == "<script id=\"" id "\" type=\"application/json\">" { in_block=1; next }
-    in_block && /^<\/script>$/ { exit }
+    $0 ~ "^[[:space:]]*<script id=\"" id "\" type=\"application/json\">$" { in_block=1; next }
+    in_block && /^[[:space:]]*<\/script>$/ { exit }
     in_block { print }
   ' "$file"
 }
@@ -4959,19 +6217,21 @@ cmd_run() {
     return 1
   fi
   local data agent_cmd step step_id step_desc step_first_line
+  local -a agent_arr
   data="$(_extract_block "$SELF" "oo-data")"
 
   agent_cmd="$(printf '%s' "$data" | jq -r '.execute.agent_cmd // empty')"
   if [ -z "$agent_cmd" ]; then
     agent_cmd="${TEND_AGENT_CMD:-claude -p}"
   fi
+  read -ra agent_arr <<< "$agent_cmd"
 
   while IFS= read -r step; do
     step_id="$(printf '%s' "$step" | jq -r '.id')"
     step_desc="$(printf '%s' "$step" | jq -r '.description // .title // ""')"
     step_first_line="$(printf '%s' "$step_desc" | head -1)"
     echo "[step ${step_id}] ${step_first_line}"
-    if ! printf '%s' "$step_desc" | $agent_cmd; then
+    if ! printf '%s' "$step_desc" | "${agent_arr[@]}"; then
       echo "error: step ${step_id} failed" >&2
       return 1
     fi

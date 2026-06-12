@@ -260,8 +260,24 @@ explaining what's unknown. Flag for the user rather than guessing.
 - All features have `status: "planned"` - never `verified`. Audit must validate before that transition.
 - Gaps and unknowns are explicitly flagged via empty slots and `status: "needs-clarification"` checks; the user can resolve them via `/tend brainstorm` or `/tend audit`.
 
-## Suggested Next Steps
+## Next move
 
-- To verify what discover claims actually works: `/tend audit`
-- To plan new features (not yet in code): `/tend brainstorm`
-- To see the feature map: `/tend` (entry point renders the graph on request)
+Close the loop — don't leave the user guessing what comes next.
+
+1. **Compute it.** Call `tend_get_next` (MCP preferred; CLI fallback
+   `node dist/bin/tend.js next --json`). It reads on-disk state and
+   returns the highest-leverage action with reason codes.
+2. **Present it plainly.** State the recommended `action` verbatim and the
+   reason in plain words (paraphrase the reason code, don't paste it).
+   After a bootstrap the spine is bare, so the move is usually
+   `/tend position` — *"discovered features have no persona-jobs to anchor
+   checks to; plant the ICPs first."*
+3. **Offer to chain — never auto-execute.** Ask before continuing:
+   *"Want me to run `/tend position` now to plant the spine?"* Only
+   proceed on the user's yes. If they decline, route to whichever
+   sub-skill matches their intent.
+
+The post-discover leverage order is `/tend position` (plant the spine) →
+`/tend audit` (claim coverage feature-by-feature, prioritizing the
+inferred-from-mock checks) → `/tend brainstorm` (new features not yet in
+code). Let `tend_get_next` confirm the first step rather than assuming.

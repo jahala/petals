@@ -68,7 +68,7 @@ A green badge has to mean three things, not one. For every check, the audit answ
 - **Negative control — the test must discriminate.** Before recording any `pass`, run the atomic negative-control helper against a throwaway worktree — **never hand-edit the live source file**:
 
   ```
-  node skills/tend-audit/scripts/negctrl.mjs \
+  npx tend-cli negctrl \
     --file <repo-relative-path>             \
     --find '<exact load-bearing substring>' \
     --replace '<broken replacement>'        \
@@ -88,6 +88,8 @@ A green badge has to mean three things, not one. For every check, the audit answ
 - **Match evidence to `integration_level`.** If the check is `integration` or `e2e` and the only evidence is a unit test (whether or not it mocks), mark `partial`. Real-stack evidence is required for non-unit checks. For `manual`, record human-verification evidence (sign-off, screenshot, recording) - do not auto-pass.
 - **Read the bound persona-job validation clause as the pass criterion.** Mark `partial` when the test passes its `verification_recipe` but does not assert the job validation clause measurably. Example: recipe says "POST returns 200", job validation says "completes in <60s on cold start" — these are different bars. The test must assert against the validation clause's measurable component (timing, error-message text, end-state, count) for the verdict to be `pass`. A check with `validates_job` set but no validation-clause assertion in its test is `partial` no matter how green the test runs.
 - **A verdict downgrade is the audit succeeding.** Pass→partial or partial→fail means the cited evidence no longer supports the claim — tests changed, code drifted, an invariant broke. That signal is the whole point of running the audit. Never refresh `evidence_sha` just to silence a `stale-evidence` warning. If the claim is broken, write the downgrade honestly; the resulting gap-card routes the follow-up work.
+- **Trivial `verification_recipe` caps the verdict at `partial`.** Before recording any pass, inspect the check's `verification_recipe`. If it is under ~20 characters or matches a boilerplate phrase (`"check manually"`, `"tests pass"`, `"it works"`, `"run tests"`, `"manually"`, `"works"`, or any similar non-specific phrase), the recipe is too vague to constitute an evidence bar — the audit cannot confirm what "passing" means. Cap the verdict at `partial`, note `trivial recipe — author a concrete recipe via /tend brainstorm`, and do not record `pass` no matter how green the negctrl run is. The fix is to write a real recipe (specific command, expected output, measurable assertion) via `/tend brainstorm`, not to stretch the vague phrase to meet the threshold.
+- **Cite stable artifacts — never hash a living file.** A verdict's `evidence_path` must point at an artifact whose content is stable between writes: a source file, a test file, a committed fixture. **Never cite the garden polyglot (`docs/tend/overview.html`) or any other file that mutates on every write** — its SHA changes the instant the next feature is written, so a verdict hashing it goes `stale-evidence` immediately and forever, generating a re-audit treadmill that proves nothing. If the behavior under audit is produced by such a file, cite the *stable code that produces it* (e.g. the side-effect function in `src/core/`, the renderer partial), not the mutable artifact it writes into. For a `manual` check (visual review, sign-off, observed behavior with no unit to break), record the observation as prose in the verdict notes and cite the stable code that produces the behavior — do not fabricate a hashable evidence path just to fill the field.
 
 ### Quality rules
 
@@ -152,7 +154,7 @@ For each check's evidence, evaluate:
 - For `entry_condition` / `exit_condition` features: confirm the code enforces the entry condition (route guard, middleware, precondition assertion) and reaches the exit condition (success branch produces the declared state).
 - For each check, resolve `validates_job` (if set) to the persona-job validation clause (`personas[id].jobs[idx].validation`). The strongest evidence is a test that asserts on the validation clause's measurable component. A test that only asserts the recipe's surface ("returns 200") while the validation demands more ("within 60s") is documented as `partial` in the verdict notes.
 - **Built? (completeness)** — read the cited *implementation*. Flag + downgrade on any TODO/FIXME, `not implemented` throw, stub/placeholder body, or production-path mock (Completeness-scan rule).
-- **Discriminates? (negative control)** — before recording `pass`, run `negctrl.mjs` (Negative-control rule). Exit 0 → `DISCRIMINATES` → may record `pass`. Exit 1 → `DOES NOT DISCRIMINATE` → cap at `partial`. Never hand-edit the live source file.
+- **Discriminates? (negative control)** — before recording `pass`, run `npx tend-cli negctrl` (Negative-control rule). Exit 0 → `DISCRIMINATES` → may record `pass`. Exit 1 → `DOES NOT DISCRIMINATE` → cap at `partial`. Never hand-edit the live source file.
 - **Built well? (quality)** — assess the implementation + test against the project rubric + the universal floor (Quality rules); record deviations as drift, downgrade the egregious "not really built" ones.
 
 ### 3. Record per-check verdicts
@@ -225,9 +227,40 @@ Run `tend_validate` and treat any `coverage_path_missing` error as an audit verd
 - `partial`: at least one check is `partial`, none are `fail`, smoke (if defined) passed.
 - `fail`: any check is `fail`, OR smoke failed, OR any `coverage_path_missing` error exists.
 
+### 8.5. Re-judge the verification questions
+
+Audit doesn't only check evidence — it re-asks the two **verification-relevant** semantic questions and records refreshed `judgments[]` **in the same `tend_update_feature` call** as the audit verdicts (one write, not two). These are advisory and never gate the audit; they cap *confidence in the bet* alongside the evidence verdict.
+
+Two questions apply at audit:
+
+| `question_id` | the question | `target` |
+|---|---|---|
+| `check_discriminates` | "Would this check FAIL if the unit were broken, or does it pass on anything?" | `check:<check_id>` |
+| `impact_measurable` | "Does IMPACT name a real, observable change — and does a check measure that quantity?" | `slots:impact` |
+
+**The negctrl-skip rule for `check_discriminates`.** A check whose evidence already survived a **discriminating negctrl run** (`DISCRIMINATES`, exit 0, from step 2) is mechanically proven to discriminate — the semantic question is redundant and re-asking it double-surfaces the same concern. **Skip `check_discriminates` for any check with a green discriminating negctrl.** Record ONE feature-level `n_a` documenting the skip (not one per proven check), rationale: `"negctrl proves discrimination mechanically; semantic re-judgment skipped for negctrl-proven checks."` Re-ask `check_discriminates` (writing `pass` / `push_back`) only for checks WITHOUT a discriminating negctrl — `manual` checks, pure existence/config checks, or any check the negctrl couldn't run on.
+
+**`impact_measurable`** is re-asked whenever IMPACT is filled — a green test can still measure the wrong quantity. `pass` when a check measures the observable IMPACT names; `push_back` when IMPACT is a wish ("faster", "better") with no check measuring it.
+
+**push_back is advisory — it NEVER blocks the audit result.** A `push_back` here caps confidence in the bet even when every check passes against evidence (the checks prove the code; the judgment flags a semantic gap the evidence audit is blind to). It does not downgrade `audit.result`, does not stop the `status: "verified"` transition, and does not move the health verdict — it lands in the refinement backlog. Optionally note the gap in `audit.drift` (`action: investigate`) so the loop sees it; the judgment record is the durable home.
+
+**Never supply `judged_sha`** — the write side-effect stamps it from the feature's own current text (a caller-supplied value is overwritten). You supply only `question_id` / `target` / `verdict` / `rationale`.
+
+Generic shape (own ids only — never another project's), carried in the step-9 write:
+
+```
+judgments: [
+  { question_id: "check_discriminates", target: "check:c001", verdict: "n_a",
+    rationale: "negctrl proves discrimination mechanically; semantic re-judgment skipped for negctrl-proven checks." },
+  { question_id: "impact_measurable", target: "slots:impact", verdict: "push_back",
+    rationale: "IMPACT says 'faster sign-in' with no number; no check measures latency. Code passes, the impact claim is unmeasured." }
+]
+```
+
 ### 9. Write audit and (when justified) transition to verified
 
-Call `tend_update_feature`. Pass `audit` (verdicts, result, ran_at, drift).
+Call `tend_update_feature`. Pass `audit` (verdicts, result, ran_at, drift)
+and the refreshed `judgments[]` (step 8.5) **in the same call**.
 When `audit.result === "pass"` AND every check has `verdict: pass` AND
 smoke (if defined) passed, also pass `status: "verified"` in the same
 call - the verified-status gate accepts it because `audit.result === 'pass'`
@@ -243,6 +276,7 @@ tend_update_feature({
       verdicts: [/* per-check verdicts */],
       drift: [/* drift findings */]
     },
+    judgments: [/* step 8.5 — check_discriminates (non-negctrl checks) + impact_measurable */],
     status: "verified"
   }
 })
@@ -295,7 +329,7 @@ Feature remains <previous status>. Address: <check-ids> before next audit.
 - Every check has a `verdict` and (where verdict is `pass` or `partial`) specific evidence.
 - Every `pass` verdict's `evidence_path` carries proof of execution — the run command and the observed result line — not a bare file path. Verdicts backed only by reading source, or by a path citation with no captured run result, were capped at `partial`.
 - Mocks-of-unit-under-test were not counted as evidence. Checks whose only evidence was a mocked test are marked `partial` with a note.
-- Each `pass` verdict survived a **negative control** — `negctrl.mjs` was run against a throwaway worktree; the live source was never mutated. `DISCRIMINATES` (exit 0) was confirmed before recording `pass`; `DOES NOT DISCRIMINATE` (exit 1) capped the verdict at `partial`.
+- Each `pass` verdict survived a **negative control** — `npx tend-cli negctrl` was run against a throwaway worktree; the live source was never mutated. `DISCRIMINATES` (exit 0) was confirmed before recording `pass`; `DOES NOT DISCRIMINATE` (exit 1) capped the verdict at `partial`.
 - The cited implementation was **scanned for completeness**; any TODO / stub / `not implemented` / production-path mock was flagged and the verdict downgraded.
 - Implementation + test were assessed against the project's quality rubric + the universal engineering floor; deviations recorded as `audit.drift`, with the "not really built" kind downgrading the verdict.
 - Check `integration_level` was respected: integration/e2e checks marked `pass` only when real-stack evidence existed.
@@ -306,3 +340,27 @@ Feature remains <previous status>. Address: <check-ids> before next audit.
 - Progress recomputed (auto-side-effect of the write).
 - A summary report is shown to the user that distinguishes verified from implemented-but-unverified.
 - For each check with `validates_job` set, the verdict was evaluated against the bound persona-job validation clause (`personas[id].jobs[idx].validation`), not just `verification_recipe`. Mismatches between validation clause and recipe were resolved in favor of the validation clause and surfaced as `partial` verdicts where the test asserts the weaker bar.
+- The verification questions were re-judged in the same write: `impact_measurable` whenever IMPACT is filled, and `check_discriminates` only for checks WITHOUT a discriminating negctrl (negctrl-proven checks recorded ONE feature-level `n_a` documenting the skip). `judged_sha` was never supplied — the side-effect stamped it. Any `push_back` was advisory: it did not block the audit result or the verified transition.
+
+## Next move
+
+Close the loop — don't leave the user guessing what comes next.
+
+1. **Compute it.** Call `tend_get_next` (MCP preferred; CLI fallback
+   `node dist/bin/tend.js next --json`). It reads on-disk state and
+   returns the highest-leverage action with reason codes.
+2. **Present it plainly.** State the recommended `action` verbatim and the
+   reason in plain words (paraphrase the reason code, don't paste it).
+   The move depends on the verdict: a `pass` usually frees a blocked
+   dependent (*"`dashboard` was waiting on this — it's unblocked now"*); a
+   `partial` / `fail` routes to `/tend change` or `/tend run` to close the
+   named gap; a clean board may point at `/tend narrate` to write the
+   story.
+3. **Offer to chain — never auto-execute.** Ask before continuing:
+   *"Want me to run `/tend run dashboard` now?"* Only proceed on the
+   user's yes. If they decline, route to whichever sub-skill matches their
+   intent.
+
+After an audit, let `tend_get_next` pick the next leverage point rather
+than assuming the work is finished — a green verdict often unblocks the
+real next feature.
