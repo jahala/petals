@@ -56,9 +56,10 @@ Load reference files on demand based on the task:
 | Task | Load |
 |------|------|
 | Extracting brand from assets | `references/extraction-guide.md` |
-| Populating output templates | `templates/DESIGN.md`, `templates/colors.md`, `templates/typography.md`, `templates/voice.md`, `templates/identity.md`, `templates/components.md` |
+| Populating output templates | `templates/DESIGN.md`, `templates/colors.md`, `templates/typography.md`, `templates/voice.md`, `templates/identity.md`, `templates/components.md`, `templates/layout.md` |
 | Auditing colors | `.brand/colors.md`, `references/color-audit-guide.md` |
-| Auditing typography/spacing | `.brand/typography.md` |
+| Auditing typography | `.brand/typography.md` |
+| Auditing layout (spacing/containers/breakpoints) | `.brand/layout.md` |
 | Auditing surface (radius/shadow/motion) | `.brand/components.md` |
 | Auditing voice | `.brand/voice.md`, `references/voice-guide.md` |
 | Auditing output (all dimensions) | `references/color-audit-guide.md`, `references/voice-guide.md`, `.brand/*.md` |
@@ -251,7 +252,7 @@ When `/petal check` is invoked without a file argument, it checks for brand drif
 
 ## /petal check `<file>` (File Audit)
 
-When `/petal check <file>` is invoked with a file argument, the agent audits the file against `.brand/` rules across up to five dimensions: color, typography, spacing, surface, and voice. The audit follows progressive disclosure: each dimension only loads the `.brand/` file it needs.
+When `/petal check <file>` is invoked with a file argument, the agent audits the file against `.brand/` rules across up to five dimensions: color, typography, layout, surface, and voice. The audit follows progressive disclosure: each dimension only loads the `.brand/` file it needs.
 
 ### Guard clause
 
@@ -284,10 +285,20 @@ Before any audit, verify the project is configured:
    ```
    ERROR [color] line <N>: <found-hex> is not in the palette. Did you mean <closest-palette-match>?
    ```
+6. **Contrast pairings** (only if a "Contrast Pairings" section exists in `.brand/colors.md`): legibility is part of color.
+   - Extract the pair-class minimums (reading / labels & display / decorative) and any documented pair classifications.
+   - Scan the target for places where a text color and its background are both knowable: a rule or inline style setting both `color` and `background`(-color), resolving `var()` references against the file's `:root` (skip pairs that cannot be resolved statically).
+   - Compute the WCAG 2.x contrast ratio for each resolved pair. Classify the text: body-size prose → reading; short labels, tags, kickers, or display-size (≥ 24px) type → labels & display.
+   - **Below the class minimum**: **error**. A palette color used illegibly is off-brand.
+   - A reading-class pair documented in colors.md as "labels & display only" or "decorative only" used for body copy: **error** — name the documented class.
+   ```
+   ERROR [color] line <N>: <fg> on <bg> is <ratio>:1 — below the <class> minimum of <min>:1. <suggestion from the pairings table>
+   ```
+7. **Charts**: hex literals in chart configs are already covered by steps 2–5; additionally, a categorical series that does not follow the documented "Data Visualization" order is a **warning**.
 
 If zero color violations:
 ```
-PASS [color] All colors match the brand palette.
+PASS [color] All colors match the brand palette and pairing minimums.
 ```
 
 ### Dimension 2: Typography Audit
@@ -319,13 +330,15 @@ If zero typography violations:
 PASS [typography] Font families match the brand hierarchy.
 ```
 
-### Dimension 3: Spacing Audit
+### Dimension 3: Layout Audit
 
-**Load**: `.brand/typography.md` (specifically the "Spacing Scale" section — spacing lives in typography.md). If no spacing scale is defined, skip and report: `SKIP [spacing] No spacing scale defined. Skipping spacing audit.`
+**Load**: `.brand/layout.md` (only this file). If `.brand/layout.md` does not exist, skip and report: `SKIP [layout] layout.md not found. Skipping layout audit.`
+
+Layout governs the space *between* elements — spacing scale, containers, breakpoints, density. (Surface, Dimension 4, governs the finish *of* an element.)
 
 **Process**:
 
-1. Extract the spacing scale from `.brand/typography.md`. If a "Spacing Scale" section exists, parse the values (e.g., `4px, 8px, 12px, 16px, 20px, 24px, 32px, 40px, 48px`). If the scale is expressed as "multiples of N", compute the set of valid multiples.
+1. Extract from `.brand/layout.md`: the spacing scale (e.g., `4px, 8px, 12px, …`; if expressed as "multiples of N", compute the set of valid multiples), the container max-width(s) and gutter, and the documented breakpoints.
 2. Read the target file and scan for `px` values in padding, margin, gap declarations:
    - `padding: <N>px`, `margin: <N>px`, `gap: <N>px`
    - `padding-top`, `padding-bottom`, `margin-left`, etc.
@@ -333,14 +346,16 @@ PASS [typography] Font families match the brand hierarchy.
 3. For each px value, check against the spacing scale:
    - **Matches a scale value (or an exact multiple)**: No violation.
    - **Does not match**: **Warning** (not an error). Find the two nearest scale values and suggest the closest.
-4. Report spacing warnings as:
+4. Scan for content containers (`max-width` on wrapper/container elements): a container width that matches neither the documented container(s) nor a documented reading measure is a **warning** — name the documented value.
+5. Scan `@media` query widths: a breakpoint not in the documented set is a **warning** — name the nearest documented breakpoint. (Adapt within the brand's breakpoints rather than inventing new ones.)
+6. Report layout warnings as:
    ```
-   WARNING [spacing] line <N>: <N>px is outside the spacing scale. Did you mean <closest-scale-value>px?
+   WARNING [layout] line <N>: <found-value> is outside the <spacing scale|container widths|breakpoints>. Did you mean <closest-documented-value>?
    ```
 
-If zero spacing warnings:
+If zero layout warnings:
 ```
-PASS [spacing] All spacing values match the brand scale.
+PASS [layout] Spacing, containers, and breakpoints match the layout rules.
 ```
 
 ### Dimension 4: Surface Audit
@@ -385,7 +400,7 @@ After all dimensions complete, print a summary:
 --- brand check summary ---
 Colors:   <N> error(s), <M> warning(s)
 Typography: <N> error(s), <M> warning(s)
-Spacing:  <N> error(s), <M> warning(s)
+Layout:   <N> error(s), <M> warning(s)
 Surface:  <N> error(s), <M> warning(s)
 Voice:    <N> error(s), <M> warning(s)
 
@@ -423,8 +438,9 @@ The argument can be either inline text or a file path:
 
 1. **Load voice rules**: Read `.brand/voice.md` (only this file — do not load DESIGN.md, colors.md, or typography.md). Extract:
    - Forbidden terms from the "Forbidden Terms" table (term + preferred alternative)
+   - Canonical terms from the "Terminology" table (term + banned synonyms), plus product-name casing rules
+   - Capitalization & microcopy rules (sentence case, verb-first buttons, error shape, punctuation)
    - Tone spectrum rules (formality, warmth, directness for each context)
-   - Grammar rules (case, voice, contractions, sentence length)
 
 2. **Determine the context**: Classify the text based on the file type or content:
    - UI code files (`.tsx`, `.jsx`, `.vue`, `.svelte`, `.css`): UI Microcopy context
@@ -437,14 +453,21 @@ The argument can be either inline text or a file path:
    - Match exact words and substrings (e.g., "leveraging" contains "leverage")
    - For each match, record: the forbidden term, line number/position, full matched word
 
-4. **Check tone rules**: Flag additional patterns:
+4. **Check terminology** (if a "Terminology" table exists): for each banned synonym, search case-insensitively; a match is a **warning** naming the canonical term. A capitalized product name (e.g. "Petals" where the rules say lowercase) is a **warning**.
+
+5. **Check capitalization & microcopy** (if the rules exist): flag as **warnings**:
+   - Headings, buttons, or labels in Title Case (two or more consecutive capitalized words that are not proper nouns) where sentence case is required
+   - Button labels that are not verb-first or exceed the stated word limit
+   - Exclamation marks in interface copy, if forbidden
+
+6. **Check tone rules**: Flag additional patterns:
    - Jargon density: 3+ jargon/buzzword-like terms in close proximity
    - Sentence length: Sentences exceeding 25 words
    - Passive voice: If active voice is required by grammar rules
 
-5. **Provide replacements**: For each forbidden term violation, provide the preferred alternative from the voice guide. For tone rule violations, provide a plain-language suggestion.
+7. **Provide replacements**: For each forbidden term violation, provide the preferred alternative from the voice guide. For terminology and tone violations, provide the canonical term or a plain-language suggestion.
 
-6. **Report results**:
+8. **Report results**:
 
 For each forbidden term violation (error):
 ```
@@ -473,6 +496,17 @@ Result: <PASS | FAIL (<X> error(s) to fix, <Y> warning(s) to review)>
 ```
 
 Exit 0 if zero errors (warnings alone do not fail). Exit non-zero if any forbidden term violations exist.
+
+## /petal logo `[variant]`
+
+When `/petal logo` is invoked, the agent hands out the logo *with its rules* — the asset alone invites redrawing.
+
+1. **Guard**: if `.brand/` does not exist, report the standard "No brand configured" message and stop.
+2. **Resolve the variant**:
+   - default → `.brand/assets/logo.svg`
+   - `mono` → the all-ink variant if present (`logo-mono.svg`); if absent, instruct: copy `logo.svg` and set every path fill to the brand ink color — the ONLY permitted recolor.
+3. **Return** the asset path AND print the "Logo Usage" rules from `.brand/identity.md` (minimum size, clear space, exact fills, the never-list).
+4. **When placing the logo in generated UI**: copy the asset file or inline its exact markup — never redraw, approximate, or restyle it. The color audit treats a logo with altered fills as an **error** (it is not a palette question; it is the mark).
 
 ## .petalrc Format
 

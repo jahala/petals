@@ -38,22 +38,10 @@ Base: `html { font-size: 18px }`. Sizes below are in `rem` (relative to 18px) fo
 | stat | 3.75rem | 1.0 | 700 | Display numerals |
 | code | 0.95rem | 1.6 | 400 | Code / terminal text |
 
-## Spacing Scale
+## Spacing
 
-Multiples of 4px:
-
-| Token | Value | Usage |
-|-------|-------|-------|
-| 4xs | 4px | Tight icon padding |
-| 3xs | 8px | Inline spacing |
-| 2xs | 12px | Component inner |
-| xs | 16px | Compact section |
-| sm | 24px | Standard section |
-| md | 32px | Major section |
-| lg | 48px | Page sections |
-| xl | 64px | Hero spacing |
-| 2xl | 96px | Layout breaks |
-| 3xl | 128px | Marketing section rhythm |
+The spacing scale moved to `layout.md`, where it lives with the containers,
+breakpoints, and density rules it belongs to. Typography owns type only.
 
 ## Font Sources
 

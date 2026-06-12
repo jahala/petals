@@ -385,15 +385,19 @@
     font-family: var(--font-heading); font-size: 1.1rem; font-weight: 600;
     background: var(--pp-surface);
   }
+  /* icon tints chosen from pairs that clear the labels minimum on surface
+     (colors.md Contrast Pairings — caution and petal fail there) */
   .dim-item:nth-child(1) .icon { color: var(--pp-primary); }
   .dim-item:nth-child(2) .icon { color: var(--pp-info); }
-  .dim-item:nth-child(3) .icon { color: var(--pp-caution); }
-  .dim-item:nth-child(4) .icon { color: var(--pp-petal); }
-  .dim-item:nth-child(5) .icon { color: var(--pp-accent); }
+  .dim-item:nth-child(3) .icon { color: var(--pp-healthy); }
+  .dim-item:nth-child(4) .icon { color: var(--pp-accent); }
+  .dim-item:nth-child(5) .icon { color: var(--pp-error); }
   .dim-item .body strong { display: block; font-weight: 600; font-size: var(--text-h4); margin-bottom: var(--space-4xs); }
   .dim-item .body p { font-size: var(--text-small); line-height: 1.55; color: var(--pp-text-soft); }
   .repr-note {
-    font-family: var(--font-code); font-size: var(--text-small); color: var(--pp-muted);
+    /* reading copy on paper: soft, not muted — muted is 3.18:1, below the
+       reading minimum (colors.md Contrast Pairings) */
+    font-family: var(--font-code); font-size: var(--text-small); color: var(--pp-text-soft);
     margin-top: var(--space-xs); line-height: 1.6;
   }
 
@@ -448,8 +452,9 @@
   .install h2 { margin-bottom: 0; color: var(--pp-bg); }
   .install .section-head { margin-bottom: var(--space-lg); }
   .install .container { position: relative; }
-  .install .kicker { color: var(--pp-petal); }
-  .install p { color: var(--pp-surface); }
+  /* petal on primary is 2.17:1 — decorative only; words on the band are cream */
+  .install .kicker { color: var(--pp-bg); }
+  .install p { color: var(--pp-bg); }
   .install a { color: var(--pp-bg); text-decoration-color: rgba(232, 145, 127, 0.6); }
   .install a:hover { text-decoration-color: var(--pp-petal); }
   .install .install-term {
@@ -457,7 +462,7 @@
     margin: 0 auto var(--space-md); min-width: 420px; max-width: 100%;
     border-color: rgba(248, 245, 236, 0.18);
   }
-  .install .note { font-family: var(--font-code); font-size: var(--text-small); color: var(--pp-surface); opacity: 0.75; }
+  .install .note { font-family: var(--font-code); font-size: var(--text-small); color: var(--pp-bg); }
   .badge {
     display: inline-flex; align-items: center; gap: var(--space-3xs);
     background: var(--pp-surface); border: 1px solid var(--pp-border);
@@ -497,9 +502,9 @@
     text-decoration: none;
   }
   footer .col-links a:hover { color: var(--pp-primary); }
-  footer .col-cmds .mono { color: var(--pp-muted); }
-  footer .family { font-size: var(--text-small); color: var(--pp-muted); margin-top: var(--space-md); line-height: 1.55; }
-  footer .tend-line { display: block; margin-top: var(--space-sm); font-size: var(--text-small); color: var(--pp-muted); text-decoration: none; }
+  footer .col-cmds .mono { color: var(--pp-text-soft); }
+  footer .family { font-size: var(--text-small); color: var(--pp-text-soft); margin-top: var(--space-md); line-height: 1.55; }
+  footer .tend-line { display: block; margin-top: var(--space-sm); font-size: var(--text-small); color: var(--pp-text-soft); text-decoration: none; }
   footer .tend-line:hover { color: var(--pp-primary); }
 
   /* ── responsive ────────────────────────────────────────────── */
@@ -731,7 +736,7 @@
   </div>
   <div class="stat">
     <div class="num">5</div>
-    <div class="label">audit dimensions: color, type, spacing, surface, voice</div>
+    <div class="label">audit dimensions: color, type, layout, surface, voice</div>
   </div>
   <div class="stat">
     <div class="num">3</div>
@@ -864,7 +869,7 @@
         <h3>Check</h3>
         <p>
           The agent audits its own output against the rules before a human reviews it.
-          Color, typography, spacing, surface, and voice — five dimensions, caught at
+          Color, typography, layout, surface, and voice — five dimensions, caught at
           generation time, with the nearest on-brand value suggested for each miss.
         </p>
         <a class="proof" href="docs/tend/features/brand-check.tend.html"><span class="dot"></span>verified bet →</a>
@@ -900,10 +905,10 @@
           </div>
         </div>
         <div class="dim-item">
-          <div class="icon">S</div>
+          <div class="icon">L</div>
           <div class="body">
-            <strong>Spacing, against the 4px grid</strong>
-            <p>Padding, margin, and gap values scanned. Off-scale values flagged as warnings with the closest valid step.</p>
+            <strong>Layout, against layout.md</strong>
+            <p>Spacing, containers, and breakpoints checked against the layout rules. An off-scale gap or an invented breakpoint is flagged with the closest valid value.</p>
           </div>
         </div>
         <div class="dim-item">
@@ -936,7 +941,7 @@
 <span class="fail">ERROR</span> <span class="dim">line 22:</span> 'Inter' used for body text.
       <span class="dim">body must use </span><span class="ok">Source Sans 3</span><span class="dim">.</span>
 
-<span class="rule">── spacing ────────────────────────────────</span>
+<span class="rule">── layout ─────────────────────────────────</span>
 <span class="warn">WARN</span>  <span class="dim">line 38:</span> 13px outside 4px scale.
       <span class="dim">nearest: 12px or 16px.</span>
 

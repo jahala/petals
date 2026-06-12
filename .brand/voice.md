@@ -44,6 +44,33 @@ Never use these words in Plotplot copy:
 | AI-powered | Generic wrapper language. | source-aware, model-assisted, context-aware |
 | crush | Aggressive and off-brand. | outperform, improve on, move ahead of |
 
+## Terminology
+
+Canonical nouns — the product has names; use them:
+
+| Use | Not | Why |
+|-----|-----|-----|
+| .brand/ | "brand folder", "brand config", "brand cache" | The artifact has a name. |
+| skill | plugin, extension, bot | What petals is to the agent. |
+| check | lint, validate, scan | The product's own verb for auditing. |
+| agent | AI, copilot, assistant | Who reads the brand. |
+| extract | scrape, ingest, import | Explicit-only reading of stated values. |
+| brand guidelines | brand bible, brand book | Plain and accurate. |
+
+Product names are lowercase, always: petals, tend, tilth, plotplot — even at
+the start of a sentence. Capitalizing them is off-brand.
+
+## Capitalization & Microcopy
+
+- **Sentence case everywhere** — headings, buttons, nav items, labels, table
+  headers. Title Case Is Off-Brand. (Uppercase kicker labels are a CSS
+  text-transform, not authored case.)
+- **Buttons are verb-first** and three words or fewer: "Install petals",
+  "Start mapping", "See how it works".
+- **Errors** state what happened, why it matters, and the next action — in
+  that order. No jokes, no charm, no "Oops".
+- **No exclamation marks** in interface copy. Numerals for numbers.
+
 ## Before / After Examples
 
 | Context | Before (bad) | After (good) |
