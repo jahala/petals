@@ -2483,7 +2483,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
   "tend_version": "0.4.0",
   "generated_at": "2026-06-04T12:40:59.745Z",
   "project_name": "Petals",
-  "dek_sha": "85d278780d619ee822c64f38641a1f8e93abc1d4"
+  "dek_sha": "548a167479176e3e23d893af6e1ecd56e52ef74a"
 }
 </script>
 
@@ -2502,7 +2502,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
   "why": "The brand team's 40-page PDF is beautiful. It means nothing to an agent. Today, an agent opening a session picks Tailwind's default blue, uses Inter because it shipped with the template, and writes copy that sounds like every other SaaS landing page. The gap is twofold: the brand isn't agent-readable (no structured files), and even if it were, the agent doesn't know it exists or how to use it (no behavioral contract). Extraction solves both — it translates the brand into files agents can read, and wraps them in a skill that tells the agent when and how to use them.",
   "impact": "An agent in a project with .brand/ and the petal skill, given \"build a contact page\" with zero brand instructions in the prompt, produces output using the correct primary color, heading font, spacing scale, and brand voice. /petal check on the output reports zero errors. Nobody pasted a hex code. The brand was ambient infrastructure — present, correct, and invisible.",
   "fit": "The entry point. Extraction creates the brand intelligence layer — the files, the skill, the behavioral contract. Distribution gets it into projects. Check audits against it. Without extraction, there's nothing to distribute and nothing to check against.",
-  "where": "petals/SKILL.md (auto-trigger conditions, hard validity rules, subcommand dispatch — the behavioral wrapper agents read). petals/references/extraction-guide.md (structured process for reading brand assets). petals/templates/ (DESIGN.md, colors.md, typography.md, voice.md, identity.md — the output scaffolding).",
+  "where": "petals/SKILL.md (auto-trigger conditions, hard validity rules, subcommand dispatch — the behavioral wrapper agents read). petals/references/extraction-guide.md (structured process for reading brand assets). petals/templates/ (DESIGN.md, colors.md, typography.md, voice.md, identity.md, components.md, layout.md — the output scaffolding).",
   "how": "The skill gives the agent a structured process, not extraction algorithms. The agent scans the folder, reads each asset with its best native capability (vision for images, parsing for JSON/CSS, reading for markdown/PDF), synthesizes into the standard templates, copies asset files directly, and flags anything ambiguous. Color values must be explicit in source docs — petal never infers colors from swatches. DESIGN.md follows the Google Stitch 9-section standard. The SKILL.md auto-triggers on creative work and instructs agents to read .brand/ before generating and apply rules at generation time, not just check after.",
   "progress": {
     "implementation": 100,
@@ -3003,7 +3003,9 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
     "petals/templates/colors.md",
     "petals/templates/typography.md",
     "petals/templates/voice.md",
-    "petals/templates/identity.md"
+    "petals/templates/identity.md",
+    "petals/templates/components.md",
+    "petals/templates/layout.md"
   ],
   "audit": {
     "ran_at": "2026-06-05T12:00:00Z",

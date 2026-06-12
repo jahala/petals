@@ -68,6 +68,8 @@ For each output file, read the corresponding template from `petals/templates/`:
 | `.brand/typography.md` | `petals/templates/typography.md` |
 | `.brand/voice.md` | `petals/templates/voice.md` |
 | `.brand/identity.md` | `petals/templates/identity.md` |
+| `.brand/components.md` | `petals/templates/components.md` |
+| `.brand/layout.md` | `petals/templates/layout.md` |
 
 Replace each `{{PLACEHOLDER}}` in the template with the extracted value. For placeholders where no explicit value was found:
 - If the field is optional (metadata, visual theme attributes), write "not specified" or remove the line.

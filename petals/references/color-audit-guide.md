@@ -88,7 +88,20 @@ If zero violations:
 PASS [color] All colors match the brand palette.
 ```
 
+### 8. Contrast Pairings (legibility is part of color)
+
+If `.brand/colors.md` has a "Contrast Pairings" section:
+
+1. Extract the pair-class minimums (reading / labels & display / decorative) and any documented pair classifications.
+2. Find places where a text color and its background are both statically knowable: a rule or inline style setting both `color` and `background`(-color). Resolve `var()` references against the file's `:root`. Skip pairs that cannot be resolved.
+3. Compute the WCAG 2.x contrast ratio. Classify the text: body-size prose -> reading; short labels, tags, kickers, display-size (>= 24px) type -> labels & display.
+4. Below the class minimum -> **error**. A color documented as "labels & display only" or "decorative only" used for body copy -> **error**, naming the documented class.
+
+```
+ERROR [color] line 18: #C9923C on #F0EDE1 is 2.34:1 — below the labels minimum of 3.0:1. Decorative only on light surfaces (see Contrast Pairings).
+```
+
 ### Reference
 
-- Canonical color source: `.brand/colors.md`
+- Canonical color source: `.brand/colors.md` (palette + Contrast Pairings + Data Visualization)
 - This guide is used by: `/petal check <file>` (color audit dimension)

@@ -2483,7 +2483,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
   "tend_version": "0.4.0",
   "generated_at": "2026-06-04T12:42:25.475Z",
   "project_name": "Petals",
-  "dek_sha": "c51fe380099b78c8e2d89afebdcb78b63ac01b11"
+  "dek_sha": "5b5ffdc5ef64d364f4631730cc71619611d148fd"
 }
 </script>
 
@@ -2491,7 +2491,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
 {
   "id": "brand-check",
   "title": "Brand Check",
-  "status": "verified",
+  "status": "in-progress",
   "priority": "high",
   "dependencies": [],
   "enables": [],
@@ -2499,11 +2499,11 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
   "why": "Even the best agent misreads a brand file occasionally. Or someone copies a component from a different project. Or a human edits agent output and introduces a hardcoded color. Check catches what slips through — before it reaches review. Without it, every violation is caught by a human who should be reviewing architecture, not hex codes.",
   "impact": "Over a two-week period, PRs with agent-generated output have zero violations that check would catch. Color mismatches, font deviations, spacing outside scale, and forbidden terms trend to zero. The human's review shifts from 'is this our blue?' to 'is this the right abstraction?'",
   "fit": "The verify-phase safety net. Extraction creates brand context agents read at generation time. Distribution gets it into projects. Check is the last line — it audits output against the same .brand/ files the agent already read.",
-  "where": "petals/SKILL.md (check and voice subcommands). petals/references/color-audit-guide.md. petals/references/voice-guide.md. Reads from .brand/colors.md, .brand/typography.md, .brand/voice.md.",
-  "how": "The agent reads the relevant .brand/ file for each check dimension. Scans the target for violations: hex patterns against palette, font-family against typography spec, spacing against scale, forbidden terms against voice rules. Errors (must fix) vs warnings (suggest fix). Progressive disclosure: only loads the .brand/ sections relevant to what it's checking — a color-only check reads colors.md, not the full DESIGN.md.",
+  "where": "petals/SKILL.md (check and voice subcommands). petals/references/color-audit-guide.md. petals/references/voice-guide.md. Reads from .brand/colors.md, .brand/typography.md, .brand/layout.md, .brand/components.md, .brand/voice.md.",
+  "how": "The agent reads the relevant .brand/ file for each check dimension. Scans the target for violations: hex patterns and contrast pairings against colors.md, font-family against the typography spec, spacing/containers/breakpoints against layout.md, radius/shadow/motion against components.md, forbidden terms and casing against voice rules. Errors (must fix) vs warnings (suggest fix). Progressive disclosure: only loads the .brand/ file relevant to what it's checking — a color-only check reads colors.md, not the full DESIGN.md.",
   "progress": {
     "implementation": 100,
-    "verification": 100
+    "verification": 0
   },
   "checks": [
     {
@@ -2526,12 +2526,12 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
     },
     {
       "id": "c003",
-      "description": "/petal check <file> reports spacing values outside the .brand/ scale as warnings (not errors) with closest scale value suggestions.",
+      "description": "/petal check <file> reports layout values outside the .brand/ scale as warnings (not errors) with closest scale value suggestions.",
       "validates": "what",
       "validates_job": "shipping-developer:0",
       "method": "synthetic-test",
       "integration_level": "integration",
-      "verification_recipe": "Scale: multiples of 4. File uses padding: 13px. Assert warning (not error). Assert suggests 12px or 16px."
+      "verification_recipe": "Scale: multiples of 4 (from .brand/layout.md). File uses padding: 13px. Assert warning (not error). Assert suggests 12px or 16px."
     },
     {
       "id": "c004",
@@ -2589,12 +2589,12 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
     },
     {
       "id": "c010",
-      "description": "Check reads from .brand/colors.md for color audits, .brand/typography.md for typography audits, and .brand/voice.md for voice audits - these specific files exist and are the canonical sources for each check dimension.",
+      "description": "Check reads from .brand/colors.md for color audits, .brand/typography.md for typography audits, .brand/layout.md for layout audits, .brand/components.md for surface audits, and .brand/voice.md for voice audits - these specific files exist and are the canonical sources for each check dimension.",
       "validates": "where",
       "validates_job": "shipping-developer:0",
       "method": "synthetic-test",
       "integration_level": "integration",
-      "verification_recipe": "Run a color check. Assert .brand/colors.md was read. Run a typography check. Assert .brand/typography.md was read. Run a voice check. Assert .brand/voice.md was read."
+      "verification_recipe": "Run a color check. Assert .brand/colors.md was read. Run a typography check. Assert .brand/typography.md was read. Run a layout check. Assert .brand/layout.md was read. Run a surface check. Assert .brand/components.md was read. Run a voice check. Assert .brand/voice.md was read."
     },
     {
       "id": "c011",
@@ -2607,12 +2607,12 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
     },
     {
       "id": "c012",
-      "description": "Each audit dimension maps to exactly one .brand/ file - colors to colors.md, typography to typography.md, spacing to typography.md spacing section, voice to voice.md. No dimension loads an unrelated file, confirming the progressive-disclosure fit claim.",
+      "description": "Each audit dimension maps to exactly one .brand/ file - colors to colors.md, typography to typography.md, layout to layout.md, surface to components.md, voice to voice.md. No dimension loads an unrelated file, confirming the progressive-disclosure fit claim.",
       "validates": "fit",
       "validates_job": "ai-agent:2",
       "method": "synthetic-test",
       "integration_level": "unit",
-      "verification_recipe": "Inspect SKILL.md Load directives: color audit loads only colors.md, typography audit loads only typography.md, spacing audit loads only typography.md (spacing section), voice audit loads only voice.md. Assert each dimension names exactly one canonical source file. Assert no dimension loads an unrelated .brand/ file."
+      "verification_recipe": "Inspect SKILL.md Load directives: color audit loads only colors.md, typography audit loads only typography.md, layout audit loads only layout.md, surface audit loads only components.md, voice audit loads only voice.md. Assert each dimension names exactly one canonical source file. Assert no dimension loads an unrelated .brand/ file."
     }
   ],
   "smoke": {
@@ -2656,7 +2656,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
     "agent-off-brand"
   ],
   "journey_phase": "verify",
-  "narrative": "## Leo opens the PR at 10am\n\nThe diff is clean. A new settings page, agent-generated. Layout is right. Data flow is correct. Leo starts scanning the rendered output and stops at the header. That blue is wrong. It is close — a half-shade off — but it is not the brand primary. Five minutes later, same story in the copy: \"leverage our platform to synergize.\" Two forbidden terms on a single card. The agent wrote the code. Nobody checked the output before it hit the PR.\n\nLeo runs `/petal check src/pages/Settings.tsx`. The agent reads `.brand/colors.md` — just the palette, nothing else. Reports `#3B82F6` at line 42: not in palette. Suggests `#2F99A4`. Then flags \"leverage\" and \"synergize\" in the copy at line 78. Two errors. Zero architecture problems missed.\n\nThis shift — from human hex-code reviewer to human architecture reviewer — is what check delivers. The agent writes the code. The agent checks the code. Leo reviews architecture. That is the right split.\n\n## What check audits\n\nFour dimensions. Colors: every hex value in the target file resolves against the palette in `.brand/colors.md`. A `#3B82F6` where the brand uses `#2F99A4` is an error — no grey area. Typography: every `font-family` declaration checks against the hierarchy in `.brand/typography.md` — headings use the heading font, body uses the body font. A swapped weight is an error. Spacing: every padding and margin checks against the scale. 13px is not 12px, but it might be deliberate — spacing violations are warnings, not errors. Voice: every sentence scans against the forbidden terms in `.brand/voice.md`. \"Leverage\" and \"synergize\" are errors, with suggested alternatives.\n\nThe taxonomy is explicit. Errors require a fix. Warnings suggest one. The agent never leaves interpretation to the human — it names the violation, cites the rule, and offers the correction.\n\n## The right file for the right question\n\nCheck loads only what it needs. A color-only audit reads `.brand/colors.md` — not the full DESIGN.md, not voice.md, not typography.md. Ten kilobytes of context instead of fifty. Progressive disclosure keeps token cost proportional to the audit. If the file has no text content, voice.md never loads. If it has no CSS, typography.md stays on disk.\n\nThis matters because agents are cost-sensitive. If check burned fifty thousand tokens on every invocation, agents would avoid calling it. At ten thousand tokens for a focused audit, the cost is smaller than the fix it catches. That is the threshold: cheaper to run than to fix in review.\n\n## The seatbelt, not the steering wheel\n\n[Brand Extraction](brand-extraction.tend.html) creates the brand context agents read at generation time. [Brand Distribution](brand-distribution.tend.html) gets that context into every project. Both are prevention — the steering wheel, keeping the agent on course before it writes a single line.\n\nCheck is detection. It catches what slips through — a misread file, a copied component from another project, a human edit that introduces a hardcoded hex. It is the seatbelt: you hope you never need it, but when you do, the difference is a bruise versus going through the windshield.\n\nThe goal is not to make check busy. The goal is to make every check return zero errors — and to catch the ones that would have reached human review otherwise. Over a two-week period, violations trend toward zero not because agents stopped making mistakes, but because check caught them before they shipped.",
+  "narrative": "## Leo opens the PR at 10am\n\nThe diff is clean. A new settings page, agent-generated. Layout is right. Data flow is correct. Leo starts scanning the rendered output and stops at the header. That blue is wrong. It is close — a half-shade off — but it is not the brand primary. Five minutes later, same story in the copy: \"leverage our platform to synergize.\" Two forbidden terms on a single card. The agent wrote the code. Nobody checked the output before it hit the PR.\n\nLeo runs `/petal check src/pages/Settings.tsx`. The agent reads `.brand/colors.md` — just the palette, nothing else. Reports `#3B82F6` at line 42: not in palette. Suggests `#2F99A4`. Then flags \"leverage\" and \"synergize\" in the copy at line 78. Two errors. Zero architecture problems missed.\n\nThis shift — from human hex-code reviewer to human architecture reviewer — is what check delivers. The agent writes the code. The agent checks the code. Leo reviews architecture. That is the right split.\n\n## What check audits\n\nFive dimensions. Colors: every hex value in the target file resolves against the palette in `.brand/colors.md`, and every resolvable text/background pair is measured against the contrast pairings — a palette color used illegibly is an error too. Typography: every `font-family` declaration checks against the hierarchy in `.brand/typography.md` — headings use the heading font, body uses the body font. A swapped weight is an error. Layout: every padding, margin, container, and breakpoint checks against the scale and rules in `.brand/layout.md`. 13px is not 12px, but it might be deliberate — layout violations are warnings, not errors. Surface: radius, borders, shadows, and motion check against the tokens in `.brand/components.md` — a bounce ease or a pure-black shadow is flagged. Voice: every sentence scans against the forbidden terms, terminology, and casing rules in `.brand/voice.md`. \"Leverage\" and \"synergize\" are errors, with suggested alternatives.\n\nThe taxonomy is explicit. Errors require a fix. Warnings suggest one. The agent never leaves interpretation to the human — it names the violation, cites the rule, and offers the correction.\n\n## The right file for the right question\n\nCheck loads only what it needs. A color-only audit reads `.brand/colors.md` — not the full DESIGN.md, not voice.md, not typography.md. Ten kilobytes of context instead of fifty. Progressive disclosure keeps token cost proportional to the audit. If the file has no text content, voice.md never loads. If it has no CSS, typography.md stays on disk.\n\nThis matters because agents are cost-sensitive. If check burned fifty thousand tokens on every invocation, agents would avoid calling it. At ten thousand tokens for a focused audit, the cost is smaller than the fix it catches. That is the threshold: cheaper to run than to fix in review.\n\n## The seatbelt, not the steering wheel\n\n[Brand Extraction](brand-extraction.tend.html) creates the brand context agents read at generation time. [Brand Distribution](brand-distribution.tend.html) gets that context into every project. Both are prevention — the steering wheel, keeping the agent on course before it writes a single line.\n\nCheck is detection. It catches what slips through — a misread file, a copied component from another project, a human edit that introduces a hardcoded hex. It is the seatbelt: you hope you never need it, but when you do, the difference is a bruise versus going through the windshield.\n\nThe goal is not to make check busy. The goal is to make every check return zero errors — and to catch the ones that would have reached human review otherwise. Over a two-week period, violations trend toward zero not because agents stopped making mistakes, but because check caught them before they shipped.",
   "thumbnail": {
     "kind": "svg",
     "alt": "A code file panel on the left with content lines, connected by an arrow to an audit panel on the right with checkmark and cross-mark verdict rows",
@@ -2668,7 +2668,7 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
       "step_type": "command",
       "status": "done",
       "title": "Create test fixtures for brand check",
-      "description": "Test: grep 'color audit' petals/SKILL.md → confirms 4 audit dimensions documented; grep 'Load:' petals/SKILL.md → confirms progressive disclosure with single-file loads per dimension; grep '## Hard Validity Rules' petals/SKILL.md → confirms 5 non-negotiable rules present. Create a test .brand/ directory with known content: colors.md containing palette (primary: #2F99A4, accent: #FF4D00, text: #585961, background: #FFFFFF), typography.md specifying heading=Raleway and body=Open Sans with a spacing scale in multiples of 4, and voice.md with forbidden terms (leverage → use, synergize → combine). Create test files: file-on-brand.tsx using only palette colors, file-off-brand.tsx using #3B82F6 (off-palette), file-typo-wrong.css using Raleway as body font, file-spacing-off.css with padding: 13px, file-copy-bad.txt with 'leverage' and 'synergize', file-data-uri.css with hex in data URIs and base64, file-large.tsx with 200 lines, 50 colors, 20 fonts for performance testing.",
+      "description": "Test: grep 'color audit' petals/SKILL.md → confirms 5 audit dimensions documented; grep 'Load:' petals/SKILL.md → confirms progressive disclosure with single-file loads per dimension; grep '## Hard Validity Rules' petals/SKILL.md → confirms 5 non-negotiable rules present. Create a test .brand/ directory with known content: colors.md containing palette (primary: #2F99A4, accent: #FF4D00, text: #585961, background: #FFFFFF), typography.md specifying heading=Raleway and body=Open Sans with a spacing scale in multiples of 4, and voice.md with forbidden terms (leverage → use, synergize → combine). Create test files: file-on-brand.tsx using only palette colors, file-off-brand.tsx using #3B82F6 (off-palette), file-typo-wrong.css using Raleway as body font, file-spacing-off.css with padding: 13px, file-copy-bad.txt with 'leverage' and 'synergize', file-data-uri.css with hex in data URIs and base64, file-large.tsx with 200 lines, 50 colors, 20 fonts for performance testing.",
       "traces_to": [
         "c001",
         "c002",
@@ -2953,83 +2953,6 @@ a.masthead-tend__chip:hover { color: var(--accent); border-color: var(--border-s
     "petals/references/color-audit-guide.md",
     "petals/references/voice-guide.md"
   ],
-  "audit": {
-    "result": "pass",
-    "verdicts": [
-      {
-        "check_id": "c001",
-        "verdict": "pass",
-        "evidence_path": "petals/SKILL.md",
-        "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
-      },
-      {
-        "check_id": "c002",
-        "verdict": "pass",
-        "evidence_path": "petals/SKILL.md",
-        "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
-      },
-      {
-        "check_id": "c003",
-        "verdict": "pass",
-        "evidence_path": "petals/SKILL.md",
-        "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
-      },
-      {
-        "check_id": "c004",
-        "verdict": "pass",
-        "evidence_path": "petals/SKILL.md",
-        "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
-      },
-      {
-        "check_id": "c005",
-        "verdict": "pass",
-        "evidence_path": "petals/SKILL.md",
-        "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
-      },
-      {
-        "check_id": "c006",
-        "verdict": "pass",
-        "evidence_path": "petals/SKILL.md",
-        "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
-      },
-      {
-        "check_id": "c007",
-        "verdict": "pass",
-        "evidence_path": "petals/SKILL.md",
-        "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
-      },
-      {
-        "check_id": "c008",
-        "verdict": "pass",
-        "evidence_path": "petals/SKILL.md",
-        "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
-      },
-      {
-        "check_id": "c009",
-        "verdict": "pass",
-        "evidence_path": "petals/SKILL.md",
-        "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
-      },
-      {
-        "check_id": "c010",
-        "verdict": "pass",
-        "evidence_path": "petals/SKILL.md",
-        "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
-      },
-      {
-        "check_id": "c011",
-        "verdict": "pass",
-        "evidence_path": "petals/SKILL.md",
-        "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
-      },
-      {
-        "check_id": "c012",
-        "verdict": "pass",
-        "evidence_path": "petals/SKILL.md",
-        "evidence_sha": "4d449bfb986fedd5ed92b7201e51793039ff2f44"
-      }
-    ]
-  },
   "dek": "Even an agent that read the brand misreads a file, copies a component from the wrong project, or has its output hand-edited into a hardcoded hex. `/petal check` audits generated UI and copy against the same `.brand/` rules the agent already knows — colors, type hierarchy, spacing scale, forbidden terms — and reports specific violations before the work reaches review. It is the seatbelt to ambient context's steering wheel: prevention keeps the agent on-brand, detection catches what slips through.",
   "personas_resolved": [
     {
