@@ -140,7 +140,7 @@
     font-family: var(--font-heading); font-size: 1.4rem; font-weight: 600;
     color: var(--pp-text); text-decoration: none; letter-spacing: -0.01em;
   }
-  nav .logo .mark { width: 26px; height: 26px; display: block; margin-right: 8px; }
+  nav .logo .mark { width: 28px; height: 28px; display: block; margin-right: 8px; }
   nav .logo span { color: var(--pp-accent); }
   nav .links { display: flex; gap: var(--space-lg); align-items: center; }
   nav .links a {
@@ -181,28 +181,29 @@
     transform: rotate(9deg);
     background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 21 C7 19.5 4.5 15 5.5 10.5 C6.5 6 10 3 14.5 3 C18 3 19.5 5 19 8 C18.5 11.5 16.5 15.5 14 18.5 C13.4 19.3 12.7 20.2 12 21 Z' fill='%23E8917F' fill-opacity='0.16'/%3E%3Cpath d='M12 21 C13.5 16 15.5 10.5 19 6.5' stroke='%233F7A33' stroke-opacity='0.14' stroke-width='0.7' stroke-linecap='round' fill='none'/%3E%3C/svg%3E") center / contain no-repeat;
   }
-  /* the type-spec annotation — a design-review comment pinned to the headline,
-     the way petals annotates any page: pin dot, dotted leader, comment bubble */
-  .type-spec {
+  /* note-pins — design-review comments pinned across the page, the way petals
+     annotates any page: pin dot on the element, dotted leader, comment bubble
+     citing the .brand/ file that governs it. One per check dimension. */
+  .note-pin {
     display: inline-flex; align-items: center;
     font-style: normal; font-weight: 400; letter-spacing: 0;
-    margin-left: var(--space-xs);
-    transform: translateY(-0.42em);
     animation: bloom 0.6s var(--ease-petal) 2.6s both;
     transform-origin: 0% 50%;
   }
-  .type-spec .pin {
+  h1 .note-pin { margin-left: var(--space-xs); vertical-align: middle; }
+  p .note-pin { margin-left: var(--space-2xs); vertical-align: middle; }
+  .note-pin .pin {
     width: 10px; height: 10px; border-radius: 50%;
     background: var(--pp-petal);
     box-shadow: 0 0 0 4px rgba(232, 145, 127, 0.25);
     flex-shrink: 0;
   }
-  .type-spec .lead {
+  .note-pin .lead {
     width: 44px; height: 0;
     border-top: 2px dotted var(--pp-petal);
     flex-shrink: 0;
   }
-  .type-spec .bubble {
+  .note-pin .bubble {
     font-family: var(--font-code); font-size: 0.78rem; font-weight: 500;
     color: var(--pp-text-soft); white-space: nowrap;
     background: var(--pp-bg-artifact);
@@ -211,7 +212,23 @@
     padding: 7px 14px;
     box-shadow: 0 2px 5px rgba(32, 36, 27, 0.06), 0 10px 24px rgba(32, 36, 27, 0.08);
   }
-  .type-spec .bubble .src { color: var(--pp-accent); }
+  .note-pin .bubble .src { color: var(--pp-accent); }
+  /* pins inside scroll-revealed parents bloom when the parent lands */
+  .unfold .note-pin { opacity: 0; animation: none; }
+  .unfold.in .note-pin { animation: bloom 0.55s var(--ease-petal) 0.85s both; }
+  /* vertical variant — bubble above, leader dropping to a pin on the element's
+     top border (used on cards) */
+  .note-pin--up {
+    position: absolute; left: var(--space-lg); bottom: calc(100% - 6px);
+    flex-direction: column-reverse; align-items: flex-start;
+  }
+  .note-pin--up .lead {
+    width: 0; height: 20px; margin-left: 4px;
+    border-top: none; border-left: 2px dotted var(--pp-petal);
+  }
+  .note-pin--up .bubble { border-bottom-left-radius: 12px; border-top-left-radius: 2px; }
+  /* band variant — pinned to the closing band's green field */
+  .note-pin--band { position: absolute; right: var(--space-md); top: 8px; }
   .hero-row { display: grid; grid-template-columns: 1fr 1.05fr; gap: var(--space-2xl); align-items: center; }
   .hero-text { max-width: 560px; }
   .hero-text .deck {
@@ -335,6 +352,7 @@
   /* ── three features ───────────────────────────────────────── */
   .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-md); }
   .feature-card {
+    position: relative;
     display: flex; flex-direction: column;
     background: var(--pp-bg-artifact); border: 1px solid var(--pp-border);
     border-radius: 10px; padding: var(--space-lg);
@@ -429,6 +447,7 @@
   }
   .install h2 { margin-bottom: 0; color: var(--pp-bg); }
   .install .section-head { margin-bottom: var(--space-lg); }
+  .install .container { position: relative; }
   .install .kicker { color: var(--pp-petal); }
   .install p { color: var(--pp-surface); }
   .install a { color: var(--pp-bg); text-decoration-color: rgba(232, 145, 127, 0.6); }
@@ -489,7 +508,8 @@
     .hero { padding-top: var(--space-2xl); padding-bottom: var(--space-2xl); }
     .hero-head h1 { font-size: clamp(3rem, 11vw, 4.2rem); }
     .hero-head::after { width: 240px; height: 240px; top: 0; }
-    .type-spec { display: none; }
+    .note-pin { display: none; }
+    .specimen::before, .specimen::after { display: none; }
     .hero-row { grid-template-columns: 1fr; gap: var(--space-xl); }
     .hero-text { max-width: none; }
     .hero-text .deck { margin-bottom: var(--space-lg); }
@@ -564,17 +584,30 @@
   .hero { position: relative; }
   .specimen {
     /* straddles the terminal's lower-left corner from OUTSIDE the terminal
-       (inside it, the term's overflow:hidden clips the card) */
+       (inside it, the term's overflow:hidden clips the card) — and joins the
+       note-pin family: it is the session's OUTPUT, pinned to the terminal */
     position: absolute;
     left: 41%; bottom: 14px;
     background: var(--pp-bg-artifact);
     border: 1px solid var(--pp-border);
-    border-radius: 12px;
+    border-radius: 12px; border-top-right-radius: 2px;
     padding: var(--space-xs) var(--space-sm);
     box-shadow: 0 2px 6px rgba(32, 36, 27, 0.07), 0 18px 44px rgba(32, 36, 27, 0.12);
     display: grid; gap: var(--space-3xs);
     animation: bloom 0.7s var(--ease-petal) 1.9s both;
     transform-origin: 20% 90%;
+  }
+  /* pin dot on the terminal's dark strip + dotted leader into the card's
+     tail corner: the session above, its output pinned to it */
+  .specimen::before {
+    content: ''; position: absolute; top: 2px; right: -56px;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--pp-petal);
+    box-shadow: 0 0 0 4px rgba(232, 145, 127, 0.25);
+  }
+  .specimen::after {
+    content: ''; position: absolute; top: 6px; right: -44px;
+    width: 36px; border-top: 2px dotted var(--pp-petal);
   }
   .specimen-swatches { display: flex; gap: 6px; }
   .specimen-swatches .sw { width: 30px; height: 30px; border-radius: 8px; display: block; }
@@ -601,7 +634,7 @@
     .unfold, .term-line { opacity: 1; transform: none; transition: none; transition-delay: 0s !important; }
     nav .logo .mark { animation: none; }
     .feature-card .glyph, .feature-card.in .glyph { opacity: 1; animation: none; }
-    .type-spec { animation: none; }
+    .note-pin, .unfold .note-pin, .unfold.in .note-pin { opacity: 1; animation: none; }
     .feature-card, .scope-card, .btn, a { transition: none; }
   }
 </style>
@@ -610,7 +643,13 @@
 
 <nav class="container">
   <a href="/" class="logo">
-    <svg class="mark" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21 C7 19.5 4.5 15 5.5 10.5 C6.5 6 10 3 14.5 3 C18 3 19.5 5 19 8 C18.5 11.5 16.5 15.5 14 18.5 C13.4 19.3 12.7 20.2 12 21 Z" fill="#E8917F"/><path d="M12 21 C13.5 16 15.5 10.5 19 6.5" stroke="#3F7A33" stroke-width="1.3" stroke-linecap="round" fill="none"/></svg>
+    <!-- the mark: three petals from one stem — leaf, blossom, petal: the
+         palette itself, carried -->
+    <svg class="mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 21 C9.4 15 9.4 9 12 4.5 C14.6 9 14.6 15 12 21 Z" fill="#3F7A33" transform="rotate(-38 12 21)"/>
+      <path d="M12 21 C9.4 15 9.4 9 12 4.5 C14.6 9 14.6 15 12 21 Z" fill="#E8917F" transform="rotate(38 12 21)"/>
+      <path d="M12 21 C9.4 15 9.4 9 12 4.5 C14.6 9 14.6 15 12 21 Z" fill="#C04B3C"/>
+    </svg>
     petals
   </a>
   <div class="links">
@@ -626,7 +665,7 @@
 <header class="hero container">
   <div class="hero-head">
     <span class="kicker">Open source · self-hosted · file-based</span>
-    <h1>Brand that <span class="em">agents read.</span><span class="type-spec" aria-hidden="true"><i class="pin"></i><i class="lead"></i><span class="bubble">this headline: Fraunces 620 — <span class="src">.brand/typography.md</span></span></span></h1>
+    <h1>Brand that <span class="em">agents read.</span><span class="note-pin" aria-hidden="true"><i class="pin"></i><i class="lead"></i><span class="bubble">this headline: Fraunces 620 — <span class="src">.brand/typography.md</span></span></span></h1>
   </div>
   <div class="hero-row">
   <div class="hero-text">
@@ -709,7 +748,8 @@
       <h2>The brand lives in a beautiful PDF. The agent has never seen it.</h2>
       <p>
         A company spends months on its identity. None of it reaches the agent
-        writing the UI — so it reaches for the defaults, and someone catches it later.
+        writing the UI — so it reaches for the defaults, and someone catches it
+        later.<span class="note-pin" aria-hidden="true"><i class="pin"></i><i class="lead"></i><span class="bubble">this copy: warm, zero hype — <span class="src">.brand/voice.md</span></span></span>
       </p>
     </div>
 
@@ -771,6 +811,7 @@
 
     <div class="features">
       <div class="feature-card">
+        <span class="note-pin note-pin--up" aria-hidden="true"><i class="pin"></i><i class="lead"></i><span class="bubble">this card: radius-lg · shadow-lift — <span class="src">.brand/components.md</span></span></span>
         <!-- the brand guideline, and the petal extracted from its corner -->
         <svg class="glyph" viewBox="0 0 48 48" fill="none" aria-hidden="true">
           <rect x="9" y="5" width="24" height="32" rx="3" fill="#F0EDE1" stroke="#3F7A33" stroke-width="2"/>
@@ -1001,6 +1042,7 @@
     <div class="section-head centered">
       <span class="kicker">Get started</span>
       <h2>One command. Brand that agents read.</h2>
+      <span class="note-pin note-pin--band" aria-hidden="true"><i class="pin"></i><i class="lead"></i><span class="bubble">this band: #3F7A33 primary — <span class="src">.brand/colors.md</span></span></span>
     </div>
     <div class="term install-term">
       <div class="titlebar">
@@ -1022,7 +1064,11 @@
 <footer class="container">
   <div class="brand-col">
     <div class="logo">
-      <svg class="mark" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21 C7 19.5 4.5 15 5.5 10.5 C6.5 6 10 3 14.5 3 C18 3 19.5 5 19 8 C18.5 11.5 16.5 15.5 14 18.5 C13.4 19.3 12.7 20.2 12 21 Z" fill="#E8917F"/><path d="M12 21 C13.5 16 15.5 10.5 19 6.5" stroke="#3F7A33" stroke-width="1.3" stroke-linecap="round" fill="none"/></svg>
+      <svg class="mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 21 C9.4 15 9.4 9 12 4.5 C14.6 9 14.6 15 12 21 Z" fill="#3F7A33" transform="rotate(-38 12 21)"/>
+        <path d="M12 21 C9.4 15 9.4 9 12 4.5 C14.6 9 14.6 15 12 21 Z" fill="#E8917F" transform="rotate(38 12 21)"/>
+        <path d="M12 21 C9.4 15 9.4 9 12 4.5 C14.6 9 14.6 15 12 21 Z" fill="#C04B3C"/>
+      </svg>
       petals
     </div>
     <p>
