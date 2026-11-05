@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>component-contracts</title>
+<link rel="stylesheet" href="loop.css">
+<body>
+<script type="text/markdown" id="loop">
+# component-contracts: one home per component, and the check knows it
+**Goal.** Every component has one home and a contract naming its states and tokens, and the check flags a component that was rebuilt instead of reused. Phase 5 of the roadmap.
+
+## Tests
+- [ ] (code) A generated brand writes the starter components as real code, with a contract per component in .brand/components/ naming its home, states and tokens (issue #6) · tests/components.spec.sh
+- [ ] (code) Each starter component's preview page shows every state its contract names (issue #6) · tests/components.spec.sh
+- [ ] (code) A raw button or checkbox in a file that does not import the component is flagged with the component's home (issue #7) · tests/reuse.spec.sh
+- [ ] (code) A second definition of a contracted component outside its home is flagged (issue #7) · tests/reuse.spec.sh
+- [ ] (code) A graft screen control whose kind matches no component contract is flagged (issue #8) · tests/graft-seam.spec.sh
+- [ ] (code) Kill test: across two bootstrapped projects, no rebuilt component and no off-token value passes the check · tests/kill-test.spec.sh
+
+## Needs #generated-brand
+
+## For #ai-agent #shipping-developer
+
+## Tried
+- 2026-11-05 shaped from docs/plans/2026-11-05-petals-roadmap.md
+</script>
+<script src="loop.js"></script>

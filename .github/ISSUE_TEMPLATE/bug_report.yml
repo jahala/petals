@@ -1,0 +1,32 @@
+name: Bug report
+description: Something petals does wrong, or differently than the docs say.
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What did petals do, and what did you expect instead?
+      placeholder: |
+        Expected: ...
+        Actual:   ...
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction
+      description: The command and the smallest file that shows it. A paste is fine.
+      placeholder: |
+        1. `petals check page.html --brand .brand`
+        2. Look at the output
+      render: shell
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The output of `petals --version`, or the petals commit you use.
+    validations:
+      required: true

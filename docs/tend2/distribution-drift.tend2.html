@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>distribution-drift · garden</title>
+<link rel="stylesheet" href="./loop.css">
+<body>
+<noscript>This page renders its markdown payload with JavaScript — enable JS, or read the raw payload in the page source.</noscript>
+<script type="text/markdown" id="loop">
+# Distribution Drift
+
+**Pain.** The brand changes. New logo. Palette refresh. Voice shift. Someone Slacks every team. Some projects update. Some don't. Six months later, three different versions of the brand exist across the org's codebases. The brand operator's careful update reached nobody consistently. New projects copy-paste a colors.ts from a random repo and hope it's current. There is no mechanism to propagate a brand change — only chat messages and hope.
+
+## Six projects. One brand repo. Zero chat messages.
+
+The brand team tags `v1.3.0` on the central repo. Maria doesn't message anyone. She doesn't file a ticket. She doesn't paste hex codes into a shared document and hope. The next agent session on each connected project detects the drift — `.brand/` is behind. The agent shows what changed: new primary color, updated logo. Four projects update immediately. Two have campaign overrides — they update without losing their seasonal palette. By Friday, zero projects are still silently on `v1.2.0`.
+
+That's distribution working. The brand travels through git, not through chat messages. Projects don't fossilize. New projects don't copy-paste a `colors.ts` from a random repo and hope it's current. They run `/petal init --from` and get the canonical brand, version-pinned, always current, never drifting silently.
+
+## Git is the distribution layer. That's either genius or naive.
+
+We're betting that git is sufficient for brand distribution — that the same mechanism developers use for code works for brand files. Git is already authenticated. Already versioned. Already understood by every developer. What it lacks — push notifications, real-time sync, centralized enforcement — are features we argue are unnecessary. Next time an agent works, it notices the drift. That's fast enough.
+
+The risk: projects go months without an agent session. A brand update lands in the central repo, tagged and ready, and sits there because nobody opened a session on the legacy admin dashboard in six weeks. When someone finally does, the drift is 14 versions deep and the merge is painful. The countermeasure — `/petal update` can run in CI on a schedule — is not built in v1. Without it, distribution relies on agent sessions as the sync trigger, and cold projects stay cold.
+
+A subtler risk: the central repo becomes a bottleneck. One person — Maria — owns the brand repo. If she's on vacation when the palette changes, the central repo is stale and every project is frozen. Distribution that flows through a single human is not distribution — it's a queue. The fix (multiple maintainers, CI-pushed updates from design tools) is organizational, not technical. But the tool doesn't solve the organizational problem; it just makes the queue visible.
+
+## Every company with more than three projects has this scar
+
+One brand tool ships a `brand.md` file specifically to prevent distribution drift. Another's entire architecture is built around a portable `.brand/` directory. A third publishes `brand.json` at their domain root to keep external agents current. Three independent companies, three different approaches, one shared pain: brand changes don't propagate.
+
+This isn't theoretical. Every company with more than three projects and a brand identity has at least two different palettes in production right now. The marketing site uses last year's colors. The dashboard updated last month. The docs site never got the memo. Nobody checks unless a customer notices. When someone finally audits, they find `#E7000B` living in a footer that should have been `#FF4D00` since March.
+
+The pattern is consistent: the brand team ships a change, someone announces it in chat, and the announcement decays. People leave channels. People skim and forget. People copy-paste the old `colors.ts` because that's what they found first. The announcement-based distribution model — which every company uses because there is no alternative — fails silently, constantly, everywhere. Petals replaces the announcement with infrastructure. The brand doesn't get announced. It gets fetched.
+
+## For #brand-operator
+
+## Solved by #brand-distribution
+
+## Signals
+- Brand distribution tools name drift across projects as their core value; every company with more than three projects and one brand meets it · from the competitor analysis
+- metric: nine days between the heading-face change and the first page that noticed, across five product pages · from the petals start prompt, 2026-11-05
+
+## Tried
+- 2026-11-05 migrated from v1 (docs/tend/features/distribution-drift.tend.html) by `loop migrate`
+</script>
+<script src="./loop.js"></script>

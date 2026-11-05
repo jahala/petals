@@ -1,0 +1,17 @@
+/* file-spacing-off.css — contains padding: 13px (not a multiple of 4) */
+/* Spacing scale: multiples of 4. 13px should be a warning. */
+
+.container {
+  padding: 13px;
+  margin: 8px;
+}
+
+.card {
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.button {
+  padding: 13px 24px;
+  margin-top: 4px;
+}

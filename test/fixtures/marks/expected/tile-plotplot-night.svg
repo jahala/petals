@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-label="plotplot">
+  <rect width="24" height="24" rx="5.5" fill="#1C1610"/>
+  <g transform="translate(3.36 3.36) scale(0.72)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 22 V8" stroke="#84C56A" stroke-width="2"/>
+  <path d="M12 17.6 C7.8 16.8 5.2 13.6 5.6 9.8 C9.3 10.4 12 13.2 12 17.6 Z" fill="#84C56A"/>
+  <path d="M12 14.6 C16.2 13.8 18.8 10.6 18.4 6.8 C14.7 7.4 12 10.2 12 14.6 Z" fill="#84C56A"/>
+  <circle cx="12" cy="4.6" r="2.5" fill="#F4B63A"/>
+  </g>
+</svg>

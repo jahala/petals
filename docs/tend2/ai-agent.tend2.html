@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ai-agent · garden</title>
+<link rel="stylesheet" href="./loop.css">
+<body>
+<noscript>This page renders its markdown payload with JavaScript — enable JS, or read the raw payload in the page source.</noscript>
+<script type="text/markdown" id="loop">
+# AI Agent
+
+**Who.** A Claude Code agent (or any coding agent) working in a project with .brand/ files. It has no opinions, no brand knowledge of its own, and a context window that fills fast. It produces UI code and copy on demand — and defaults to generic styles every time unless brand context is discoverable, structured, and cheap to load. It doesn't "want" anything — but if brand files are available and designed right, it produces on-brand output without the developer thinking about it. If they're not, it silently drifts.
+
+The agent opens a session. Someone types "build a pricing page." It has a ~200K token context window, no brand knowledge of its own, and a default color palette that leans framework blue and Inter. It reads .brand/colors.md because the skill description told it to. It loads only the palette — 2,000 tokens, not 15,000 — because progressive disclosure keeps voice rules and typography on disk until needed. It generates the hero section in the right primary color, the right heading font, the right voice tone. Before marking the work ready, it runs /petals check on its own output. Finds a spacing value at 13px that should be 12px. Fixes it. No human saw the violation. No PR comment needed. The agent doesn't want anything — but its constraints (finite context, no persistent memory, generic defaults) shape every design decision in petals.
+
+## "I start every session from zero. Every single one."
+
+"I have no memory of the last session. I don't remember that Maria updated the accent to `#FF4D00` yesterday. I don't know the voice guide bans 'leverage.' I open a new session and my entire knowledge of the brand is: nothing. Unless `.brand/` is there and someone tells me to read it."
+
+"If `.brand/` exists and the skill tells me to read it, I will. I'll load `colors.md` and use `#2F99A4` for the primary. I'll load `typography.md` and use Raleway for headings. I'll load `voice.md` and avoid 'leverage.' I don't need to want to be on-brand. I just need the files to be there, discoverable, and cheap to load."
+
+"But if those files don't exist — or they cost 15,000 tokens to load — I'll default to framework blue. I'll use Inter. I'll write copy that sounds like every other landing page. Not because I want to. Because I don't know any better. And when Sam catches it in review and leaves that comment for the fourteenth time — I could have caught it first. I just needed the rules."
+
+## The agent at work: three moments
+
+A session starts. The prompt is "build a contact page." No hex codes. No font names. No voice rules. Before generating anything, the agent reads `.brand/colors.md` — just the palette, 2,000 tokens. It finds `primary: #2F99A4` and uses it for the CTA button. It reads `.brand/typography.md` and uses Raleway Bold for the heading. It reads `.brand/voice.md` and writes the headline in direct, warm language without a single "leverage" or "synergize." The output is on-brand. The developer typed zero brand context into the prompt. The agent loaded exactly three files — not the full DESIGN.md, not voice rules it didn't need, just the sections relevant to the task.
+
+A different session. The agent generates a settings page with a pricing card. Before marking the work ready for review, it runs `/petal check` on its own output. The check finds `padding: 13px` where the spacing scale uses multiples of 4. Warning, not error — but the agent fixes it to 12px before the human sees it. Then it scans the copy: "We leverage our platform to deliver value." The check flags "leverage" and suggests "use." The agent rewrites to "We use our platform to deliver value." `/petal check` runs again — zero errors. The human reviews architecture. Nobody comments on hex codes.
+
+A session with a tight budget. The prompt is a complex multi-step feature: auth flow, dashboard, onboarding. The agent needs every token for the task. It discovers petals at ~100 tokens (just the skill name and description in the registry). When the creative work begins, it activates the skill at ~2,500 tokens (SKILL.md body). It loads `colors.md` for the palette — nothing else. Voice and typography stay on disk until copy or UI work requires them. Total brand context: under 3,000 tokens out of 200K. The rest goes to the task. That's progressive disclosure working as designed.
+
+## The silent consumer
+
+The agent is not a persona in the traditional sense. It has no job title. No chat presence. No "week" to describe. It doesn't feel frustration or hope or satisfaction. But its constraints — a finite context window, no persistent memory, generic defaults, no brand knowledge — are the constraints that shaped every architectural decision in petals.
+
+`.brand/` files are separate markdown files, not one big JSON blob, because the agent needs to load them one at a time. The skill uses progressive disclosure because the agent's context budget is shared between brand rules and the actual task. `colors.md` exists as its own file because the agent loads it before generating UI — it doesn't need voice rules for a button component. `voice.md` is separate because the agent loads it before writing copy.
+
+[Brand extraction](brand-extraction.tend2.html) produces `.brand/` files the agent can read. [Brand check](brand-check.tend2.html) lets the agent self-audit before a human reviews. Every feature in petals exists because the agent's constraints demand a specific design: files over APIs, markdown over JSON, progressive over monolithic, explicit over inferred.
+
+This archetype matters because if you don't name the agent as a consumer, you design for humans by default. You build a beautiful web dashboard. You put brand guidelines in a wiki page. You organize colors in a design-tool library. All of those work perfectly for Maria and Sam. None of them work for the agent. The agent needs files on disk, structured for progressive reading, discoverable without configuration, cheap to load, and explicit about every value. That's not a human's requirement set. That's the agent's.
+
+Petals exists because those requirements were named. If you skip this persona, you build the wrong thing for the right reasons — a brand tool that humans love and agents can't use.
+
+## Jobs
+- When I open a new session and receive a creative task — build a landing page, write headlines, create a component — because every session starts from zero brand knowledge and my defaults are framework blue + Inter + neutral tone, we believe .brand/ files should be discoverable and readable without the developer mentioning them or pasting hex codes into the prompt. We'll know we got it right when I produce output using palette colors, correct fonts, and brand voice from a prompt that contains zero brand instructions, and I can cite which .brand/ file each value came from. · guessed
+- When I've generated UI or copy, because I confidently produce wrong hex values and forbidden terms that look right but aren't, we believe I should self-audit my output by running /petal check and /petal voice before a human reviews my work, catching violations I can fix without human intervention. We'll know we got it right when over a two-week period, my PRs contain zero violations that /petal check would have caught — I caught them first. · guessed
+- When I load brand context, because my context window is finite and shared between the task, the conversation, and all loaded files, we believe brand files should be progressively disclosed — I discover the skill at ~100 tokens, load SKILL.md at ~2,500 tokens when brand work activates, and load individual reference files on demand (colors.md only when checking colors, voice.md only when reviewing copy). We'll know we got it right when a standard UI task loads less than 3,000 tokens of brand context, leaving the rest of my context window for the actual work. · guessed
+
+## Tried
+- 2026-11-05 migrated from v1 (docs/tend/features/ai-agent.tend.html) by `loop migrate`
+</script>
+<script src="./loop.js"></script>

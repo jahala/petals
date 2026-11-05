@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>file-stages</title>
+<link rel="stylesheet" href="loop.css">
+<body>
+<script type="text/markdown" id="loop">
+# file-stages: mockups may invent content, production may not
+**Goal.** Every file has a stage. Mockup paths are declared in config and everything else is production. Content-truth rules are notes in a mockup and block in production; brand rules hold in both. Part of phase 3 of the roadmap.
+
+## Tests
+- [x] (code) Invented content under a declared mockup path is a note, and the same content under a production path blocks · tests/stages.spec.sh · reads: petals/scripts/check.sh, test/fixtures/brand-plotplot-v1.9.0/ @cd4fccca81a4c9 · by cli
+- [x] (code) A file in no declared stage is judged as production · tests/stages.spec.sh · reads: petals/scripts/check.sh, test/fixtures/brand-plotplot-v1.9.0/ @fb341daa81a4c9 · by cli
+- [x] (code) Brand rules give the same findings in a mockup and in production · tests/stages.spec.sh · reads: petals/scripts/check.sh, test/fixtures/brand-plotplot-v1.9.0/ @11fbac3a81a4c9 · by cli
+- [x] (code) A change that moves a mockup file with invented content into a production path blocks · tests/stages.spec.sh · reads: petals/scripts/check.sh, test/fixtures/brand-plotplot-v1.9.0/ @5233214a81a4c9 · by cli
+
+## Needs #stem-bed
+
+## For #shipping-developer #brand-operator
+
+## Tried
+- 2026-11-05 shaped from docs/plans/2026-11-05-petals-roadmap.md
+- 2026-11-05 cli: content-truth rules were planned in the phase 6 pack, but stages relax nothing without them; three deterministic ones landed here (placeholder, dummy contact, dead link). Invented testimonials cannot be told from text, so they stay an agent judgment. A file moved into a production path is a production file, so the per-file check blocks it; the gate (#4) adds the diff view
+</script>
+<script src="loop.js"></script>

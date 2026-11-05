@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ground</title>
+<link rel="stylesheet" href="loop.css">
+<body>
+<script type="text/markdown" id="loop">
+# ground: land what is worth keeping, then brief the agents
+**Goal.** Master holds everything worth keeping from the unlanded release work, each piece of the old code has a recorded verdict, and agents get a brief that says what petals is now. Phase 0 of the 2026-11-05 roadmap.
+
+## Tests
+- [x] (code) Every path the June release work touched is landed on master or named as left out, with its reason, in the old-code review · tests/release-landed.spec.sh · reads: docs/plans/release-work-paths.txt, docs/plans/old-code-review.md @900cca42759798 · by cli
+- [x] (code) Every spec suite prints TAP and passes on master · tests/run-all.sh · reads: tests/, petals/scripts/, test/fixtures/ @8126883343f02e · by cli
+- [x] (code) `.petalsrc` pins jahala/plotplot with petals as the product, the product layer is committed and the umbrella's files ignored, and the pinned version is a tag the source publishes (being behind a newer tag is drift, which check-brand-drift.sh reports) · tests/petalsrc.spec.sh · reads: .petalsrc, .gitignore, petals/scripts/check-brand-drift.sh @6a93759a20e496 · by cli
+- [x] (code) docs/plans/old-code-review.md gives a verdict (port, learn from or drop) and a reason for every script in petals/scripts and every /petals command · tests/old-code-review.spec.sh · reads: docs/plans/old-code-review.md, petals/scripts/, petals/SKILL.md @4e354d702ec7ee · by cli
+
+## For #ai-agent #brand-operator
+
+## Tried
+- 2026-11-05 shaped from docs/plans/2026-11-05-petals-roadmap.md
+- 2026-11-05 cli: order: the release work stops committing .brand/, which the brand-check and brand-book stamps read; land the v1.9.0 fetch in the same step, so those stamps re-earn against the fetched brand instead of losing their inputs
+</script>
+<script src="loop.js"></script>

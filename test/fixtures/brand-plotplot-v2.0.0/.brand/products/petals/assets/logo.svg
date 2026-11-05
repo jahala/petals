@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+  <!-- petals mark — three petals fanned from one base point, in the three
+       brand tones: vital leaf, vivid blossom, luminous petal.
+       Canonical asset: copy byte-for-byte; never redraw or recolor. -->
+  <path d="M12 21 C9.4 15 9.4 9 12 4.5 C14.6 9 14.6 15 12 21 Z" fill="#3F7A33" transform="rotate(-38 12 21)"/>
+  <path d="M12 21 C9.4 15 9.4 9 12 4.5 C14.6 9 14.6 15 12 21 Z" fill="#E8917F" transform="rotate(38 12 21)"/>
+  <path d="M12 21 C9.4 15 9.4 9 12 4.5 C14.6 9 14.6 15 12 21 Z" fill="#C04B3C"/>
+</svg>

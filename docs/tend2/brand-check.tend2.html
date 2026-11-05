@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>brand-check · garden</title>
+<link rel="stylesheet" href="./loop.css">
+<body>
+<noscript>This page renders its markdown payload with JavaScript — enable JS, or read the raw payload in the page source.</noscript>
+<script type="text/markdown" id="loop">
+# Brand Check
+
+**Goal.** /petals check [file] audits agent-generated UI against .brand/ rules. /petals voice <text> checks copy against voice guidelines. Both report specific, actionable violations. This is the seatbelt — ambient context (from brand-extraction) is the steering wheel.
+
+Even the best agent misreads a brand file occasionally. Or someone copies a component from a different project. Or a human edits agent output and introduces a hardcoded color. Check catches what slips through — before it reaches review. Without it, every violation is caught by a human who should be reviewing architecture, not hex codes.
+
+## Leo opens the PR at 10am
+
+The diff is clean. A new settings page, agent-generated. Layout is right. Data flow is correct. Leo starts scanning the rendered output and stops at the header. That blue is wrong. It is close — a half-shade off — but it is not the brand primary. Five minutes later, same story in the copy: "leverage our platform to synergize." Two forbidden terms on a single card. The agent wrote the code. Nobody checked the output before it hit the PR.
+
+Leo runs `/petals check src/pages/Settings.tsx`. The agent reads `.brand/colors.md` — just the palette, nothing else. Reports `#3B82F6` at line 42: not in palette. Suggests `#2F99A4`. Then flags "leverage" and "synergize" in the copy at line 78. Two errors. Zero architecture problems missed.
+
+This shift — from human hex-code reviewer to human architecture reviewer — is what check delivers. The agent writes the code. The agent checks the code. Leo reviews architecture. That is the right split.
+
+## What check audits
+
+Five dimensions. Colors: every hex value in the target file resolves against the palette in `.brand/colors.md`, and every resolvable text/background pair is measured against the contrast pairings — a palette color used illegibly is an error too. Typography: every `font-family` declaration checks against the hierarchy in `.brand/typography.md` — headings use the heading font, body uses the body font. A swapped weight is an error. Layout: every padding, margin, container, and breakpoint checks against the scale and rules in `.brand/layout.md`. 13px is not 12px, but it might be deliberate — layout violations are warnings, not errors. Surface: radius, borders, shadows, and motion check against the tokens in `.brand/components.md` — a bounce ease or a pure-black shadow is flagged. Voice: every sentence scans against the forbidden terms, terminology, and casing rules in `.brand/voice.md`. "Leverage" and "synergize" are errors, with suggested alternatives.
+
+The taxonomy is explicit. Errors require a fix. Warnings suggest one. The agent never leaves interpretation to the human — it names the violation, cites the rule, and offers the correction.
+
+## The right file for the right question
+
+Check loads only what it needs. A color-only audit reads `.brand/colors.md` — not the full DESIGN.md, not voice.md, not typography.md. Ten kilobytes of context instead of fifty. Progressive disclosure keeps token cost proportional to the audit. If the file has no text content, voice.md never loads. If it has no CSS, typography.md stays on disk.
+
+This matters because agents are cost-sensitive. If check burned fifty thousand tokens on every invocation, agents would avoid calling it. At ten thousand tokens for a focused audit, the cost is smaller than the fix it catches. That is the threshold: cheaper to run than to fix in review.
+
+## The seatbelt, not the steering wheel
+
+[Brand Extraction](brand-extraction.tend2.html) creates the brand context agents read at generation time. [Brand Distribution](brand-distribution.tend2.html) gets that context into every project. Both are prevention — the steering wheel, keeping the agent on course before it writes a single line.
+
+Check is detection. It catches what slips through — a misread file, a copied component from another project, a human edit that introduces a hardcoded hex. It is the seatbelt: you hope you never need it, but when you do, the difference is a bruise versus going through the windshield.
+
+The goal is not to make check busy. The goal is to make every check return zero errors — and to catch the ones that would have reached human review otherwise. Over a two-week period, violations trend toward zero not because agents stopped making mistakes, but because check caught them before they shipped.
+
+## Three lines of defense
+
+The skill's auto-trigger is generation-time — the brand arrives before the first line is written. The Guardrails recipes in SKILL.md add the other two moments: an edit-time hook that runs the deterministic half of the color audit (hex literals against the palette, no agent in the loop) on every edited UI file, and a merge-time CI job that runs the full five-dimension check on a pull request's changed files. Generation, edit, merge. Check stops being a command someone remembers and becomes a property of the project.
+
+## One family, many products
+
+The brand may be a family: an umbrella (plotplot) whose products each claim one accent. In a product context the check knows whose accent is whose — tend's clay in petals UI is a warning by name, and an off-palette color near a product accent is suggested with its owner named. The product's own accent passes without comment. Family palette, product boundaries.
+
+## Where
+
+petals/SKILL.md (check and voice subcommands). petals/references/color-audit-guide.md. petals/references/voice-guide.md. Reads from .brand/colors.md, .brand/typography.md, .brand/layout.md, .brand/components.md, .brand/voice.md.
+
+## How
+
+The agent reads the relevant .brand/ file for each check dimension. Scans the target for violations: hex patterns and contrast pairings against colors.md, font-family against the typography spec, spacing/containers/breakpoints against layout.md, radius/shadow/motion against components.md, forbidden terms and casing against voice rules. Errors (must fix) vs warnings (suggest fix). Progressive disclosure: only loads the .brand/ file relevant to what it's checking — a color-only check reads colors.md, not the full DESIGN.md.
+
+## Fit
+
+The verify-phase safety net. Extraction creates brand context agents read at generation time. Distribution gets it into projects. Check is the last line — it audits output against the same .brand/ files the agent already read.
+
+## Impact
+
+Over a two-week period, PRs with agent-generated output have zero violations that check would catch. Color mismatches, font deviations, spacing outside scale, and forbidden terms trend to zero. The human's review shifts from 'is this our blue?' to 'is this the right abstraction?'
+
+## Tests
+- [x] (code) /petals check <file> reports every hardcoded hex not in the palette as an error with a suggested palette alternative. Reports zero errors when all colors are in palette. · tests/check.spec.sh · reads: petals/scripts/check.sh, petals/scripts/lib/common.sh, test/fixtures/check/, test/fixtures/brand-plotplot-v2.0.0/ @16bb11324e44ef · by cli
+- [ ] (code) /petals check <file> reports a typography error when heading font is used as body font (or vice versa). Reports zero errors when typography matches hierarchy. · petals/SKILL.md
+- [x] (code) /petals check <file> reports layout values outside the .brand/ scale as warnings (not errors) with closest scale value suggestions. · tests/check.spec.sh · reads: petals/scripts/check.sh, petals/scripts/lib/common.sh, test/fixtures/check/, test/fixtures/brand-plotplot-v2.0.0/ @829890824e44ef · by cli
+- [ ] (code) /petals voice <text> reports forbidden terms with suggested alternatives. Passing text reports zero violations. · petals/SKILL.md
+- [ ] (code) /petals check <file> does not flag hex values inside data URIs, base64 strings, or URLs as hardcoded colors. · petals/scripts/check.sh
+- [ ] (code) /petals check on a project with no .brand/ directory reports a clear setup instruction ('no brand configured - run /petals init --from <url>'). · petals/scripts/check.sh
+- [ ] (code) /petals check <file> only reads the .brand/ files relevant to the violations being checked. A file with only color values reads colors.md; it does not load voice.md or the full DESIGN.md. · petals/SKILL.md
+- [ ] (code) /petals check <file> completes on a 200-line file with 50 color values and 20 font declarations in under 10 seconds - fast enough that agents don't avoid calling it. · petals/scripts/check.sh
+- [ ] (code) Check uses the agent's native capabilities (reading files, pattern matching) - it does not depend on external linting tools, browser automation, or custom code. · petals/scripts/check.sh
+- [ ] (code) Check reads from .brand/colors.md for color audits, .brand/typography.md for typography audits, .brand/layout.md for layout audits, .brand/components.md for surface audits, and .brand/voice.md for voice audits - these specific files exist and are the canonical sources for each check dimension. · petals/scripts/check.sh
+- [x] (code) /petals check catches brand violations that would otherwise reach PR review - color audit (c001) and voice audit (c004) detect 100% of seeded violations in test fixtures, confirming the why claim that violations trend to zero before human review. · tests/check.spec.sh · reads: petals/scripts/check.sh, petals/scripts/lib/common.sh, test/fixtures/check/, test/fixtures/brand-plotplot-v2.0.0/ @e7d1f4b24e44ef · by cli
+- [ ] (code) Each audit dimension maps to exactly one .brand/ file - colors to colors.md, typography to typography.md, layout to layout.md, surface to components.md, voice to voice.md. No dimension loads an unrelated file, confirming the progressive-disclosure fit claim. · petals/scripts/check.sh
+- [ ] (code) SKILL.md documents the two guardrail recipes beyond generation time - an edit-time deterministic hex hook (PostToolUse) and a merge-time CI job running the full check on changed files. · petals/SKILL.md
+- [x] (code) A deterministic engine (petals/scripts/check.sh) covers the pure-math dimensions — palette hexes with nearest match, contrast pairs, layout scale, breakpoints, radius/easing/shadow tokens, voice terms and casing — with zero agent tokens, in the documented report format. The agent covers typography and tone. · tests/check.spec.sh · reads: petals/scripts/check.sh, petals/scripts/lib/common.sh, test/fixtures/check/, test/fixtures/brand-plotplot-v2.0.0/ @29ba3df24e44ef · by cli
+- [x] (code) In a product context, the check warns by name when another product's accent appears literally in the product's UI, and names the owning product when an off-palette color's nearest match is a product accent. The product's own accent passes silently. · tests/check.spec.sh · reads: petals/scripts/check.sh, petals/scripts/lib/common.sh, test/fixtures/check/, test/fixtures/brand-plotplot-v2.0.0/ @b3fec0524e44ef · by cli
+
+## For #shipping-developer #ai-agent
+## Needs #ground
+
+## Tried
+- 2026-11-05 migrated from v1 (docs/tend/features/brand-check.tend.html) by `loop migrate`
+- 2026-11-05 v1 steps collapsed; history in git
+- 2026-11-05 Check reads .brand/ files by name. It does not validate the format. Missing files are reported as setup issues, not violations. — Format validation is extraction's job. Check works with whatever valid .brand/ exists.
+- 2026-11-05 All spacing violations are warnings (suggestions). Colors, typography, and voice violations are errors (must fix). The distinction: errors block a clean check result; warnings are advisory. — Spacing deviations are often intentional micro-adjustments. Hard color/font/voice rules should never be broken.
+- 2026-11-05 Check reads only the .brand/ sections relevant to the violations being checked — progressive disclosure, not loading everything at once. — Context budget is precious. A color-only check should not burn tokens loading typography rules or voice guides.
+- 2026-11-05 v1: enabled by #brand-distribution (same v1 user-journey edge, recorded on this side too)
+- 2026-11-05 v1: enabled by #brand-extraction (same v1 user-journey edge, recorded on this side too)
+- 2026-11-05 cli: tend2 migration: claimed checks reopened where the evidence is a document or a script that is not a test, or a file not on master; only checks backed by tests/check.spec.sh were re-earned
+</script>
+<script src="./loop.js"></script>

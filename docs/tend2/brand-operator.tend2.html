@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>brand-operator · garden</title>
+<link rel="stylesheet" href="./loop.css">
+<body>
+<noscript>This page renders its markdown payload with JavaScript — enable JS, or read the raw payload in the page source.</noscript>
+<script type="text/markdown" id="loop">
+# Brand Operator
+
+**Who.** A senior developer or tech lead who translates between the brand steward's world (PDFs, design-tool files, brand guidelines) and the development world (git repos, markdown files, CLI tools). They set up brand infrastructure once, maintain it when the brand changes, and otherwise trust it to run. Their week: PR reviews, architecture decisions, unblocking their team. They use git, CLI, and markdown as naturally as breathing. They are not a designer — but they're the person the designer comes to when the brand needs to reach the product.
+
+Maria opens her laptop at 9pm after the kids are down. She has 90 minutes before she crashes. The brand team sent her a 40-page PDF yesterday — the new palette, the updated voice guide, the fresh logo variants. She's supposed to get this into six projects. Every agent is still generating the old accent color. Nobody else on the team knows how to bridge the gap between a PDF and an agent's context window. She's the bridge. She points petals at the folder. One command. Five minutes later, .brand/ exists. She pushes it to the central repo, tags v2.0.0, and closes her laptop. Three days later, a developer on the dashboard project opens a session and types 'build a pricing page' — the agent produces output in the new brand colors without anyone pasting a hex code. The developer has never heard of Maria. They don't need to.
+
+## "The brand team ships PDFs. I ship hex codes."
+
+"I don't pick the blue. I don't choose the font. I'm the person who makes sure the agent knows the blue is `#2F99A4` and the heading is Raleway Bold, not Inter SemiBold — because the brand team spent six months on that decision and the agent starts from zero every session."
+
+"If I skip this, someone's agent ships `#3B82F6` into production tomorrow. I know because I've caught it. The agent didn't know any better. That's what I fix — not the hex code, the system that let the agent get it wrong in the first place."
+
+"Everyone assumes the brand just flows to the code. It doesn't. Someone has to read the 40-page PDF and turn it into files an agent can load in 2,000 tokens. I'm that person. After that, I'm not needed — the infrastructure runs itself."
+
+## Tuesday at 9:17pm, the message from Design arrives
+
+The kids are down. Maria opens her laptop. A chat notification from the brand team: "New palette PDF attached. Accent changed to #FF4D00 — please update everywhere." The PDF is 40 pages. Six projects are still generating the old accent.
+
+She points petals at the folder. One command. The agent reads the PDF, identifies every color value, catalogs the font hierarchy, copies the new logo SVGs. Five minutes later, `.brand/` exists. She opens `colors.md` — `accent: "#FF4D00"`, not `#E7000B`. She diffs against her mental checklist from the brand guide. The heading weight matches. Every asset is accounted for. She pushes to the central repo, tags `v2.0.0`. Twenty-two minutes total. She closes the laptop at 9:39pm.
+
+Three days later, a developer on the dashboard project types "build a pricing page." The agent generates the hero in `#FF4D00` — a color the developer has never typed. The developer doesn't know the accent changed. They don't need to know Maria exists.
+
+Sprint day one. New project repo, empty except for a README. Maria arrives at 8:30am and runs `/petal init --from brand-repo` before the first standup. Three minutes. She doesn't mention it. Nobody asks.
+
+Two sprints later, a junior developer opens an agent session and types "build a contact page." The agent produces the hero in the primary color, the heading in the correct font, the copy in brand voice. The developer pasted zero hex codes. They don't know Maria wired this up three sprints ago. It's not supposed to be visible.
+
+v1.3.0 drops mid-sprint. The central repo has a new tag. Primary color changed. Six projects are connected. Maria doesn't message anyone. On the next agent session in each project, drift detection fires — `.brand/` is behind. The agent shows what changed: new primary, updated logo. Four projects update immediately. Two have seasonal campaign overrides — they update without losing their custom palette. One project shows stale because a gitignore mistake blocked the fetch. Maria spots it in the drift report, fixes it in 30 seconds. By Friday, zero projects are on `v1.2.0`.
+
+## Nobody bridges the PDF and the prompt
+
+A brand team ships a 40-page PDF. A developer opens an IDE. An agent generates UI. These things share no format, no vocabulary, no protocol. The PDF is a human document made for human eyes. The agent reads markdown, JSON, and code. They need a translator.
+
+Maria is that translator. She takes what the brand team produces — PDFs, design-tool libraries, asset folders, chat messages about accent colors — and turns it into structured `.brand/` files that every agent in the org reads on startup. She doesn't design the brand. She doesn't consume the brand. She builds the pipe that carries brand intelligence from the design team's shared drive to the agent's context window — exactly once, correctly, with explicit values and no guesses.
+
+If this persona didn't exist, the brand stays in the PDF. Agents default to framework blue and Inter on every session. Developers paste hex codes into prompts — sometimes correctly, sometimes from memory, sometimes not at all. Reviewers spend 40% of their review time catching brand violations that the agent could have caught itself. When the brand changes — and it always changes — nobody knows which projects updated and which are silently running last year's palette.
+
+The damage compounds with every agent deployed. Ten agents across six projects, each producing UI without brand context, each PR needing manual brand review. The [brand extraction](brand-extraction.tend2.html) tool is the hammer; Maria is the hand that swings it. Without her, the tool sits unused and the brand team's months of work rot in a shared drive, beautiful and invisible.
+
+## Nobody designed this job. It appeared when agents started writing code.
+
+Maria's role didn't exist two years ago. The brand team designed PDFs for human designers. The engineering team wrote CSS by hand and knew the palette by heart. Agents changed the equation. They produce more code than any human team, but they start from zero every session. Someone has to bridge that gap. It became Maria's job by default — she was the one who caught the first `#3B82F6` in review and asked "why doesn't the agent know our brand?"
+
+This archetype matters because it names a role that already exists in every AI-assisted engineering team but isn't on any org chart. Every team has a Maria — the person who catches brand drift, who pastes the hex codes into the prompt when they remember, who Slacks the team when the palette changes. Petals makes that role a first-class operation: one command instead of forty chat messages, a central repo instead of tribal knowledge, files instead of hope. The work Maria already does — just intentional, automated, invisible.
+
+## Jobs
+- When the brand team sends me a 40-page PDF brand guide, a folder of logo SVGs, and a chat message about the new accent color (#FF4D00, not #E7000B, "please update everywhere"), because every AI agent across six projects is still generating the old accent color and nobody else on the team knows how to bridge the gap between a PDF and an agent's context window, we believe I should be able to point petal at that folder and get a complete, correct .brand/ directory in one command — colors extracted to hex, fonts identified, voice rules captured, logos copied — without manually typing 47 hex codes or guessing which font weight is the heading weight. We'll know we got it right when the generated colors.md contains #FF4D00 as the accent (not #E7000B, which was the old accent), the generated typography.md names the correct heading font family and weight, and every asset in assets/ matches its source — verified by diffing the output against known values from the brand guide. · guessed
+- When I start a new project repo and the team expects their agents to produce on-brand output from day one, because if brand isn't set up before the first agent session, the first PR will hardcode the framework's default blue into the hero section and someone (me) will catch it in review, we believe one command should pull the current brand into .brand/ and wire it into the project so every future agent session reads brand context without anyone thinking about it. We'll know we got it right when a developer who has never heard of petal opens a new agent session in this project, types "build a contact page," and the agent produces output with the correct primary color, heading font, and voice tone — without the developer pasting a single hex code into the prompt. · guessed
+- When the central brand repo gets a new tag (v1.2.0 to v1.3.0 — primary color changed, new logo variant added), because I can't manually message every developer on every project and hope they update before their next agent session, we believe every connected project should detect the drift automatically on the next /petal check or agent session, show what changed, and update with one command without losing project-specific overrides. We'll know we got it right when six projects detect the v1.3.0 drift on their next agent session, four update immediately, two with campaign overrides update without losing their seasonal palette, and zero projects are still silently using v1.2.0 two weeks later. · guessed
+
+## Tried
+- 2026-11-05 migrated from v1 (docs/tend/features/brand-operator.tend.html) by `loop migrate`
+</script>
+<script src="./loop.js"></script>

@@ -1,0 +1,36 @@
+DIFF css --pp-dur-micro committed: 0.18s derived: (absent) # components.md gives dur-micro as the range 0.15-0.3s; plotplot committed 0.18s by hand, a single value the markdown does not state
+DIFF css [dark]--pp-bg-band committed: #211A12 derived: (absent) # colors.md Light / Dark table gives Band dark as #211A12 but its CSS dark block omits --pp-bg-band; plotplot committed the table value into the CSS by hand
+DIFF css --pp-font-interface committed: (absent) derived: 'Hanken Grotesk', system-ui, sans-serif # typography.md declares --font-interface; plotplot never added --pp-font-interface to its committed tokens
+DIFF css --pp-breakpoint-880 committed: (absent) derived: 880px # layout.md names breakpoints by their width only; plotplot gave them hand-picked names (stack, dense), so the derived names are the widths
+DIFF css --pp-breakpoint-520 committed: (absent) derived: 520px # layout.md names breakpoints by their width only; plotplot gave them hand-picked names (stack, dense), so the derived names are the widths
+DIFF json color.terminal-bg committed: #1C1610 derived: (absent) # plotplot committed tokens.json with terminal-* keys while its own CSS and colors.md block say term-*; the two committed files disagree on the name
+DIFF json color.terminal-surface committed: #262019 derived: (absent) # plotplot committed tokens.json with terminal-* keys while its own CSS and colors.md block say term-*; the two committed files disagree on the name
+DIFF json color.terminal-border committed: #403628 derived: (absent) # plotplot committed tokens.json with terminal-* keys while its own CSS and colors.md block say term-*; the two committed files disagree on the name
+DIFF json layout.container-gutter committed: 32px derived: (absent) # plotplot committed tokens.json with container-gutter while its own CSS says --pp-gutter; the derived key follows the CSS name
+DIFF json layout.breakpoint-stack committed: 880px derived: (absent) # layout.md names breakpoints by their width only; plotplot gave them hand-picked names (stack, dense)
+DIFF json layout.breakpoint-dense committed: 520px derived: (absent) # layout.md names breakpoints by their width only; plotplot gave them hand-picked names (stack, dense)
+DIFF json motion.dur-micro committed: 180ms derived: (absent) # components.md gives dur-micro as the range 0.15-0.3s; plotplot committed 180ms by hand, a single value the markdown does not state
+DIFF json color.term-bg committed: (absent) derived: #1C1610 # plotplot committed tokens.json with terminal-* keys while its own CSS and colors.md block say term-*; the two committed files disagree on the name
+DIFF json color.term-surface committed: (absent) derived: #262019 # plotplot committed tokens.json with terminal-* keys while its own CSS and colors.md block say term-*; the two committed files disagree on the name
+DIFF json color.term-border committed: (absent) derived: #403628 # plotplot committed tokens.json with terminal-* keys while its own CSS and colors.md block say term-*; the two committed files disagree on the name
+DIFF json fontFamily.interface committed: (absent) derived: 'Hanken Grotesk', system-ui, sans-serif # typography.md declares --font-interface; plotplot never added it to its committed tokens.json
+DIFF json layout.gutter committed: (absent) derived: 32px # plotplot committed tokens.json with container-gutter while its own CSS says --pp-gutter; the derived key follows the CSS name
+DIFF json layout.breakpoint-880 committed: (absent) derived: 880px # layout.md names breakpoints by their width only; plotplot gave them hand-picked names (stack, dense), so the derived names are the widths
+DIFF json layout.breakpoint-520 committed: (absent) derived: 520px # layout.md names breakpoints by their width only; plotplot gave them hand-picked names (stack, dense), so the derived names are the widths
+DIFF json dark.color.primary committed: (absent) derived: #84C56A # plotplot committed no dark overrides in tokens.json although colors.md declares them in its dark block
+DIFF json dark.color.accent committed: (absent) derived: #F2A93B # plotplot committed no dark overrides in tokens.json although colors.md declares them in its dark block
+DIFF json dark.color.leaf committed: (absent) derived: #9FD08A # plotplot committed no dark overrides in tokens.json although colors.md declares them in its dark block
+DIFF json dark.color.text committed: (absent) derived: #F3ECD9 # plotplot committed no dark overrides in tokens.json although colors.md declares them in its dark block
+DIFF json dark.color.text-soft committed: (absent) derived: #C9BBA0 # plotplot committed no dark overrides in tokens.json although colors.md declares them in its dark block
+DIFF json dark.color.bg committed: (absent) derived: #1C1610 # plotplot committed no dark overrides in tokens.json although colors.md declares them in its dark block
+DIFF json dark.color.surface committed: (absent) derived: #262019 # plotplot committed no dark overrides in tokens.json although colors.md declares them in its dark block
+DIFF json dark.color.border committed: (absent) derived: #403628 # plotplot committed no dark overrides in tokens.json although colors.md declares them in its dark block
+DIFF json dark.color.cultivate committed: (absent) derived: #1E6F77 # plotplot committed no dark overrides in tokens.json although colors.md declares them in its dark block
+DIFF json dark.color.trellis committed: (absent) derived: #AA422C # plotplot committed no dark overrides in tokens.json although colors.md declares them in its dark block
+DIFF json dark.color.umbel committed: (absent) derived: #5F6A18 # plotplot committed no dark overrides in tokens.json although colors.md declares them in its dark block
+DIFF json dark.color.harvest committed: (absent) derived: #8A3EBF # plotplot committed no dark overrides in tokens.json although colors.md declares them in its dark block
+DIFF json dark.color.stake committed: (absent) derived: #835A57 # plotplot committed no dark overrides in tokens.json although colors.md declares them in its dark block
+DIFF json dark.color.well committed: (absent) derived: #58647E # plotplot committed no dark overrides in tokens.json although colors.md declares them in its dark block
+DIFF json dark.color.upkeep committed: (absent) derived: #7D6021 # plotplot committed no dark overrides in tokens.json although colors.md declares them in its dark block
+DIFF json dark.color.pollen-ink committed: (absent) derived: #BD59D2 # plotplot committed no dark overrides in tokens.json although colors.md declares them in its dark block
+DIFF json dark.color.weeder-word committed: (absent) derived: #A37A6E # plotplot committed no dark overrides in tokens.json although colors.md declares them in its dark block

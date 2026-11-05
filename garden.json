@@ -1,0 +1,60 @@
+{
+  "$schema": "https://github.com/jahala/plotplot/blob/master/contracts/manifest.schema.json",
+  "name": "petals",
+  "summary": "petals carries a brand into what agents build and checks what came out: colours, type, layout, surface, voice and content, as SARIF.",
+  "kind": [
+    "gate",
+    "capability"
+  ],
+  "version": "0.2.0",
+  "install": {
+    "git": {
+      "url": "https://github.com/jahala/petals",
+      "rev": "87b0dfb74ac8f5cb464c07be12dd85b0265884ab"
+    }
+  },
+  "faces": {
+    "cli": "petals",
+    "skill": "petals/SKILL.md",
+    "git": [
+      "pre-commit",
+      "commit-msg"
+    ]
+  },
+  "check": "petals gate --format sarif",
+  "check_strict": true,
+  "metric": "bash tests/control-page.spec.sh",
+  "context": {
+    "upfront_tokens": null
+  },
+  "coverage": {
+    "languages": [],
+    "kinds": [
+      "html",
+      "htm",
+      "svg",
+      "css",
+      "scss",
+      "less",
+      "jsx",
+      "tsx",
+      "vue",
+      "svelte",
+      "astro"
+    ]
+  },
+  "flagged": [
+    {
+      "what": "bash and python3 are runtime dependencies",
+      "why": "petals is shell and Python scripts with no compiled binary; the planter's host must provide both"
+    },
+    {
+      "what": "context.upfront_tokens is not measured yet",
+      "why": "measured or silent: the skill description's startup cost has not been counted with a tokenizer"
+    },
+    {
+      "what": "install.git until releases exist",
+      "why": "a git install places no executable (the stem copies only a release artifact's top-level petals), so petals plants as a gate once its first release is published; scripts/build-release.sh builds that artifact"
+    }
+  ]
+}

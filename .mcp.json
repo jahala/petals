@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "tend": {
+      "command": "tend",
+      "args": [
+        "serve"
+      ]
+    }
+  }
+}

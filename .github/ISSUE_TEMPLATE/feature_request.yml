@@ -1,0 +1,18 @@
+name: Feature request
+description: A thing petals doesn't do yet, that you wish it did.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What are you trying to do that petals gets in the way of?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed shape
+      description: What would the command or the brand file look like? Rough is fine.
+    validations:
+      required: false

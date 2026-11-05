@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>generated-brand</title>
+<link rel="stylesheet" href="loop.css">
+<body>
+<script type="text/markdown" id="loop">
+# generated-brand: a project with no brand gets one
+**Goal.** When a project has no brand, petals invents one: a short interview, three presets dealt for the owner to choose from, then normal .brand/ files with every generated value marked. From then on it is the brand like any other. Phase 5 of the roadmap.
+
+## Tests
+- [ ] (code) /petals init --new asks at most three questions a round and records an unanswered one as undecided (issue #5) · tests/init-new.spec.sh
+- [ ] (code) Every starter preset passes the contrast pairs in both light and dark (issue #5) · tests/presets.spec.sh
+- [ ] (code) Presets are dealt from a history file, and two projects in a row never get the same preset (issue #5) · tests/presets.spec.sh
+- [ ] (code) A generated brand writes the same .brand/ files as an extracted one with every generated value marked, and the check runs on it unchanged (issue #5) · tests/init-new.spec.sh
+- [ ] (code) The review page offers the three dealt presets, and choosing one writes that preset as the project's .brand/ (issue #5) · tests/presets-choose.spec.sh
+- [ ] (human) Shown the three dealt presets for a real project, the owner would ship one of them
+- [ ] (agent) Kill test: pages from two bootstrapped projects, three each from separate agent sessions, are judged distinct against the written rubric (issue #5) · tests/kill-test/rubric.md
+
+## Needs #derive-tokens #owner-review-loop
+
+## For #ai-agent #shipping-developer
+
+## Tried
+- 2026-11-05 shaped from docs/plans/2026-11-05-petals-roadmap.md
+- 2026-11-05 cli: review (algiers): the mechanics stay (code), and one (human) check asks the owner about value only, whether they would ship a dealt preset
+</script>
+<script src="loop.js"></script>

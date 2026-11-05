@@ -1,0 +1,17 @@
+═══ typography dimension exercise — 2026-06-12 ═══
+Executed per SKILL.md /petals check Dimension 2 (agent dimension) against
+test/fixtures/brand-check/file-typo-wrong.css with the fixture brand
+(heading: Raleway, body: Open Sans).
+
+1. Load: .brand/typography.md -> heading=Raleway, body=Open Sans
+2. Scan font-family declarations and classify element roles:
+   line 5  body { font-family: 'Raleway' }  -> body element, heading font
+   line 12 h1,h2,h3 { font-family: 'Raleway' } -> heading elements, heading font (ok)
+   line 17 p { font-family: 'Raleway' }     -> body element, heading font
+
+ERROR [typography] line 5: 'Raleway' used for body text. Body must use 'Open Sans'.
+ERROR [typography] line 17: 'Raleway' used for body text. Body must use 'Open Sans'.
+PASS would require body/p in Open Sans; headings correctly use Raleway.
+
+Result: 2 typography errors — the dimension discriminates: the same scan
+on an Open Sans body declaration reports zero errors.

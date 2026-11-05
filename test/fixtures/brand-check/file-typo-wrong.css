@@ -1,0 +1,19 @@
+/* file-typo-wrong.css — Raleway used as body font */
+/* Brand rules: heading=Raleway, body=Open Sans */
+
+body {
+  font-family: 'Raleway', sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #585961;
+}
+
+h1, h2, h3 {
+  font-family: 'Raleway', sans-serif;
+  font-weight: 700;
+}
+
+p {
+  font-family: 'Raleway', sans-serif;
+  font-weight: 400;
+}

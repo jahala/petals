@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>shipping-developer · garden</title>
+<link rel="stylesheet" href="./loop.css">
+<body>
+<noscript>This page renders its markdown payload with JavaScript — enable JS, or read the raw payload in the page source.</noscript>
+<script type="text/markdown" id="loop">
+# Shipping Developer
+
+**Who.** A frontend or full-stack developer building products with AI coding agents. They live in an IDE, review PRs, and ship daily. They don't design brands — but they consume them. When they review PRs, they waste time catching off-brand colors that the agent should have self-corrected. They want brand to be infrastructure: present, correct, and invisible.
+
+Sam is reviewing 12 PRs before the sprint ends. Eight of them contain agent-generated UI or copy. Sam spends the first 40 minutes catching the same three things in every PR: a shade of blue that isn't the brand blue, a font that isn't the brand font, and the word 'leverage' which the voice guide explicitly bans. The agent wrote the code. The agent had access to .brand/. The agent didn't check its own work. Sam catches what the machine should have caught before anyone saw it. After petals is installed, Sam's review shifts. The agent reads .brand/ before generating, applies brand rules at generation time, and runs /petals check before marking work ready for review. Sam reviews architecture and abstractions — not hex codes and forbidden words.
+
+## "Don't make me be the brand cop"
+
+"I caught `#3B82F6` in three PRs today. It's always framework blue. The agent has access to `.brand/` — it just doesn't read it before generating."
+
+"The agent wrote it. The agent should check it. I did not sign up to be a hex-code linting service."
+
+"The word is 'use.' We banned 'leverage' six months ago. I have written this exact PR comment fourteen times. I counted."
+
+## Thursday, 9:47am. Two hours before sprint end
+
+Sam opens the twelfth PR. The card is straightforward — a new onboarding flow, agent-generated. The layout works. The button hover state uses `bg-blue-500`. Sam's eye twitches. framework blue. Again. He types Ctrl+F `#3B82F6`, finds four instances, writes four identical comments. Twenty minutes on something the agent could have caught in four seconds.
+
+Monday, 2:15pm. A junior dev on the growth team messages Sam. "Hey, the agent built a campaign landing page for me — can you take a look before I PR?" Sam opens the file. The layout is solid. The copy says "leverage our AI-powered synergistic workflow." Sam closes the file. Opens it again. Types back: "Run `/petal check` on this first and send it back to me. I'll review architecture after the agent reviewed brand." Two minutes later the junior pings back: "It caught the forbidden terms and fixed the heading font. Here's the clean version." Sam reviews abstractions. Zero brand comments. This is the split that works.
+
+Wednesday, 11:03am. Sam opens a new agent session. Types "build a settings page — match the existing layout patterns." No hex codes. No font families. No voice rules. The agent reads `.brand/` on its own — Sam watches it load `colors.md`, then `typography.md`, then start generating. The output uses `#2F99A4` for the primary. Raleway for headings. Spacing in multiples of four. Sam doesn't mention the word "brand" once. That is the bar.
+
+## Brand infrastructure that nobody sees
+
+Without Sam, brand infrastructure has a builder but no user. Maria sets up `.brand/` and distributes it to every project — but if no developer consumes it, the files are a museum exhibit. Sam is the developer who proves the infrastructure works: he opens a session, types a task, and the agent produces on-brand output without him thinking about it. Sam does not configure brand. Sam does not maintain brand. Sam ships product. Brand reaches the product through Sam's agents, not through Sam's attention.
+
+Without Sam's archetype, the review bottleneck has no measured cost. The business case for petals is abstract: "agents produce off-brand UI." Sam makes it concrete: "I spent 40 minutes catching the same three things in 12 PRs." That is a number. That is a line item in an engineering budget. That is what gets the [brand check](brand-check.tend2.html) tool built and configured.
+
+Sam is also the canary. When the brand drifts — the agent stops reading `.brand/`, the palette has a wrong hex, the voice guide is silently outdated — Sam notices first. He's the developer who catches it in review. His feedback closes the loop between what the brand team intended and what actually ships. Without that feedback channel, brand drift compounds invisibly for months until a customer screenshot surfaces in a chat channel, and by then the damage has shipped to production across six projects and three versions of the palette.
+
+## The role that existed before the tool
+
+Sam was catching `#3B82F6` in PRs before petals existed. He was pasting hex codes into prompts when he remembered. He was writing "please use brand colors" in review comments before there was a tool to enforce it. His job didn't change when petals arrived — the friction he was absorbing got automated. The 40 minutes of hex-code review turned into five minutes of architecture review. The `Ctrl+F #3B82F6` turned into `/petal check`.
+
+This archetype matters because Sam represents every developer on an AI-assisted team who is silently absorbing brand compliance work that the tooling should handle. They don't ask for brand tools because they don't know a tool could solve it — they just accept the friction as part of reviewing agent-generated code. Petals names the friction and removes it. Sam stops being the brand cop and goes back to being the engineering lead.
+
+## Jobs
+- When I'm about to review 12 PRs and 8 of them contain agent-generated UI or copy, because I currently spend 40% of my review time catching brand violations — wrong blue, wrong font, 'leverage' when we said 'use', 13px padding when our scale is multiples of 4 — all things the agent could catch before I see them, we believe the agent should run /petal check on its own output before marking work ready for review, fixing or flagging violations without human intervention. We'll know we got it right when over a two-week period, PRs containing agent-generated UI or copy have zero violations that /petal check would have caught — color mismatches, font deviations, spacing outside scale, forbidden terms, and tone violations all trend to zero. · guessed
+- When I open a new agent session and start building — new page, new component, new campaign — because I don't want to start every session by pasting 'Use Raleway for headings, Open Sans for body, primary is #2F99A4, accent is #FF4D00, voice is direct and warm, never say leverage' — that's 200 tokens I'm burning on setup instead of the task, we believe the agent should discover brand context from .brand/ files without me mentioning it, treating brand values as ambient infrastructure rather than per-task setup. We'll know we got it right when I can start a session with 'build a pricing page' — no brand context in the prompt — and the agent produces output using the correct colors, fonts, spacing scale, and voice, and can tell me where it got each value from .brand/ files. · guessed
+
+## Tried
+- 2026-11-05 migrated from v1 (docs/tend/features/shipping-developer.tend.html) by `loop migrate`
+</script>
+<script src="./loop.js"></script>

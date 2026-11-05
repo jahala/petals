@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>derive-tokens</title>
+<link rel="stylesheet" href="loop.css">
+<body>
+<script type="text/markdown" id="loop">
+# derive-tokens: derive, never hand-edit
+**Goal.** Every machine view of the brand is derived from the markdown, and a check fails when the two disagree. Phase 2 of the roadmap.
+
+## Tests
+- [x] (code) tokens.css and tokens.json are derived from the markdown, and `--check` fails when a markdown value changed and the tokens did not · tests/tokens-check.spec.sh · reads: petals/scripts/export-tokens.sh, test/fixtures/brand-plotplot-v1.9.0/, test/fixtures/tokens/ @ecafb6e05dbffd · by cli
+- [x] (code) marks.py runs from petals and reproduces the umbrella's marks byte for byte · tests/marks.spec.sh · reads: petals/scripts/marks.py, test/fixtures/marks/, test/fixtures/brand-plotplot-v1.9.0/ @86edc6bd02deb5 · by cli
+- [x] (code) The copy of petals in jahala/plotplot carries a version stamp, and a check reports when it lags the latest petals tag · tests/vendor.spec.sh · reads: petals/scripts/vendor.sh, petals/scripts/lib/common.sh @5a28eeea4e3e46 · by cli
+
+## Needs #stop-false-passes
+
+## For #brand-operator
+
+## Tried
+- 2026-11-05 shaped from docs/plans/2026-11-05-petals-roadmap.md
+- 2026-11-05 cli: c1 was stamped against tests/export-tokens.spec.sh, which never runs a --check mode (none exists yet); it now names tests/tokens-check.spec.sh
+</script>
+<script src="loop.js"></script>

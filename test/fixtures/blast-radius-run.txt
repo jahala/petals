@@ -1,0 +1,14 @@
+═══ blast-radius exercise — 2026-06-12 ═══
+consumer: /tmp/blast-exercise · sample.css uses #2F99A4 (the v1.x primary) + 16px padding
+
+── /petals check sample.css under v1.2.0 ──
+Result: PASS (0 warning(s) to review)
+
+── /petals update applies v1.3.0 (fetch + .petalsrc bump + regenerate views) ──
+updated:   version: v1.3.0
+
+── blast radius: re-check files previously on-brand ──
+ERROR [color] line 1: #2F99A4 is not in the palette. Did you mean #3DB8C4?
+Result: FAIL — 1 error(s) to fix, 0 warning(s) to review.
+
+Blast radius: 1 file has violations introduced by this update (sample.css — old primary #2F99A4, replaced by #C4541E in v1.3.0).

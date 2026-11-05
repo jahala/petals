@@ -1,0 +1,12 @@
+:root { --x-bg: #FAF5E9; }
+.a { color: #3B82F6; }
+.b { padding: 13px; margin: 8px; }
+.c { border-radius: 9px; }
+.d { transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+.e { box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); }
+.f { color: #E89227; background: var(--x-bg); }
+.g { color: #E588A0; background: #357E2C; }
+/* Supercharge your workflow with our brand bible approach. Petals is great. */
+@media (max-width: 700px) { .h { gap: 24px; } }
+.y { border-color: #D6502F; }
+.z { color: #D97757; }

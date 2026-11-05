@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    # Skipped while the repository is private, so no paid minutes are spent;
+    # it runs on every push and pull request once petals is public.
+    if: ${{ !github.event.repository.private }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # macOS runs the scripts under its own /bin/bash 3.2, where empty
+        # arrays and other edge cases have bitten before.
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v6
+      - name: shellcheck on macOS
+        if: runner.os == 'macOS'
+        run: brew install shellcheck
+      - name: every spec suite, as TAP
+        run: bash tests/run-all.sh

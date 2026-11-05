@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>stem-bed</title>
+<link rel="stylesheet" href="loop.css">
+<body>
+<script type="text/markdown" id="loop">
+# stem-bed: petals judges every commit and pull request through the stem
+**Goal.** petals is a planted bed under the plotplot stem, so every planted repository gets the brand check in the same hooks and the same pull request check as weeder, with no CI gate of its own. Phase 3 of the roadmap.
+
+## Tests
+- [x] (code) garden.json declares a check face that prints SARIF and the hooks petals wants, and the stem's manifest validation accepts it (issue #4) · tests/garden-manifest.spec.sh · reads: garden.json, petals/bin/petals, petals/SKILL.md @959e2051456753 · by cli
+- [x] (code) The release artifact is one deterministic tarball whose only member is a self-contained petals executable, with its sha256; that file copied alone runs and judges a change (issue #4) · tests/release.spec.sh · reads: scripts/build-release.sh, petals/bin/petals, petals/scripts/ @c4262076b3eae9 · by cli
+- [x] (code) A clear-cut finding blocks, the rest warn, and an allow trailer with a reason turns a block into a recorded note (issue #4) · tests/allow-trailer.spec.sh · reads: petals/bin/petals, petals/scripts/check.sh, test/fixtures/brand-plotplot-v1.9.0/ @8a77eab611634f · by cli
+- [x] (code) The check reads its config from the base branch, so a change cannot loosen its own rules (issue #4) · tests/gate.spec.sh · reads: petals/bin/petals, petals/scripts/check.sh, test/fixtures/brand-plotplot-v1.9.0/ @f412440c1fa008 · by cli
+- [x] (code) petals guard pre-commit judges the staged content and refuses a commit with an error; guard commit-msg lets a finding the message allows through (issue #4) · tests/guard.spec.sh · reads: petals/bin/petals, petals/scripts/check.sh, test/fixtures/brand-plotplot-v1.9.0/ @eca76fd7c37dea · by cli
+- [ ] (code) In a scratch planted repository, `plotplot check` on a change that adds an off-palette colour reports the petals finding in its SARIF log, and the run removes the scratch repository (issue #4) · tests/stem-integration.spec.sh
+
+## Needs #stop-false-passes
+
+## For #shipping-developer #brand-operator
+
+## Tried
+- 2026-11-05 shaped from docs/plans/2026-11-05-petals-roadmap.md
+- 2026-11-05 cli: stem contract (plotplot, from src/check.rs and src/lock.rs at umbrella master): one executable named petals (a shebang script is fine), faces.cli petals, check like 'petals gate --format sarif'; the stem replaces check's first word with .plotplot/bin/petals and refuses shell characters
+- 2026-11-05 cli: the stem runs the check in the repo root, stdin closed, with a timeout, and passes no files and no base; stdout must be one SARIF 2.1.0 log; error-level results block (exit 2), non-SARIF output is could-not-judge (exit 3); accept --base <ref> now, and with no base judge the working tree against HEAD, as weeder does
+- 2026-11-05 cli: config from the base is the bed's job: read .petalsrc and the brand files the check reads with git show <base>:<path>, never the change's copy
+- 2026-11-05 cli: releases: the lock keys artifacts by Rust target triple; one tarball listed under aarch64-apple-darwin, x86_64-apple-darwin, x86_64-unknown-linux-musl and aarch64-unknown-linux-musl with one url and sha256; bash and python3 go in the manifest's flagged list
+- 2026-11-05 cli: allowances: no stem-wide trailer; the commit-msg hook hands each bed the message file; petals honours Petals-allow: <rule> <reason>
+- 2026-11-05 cli: merge test: write it against plotplot tests/check.rs beside two_gates_become_one_log_of_two_runs_that_the_sarif_schema_accepts, and send plotplot the test text plus contracts/fixtures/sarif/petals-check.sarif.json
+- 2026-11-05 cli: part A landed: petals/bin/petals and petals gate; config, product and brand come from the base (or HEAD without --base), a product repo's committed layer is laid over its fetched umbrella; still to do: Petals-allow trailer (B), garden.json (C), release packaging (D), the stem merge test and fixture for plotplot (E)
+- 2026-11-05 cli: part C landed: garden.json validates against plotplot's contracts/manifest.schema.json (ajv, draft 2020-12) and pins install.git until releases exist; part E's SARIF fixture comes from a real gate run and tests/sarif-fixture.spec.sh keeps it equal to petals' output
+</script>
+<script src="loop.js"></script>

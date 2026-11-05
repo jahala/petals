@@ -1,0 +1,16 @@
+.DS_Store
+
+# The umbrella's brand files arrive with a petals fetch and belong to the
+# umbrella (jahala/plotplot, pinned in .petalsrc). petals' own product layer,
+# .brand/products/petals/, is petals' and is committed.
+/.brand/*
+!/.brand/products/
+/.brand/products/*
+!/.brand/products/petals/
+
+# private research (not published)
+docs/research/private/
+__pycache__/
+
+# browser automation leftovers
+.playwright-mcp/

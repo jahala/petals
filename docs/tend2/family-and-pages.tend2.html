@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>family-and-pages</title>
+<link rel="stylesheet" href="loop.css">
+<body>
+<script type="text/markdown" id="loop">
+# family-and-pages: one brand change reaches the whole family
+**Goal.** A brand change is carried through every product, the family report says what it has not reached yet, and a new bed page starts from the reference with the brand's values filled in. Phase 7 of the roadmap.
+
+## Tests
+- [ ] (code) The family report lists each product's pinned brand version, the latest tag, and its pages' check results (issue #1) · tests/family-report.spec.sh
+- [ ] (code) /petals change <dimension> carries one brand change through and ends by printing the family report (issue #2) · tests/change.spec.sh
+- [x] (code) petals' own landing page passes its own check, rebuilt from the brand's reference bed page · tests/self-check.spec.sh @b2368394029e2f · by cli
+- [x] (code) The landing page's frame is a real run of petals check on its demo file, against the frozen brand its title names · tests/landing-frame.spec.sh @95429980add1b7 · by cli
+- [x] (code) The README's Try it command prints exactly the output it shows, its version is petals --version, and it passes petals' own check · tests/readme.spec.sh @fbee2891a04b26 · by cli
+
+## Needs #derive-tokens #stem-bed
+
+## For #brand-operator
+
+## Tried
+- 2026-11-05 shaped from docs/plans/2026-11-05-petals-roadmap.md
+- 2026-11-05 cli: took petals' own landing-page check from stop-false-passes: archive #21 rebuilds the page from the reference, which is the honest way for it to pass
+- 2026-11-05 cli: cut archive #18 (product frames) and archive #21 (bed page builder) to recipes in SKILL.md with the owner's yes: rare tasks are instructions, not commands
+- 2026-11-05 cli: rebuilt index.html from plotplot v1.11.0's reference product page, following plotplot-design's notes: tagline as the sign line, bed-word ink with a petals underline, one real frame titled with what ran, a proof band from the repo's own numbers. The brand it was built from is frozen as test/fixtures/brand-plotplot-v1.11.0 so both checks hold when the pin moves
+- 2026-11-05 cli: the owner asked for a frame showing more than fonts; the demo hero now carries one slip per dimension, and the README quotes the same run, held by tests/readme.spec.sh
+</script>
+<script src="loop.js"></script>

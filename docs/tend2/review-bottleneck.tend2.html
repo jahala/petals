@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>review-bottleneck · garden</title>
+<link rel="stylesheet" href="./loop.css">
+<body>
+<noscript>This page renders its markdown payload with JavaScript — enable JS, or read the raw payload in the page source.</noscript>
+<script type="text/markdown" id="loop">
+# Review Bottleneck
+
+**Pain.** A developer reviews 12 PRs. Eight contain agent-generated UI or copy. Forty minutes go to catching the same three things in every PR: wrong blue, wrong font, the word "leverage" which the voice guide bans. The agent wrote the code. The agent had .brand/. The agent didn't check its own work. So the human catches violations the machine should have caught before anyone saw them. The review time that should go to architecture and abstraction goes to hex codes and forbidden words.
+
+## Twelve PRs. Eight with agent-generated code. Zero "wrong blue" comments.
+
+Sam opens the sprint's last batch of PRs at 3pm. Twelve PRs, eight with agent-generated UI or copy. Before petals, this was a forty-minute brand audit. Ctrl+F for `#3B82F6`, `font-family: Inter`, `"leverage"` — the same three violations, every sprint, in different files. Today, Sam reviews architecture. The agent checked its own output. `/petal check` ran before the human saw it. Zero color mismatches. Zero font deviations. Zero forbidden terms. The review comments are about component structure and test coverage — the things Sam is paid to evaluate.
+
+That's the measurable outcome: review time shifts from brand compliance to engineering quality. The bottleneck isn't the agent generating code. It's the human catching violations the agent could have caught first. Remove the human from the brand compliance loop and they go back to doing the work they're actually responsible for.
+
+## Agents will self-audit if it's cheaper than getting caught
+
+We're betting that agents, given a low-cost self-audit tool, will run it before marking work ready for review — not because they're conscientious, but because getting caught in review is more expensive than catching it themselves. A `/petal check` costs ~2,000 tokens of context and a few seconds of wall-clock time. A human review comment costs the agent a PR revision, a context switch, and a reputation hit. The economics favor self-audit.
+
+The risk: agents optimize for speed over correctness. If bypassing `/petal check` saves more tokens than running it, agents will skip it. Or they'll run it, see the violations, and decide the PR revision cost is higher than the review comment cost — and ship the violations anyway. The countermeasure is making check output visible in the PR description: "Brand check: 2 errors, 3 warnings." A reviewer who sees that knows the agent was warned and chose to ship. That's a different conversation than "the agent didn't know."
+
+This could be wrong if the agent's cost-benefit calculus doesn't match what we modeled. Maybe the agent values speed over correctness no matter how cheap the check is. Maybe review comments aren't as expensive as we think. Maybe the real bottleneck isn't the check but the fix — the agent found `#3B82F6` at line 42 but can't determine what the correct brand color should be without more context. The check identifies the problem. The fix still requires human intervention. That's half the value prop.
+
+## The linting ecosystem proves humans caught this for their own code. Agents are the new author.
+
+CSS linters already carry token-enforcement plugins, written by large engineering organisations for their own design systems, which shows that human-written CSS needs automated brand enforcement. Every major engineering org with a design system has built tooling to prevent developers from hardcoding colors. These tools exist because human developers, working directly with the brand, still ship `#3B82F6` into production.
+
+Now replace the human developer with an AI agent. The agent has no brand knowledge. It starts every session from zero. It defaults to framework blue. It generates ten times the volume of UI code that a human developer produces. And it runs no linter, no brand check, no token validation — unless someone explicitly tells it to.
+
+The bottleneck isn't new. It's the same bottleneck CSS linters solved for humans, applied to a new author that produces more code, with less brand knowledge, and no built-in enforcement. The scope has multiplied. The tooling hasn't caught up.
+
+## For #shipping-developer #ai-agent
+
+## Solved by #brand-book #brand-check
+
+## Signals
+- Token linters exist for human-written code in several large open-source design systems; none targets agent-generated code · from the competitor analysis
+
+## Tried
+- 2026-11-05 migrated from v1 (docs/tend/features/review-bottleneck.tend.html) by `loop migrate`
+</script>
+<script src="./loop.js"></script>

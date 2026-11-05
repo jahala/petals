@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>stop-false-passes</title>
+<link rel="stylesheet" href="loop.css">
+<body>
+<script type="text/markdown" id="loop">
+# stop-false-passes: the check says what the README promises
+**Goal.** A page that breaks the brand fails the check. Today all five live bed pages loaded the wrong heading face for nine days and each passed with 0 errors. Phase 1 of the roadmap.
+
+## Tests
+- [x] (code) A page loading a font family outside typography.md fails: the five bed page fixtures fail and the plotplot.ai fixture passes · tests/fonts.spec.sh · reads: petals/scripts/check.sh, test/fixtures/fonts/, test/fixtures/brand-plotplot-v1.9.0/ @6e63bc8856808e · by cli
+- [x] (code) A weight or style the face does not ship fails, and the fixer writes the override · tests/faux-style.spec.sh · reads: petals/scripts/check.sh, petals/scripts/fix-typography.sh, test/fixtures/typography/, test/fixtures/brand-plotplot-v1.9.0/ @3d8468ef5eb0f3 · by cli
+- [x] (code) An anchor such as href="#beds" is never read as a hex colour · tests/anchors.spec.sh · reads: petals/scripts/check.sh, test/fixtures/brand-plotplot-v1.9.0/ @d46bad836a0c1b · by cli
+- [x] (code) Contrast is checked against both the light and the dark theme values · tests/contrast-themes.spec.sh · reads: petals/scripts/check.sh, test/fixtures/brand-plotplot-v1.9.0/ @32eafd11232adb · by cli
+- [x] (code) A 1px hairline is not flagged as off the spacing scale · tests/hairline.spec.sh · reads: petals/scripts/check.sh, test/fixtures/brand-plotplot-v1.9.0/ @ef787fc5f63178 · by cli
+- [x] (code) An em dash fails when voice.md bans em dashes · tests/em-dash.spec.sh · reads: petals/scripts/check.sh, test/fixtures/voice/, test/fixtures/brand-plotplot-v1.9.0/, test/fixtures/brand-plotplot-v2.0.0/ @bbf487874bc43c · by cli
+- [x] (code) The footer's garden row is checked against the brand's bed list · tests/garden-row.spec.sh · reads: petals/scripts/check.sh, test/fixtures/garden/, test/fixtures/fonts/plotplot-ai.html, test/fixtures/brand-plotplot-v1.9.0/ @826ff3b2ad3553 · by cli
+- [x] (code) Correctly lowercase product names pass silently and only a capitalised one warns (issue #3) · tests/check.spec.sh @237e186d874a43 · by cli
+- [x] (code) A stroke width or shadow recipe outside the surface tokens warns · tests/surface-tokens.spec.sh · reads: petals/scripts/check.sh, test/fixtures/brand-plotplot-v1.9.0/ @437574a8cb9011 · by cli
+- [x] (code) check.sh --format sarif writes SARIF 2.1.0 with one result per finding · tests/sarif.spec.sh · reads: petals/scripts/check.sh, test/fixtures/check/, test/fixtures/fonts/bed-tilth.html, test/fixtures/garden/, test/fixtures/brand-plotplot-v1.9.0/, test/fixtures/brand-plotplot-v2.0.0/ @3e88a67b09fbb2 · by cli
+- [x] (code) Skill lint passes only when the description is present, the name matches its directory, and the skill is named in the always-on text · tests/skill-lint.spec.sh · reads: petals/scripts/lint-skills.sh, petals/SKILL.md, AGENTS.md @69d7cb92e5b736 · by cli
+- [x] (code) A hand-built control page carrying one known violation per rule fails on every one of them · tests/control-page.spec.sh · reads: petals/scripts/check.sh, test/fixtures/control/, test/fixtures/brand-plotplot-v1.9.0/ @7604c02caa581f · by cli
+- [x] (code) The spacing rule judges only spacing declaration values, so a radius, width or font size on the same line is never reported as spacing · tests/spacing-scope.spec.sh @6fcb6f9b656c66 · by cli
+- [x] (code) In a markdown file, fenced code blocks and inline code are quoted output that no rule judges, and the prose around them keeps its line numbers · tests/markdown-quoted.spec.sh @34bfb5cb7d5b10 · by cli
+
+## Needs #ground
+
+## For #shipping-developer #ai-agent
+
+## Tried
+- 2026-11-05 shaped from docs/plans/2026-11-05-petals-roadmap.md
+- 2026-11-05 cli: c3, c5, c6 and c9 were stamped against tests/check.spec.sh, which passes without testing those claims; each now names its own spec, so a shared passing file can no longer stand in for an unbuilt fix. c8 (casing, #3) is tested there and keeps its stamp
+- 2026-11-05 cli: the landing-page check moved to family-and-pages: petals' index.html is the old palette throughout, so passing honestly means rebuilding it from the brand's reference page; patching colours into the old design would ship a page that passes and looks wrong
+- 2026-11-05 cli: the control page found two checks silently off since brand v1.9.0: product accents and product-name casing read the Product Accents table by fixed column, and v1.9.0 added columns; both now read the table by its header
+- 2026-11-05 cli: a demo hero with one slip per dimension found two false findings: a border-radius beside padding was reported again as spacing (the spacing rule scanned the whole line), and checking the README read its quoted output and inline code as copy. Both now follow the <pre> and radius precedents
+</script>
+<script src="loop.js"></script>

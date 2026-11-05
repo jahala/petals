@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>agent-off-brand · garden</title>
+<link rel="stylesheet" href="./loop.css">
+<body>
+<noscript>This page renders its markdown payload with JavaScript — enable JS, or read the raw payload in the page source.</noscript>
+<script type="text/markdown" id="loop">
+# Agent Off Brand
+
+**Pain.** An agent opens a session. Someone types "build a pricing page." The agent picks the framework's blue-600. Uses Inter. Writes copy that sounds like every other SaaS landing page. It has no reason not to — it starts every session from zero brand knowledge. Developers burn tokens pasting hex codes into prompts. The agent produces confident, wrong output. Someone catches it in PR review. The brand team spent months on that identity. The PDF is beautiful. It means nothing to an agent.
+
+## An agent session begins with amnesia
+
+The agent opens a session. Someone types "build a pricing page." The agent has a ~200K token context window, no brand knowledge of its own, and a default style that leans framework blue and Inter. It generates the hero in `#3B82F6`. Uses Inter for the heading. Writes copy that sounds like every other SaaS landing page. It has no reason not to — it starts every session from zero.
+
+The developer catches the blue in PR review. Pastes the hex code into the prompt next time. Someone else writes "please use our brand colors" in a review comment for the fifth time this month. The brand team spent six months on that identity. The PDF is beautiful. It means nothing to an agent.
+
+Fix this and the entire review pipeline shifts. Zero hex-code comments in PRs. Zero tokens burned on pasting brand context into prompts. Zero instances of framework blue where the brand primary should be. The agent reads `.brand/` because the skill tells it to, loads only what it needs, and produces output in the right colors, the right fonts, the right voice — without anyone thinking about it.
+
+## The belief that files on disk become rules in context
+
+We're betting that making brand rules discoverable and cheap to load is sufficient — that the agent will read `.brand/` and apply them without being explicitly prompted. If `.brand/colors.md` exists, the agent reads it. If the voice guide bans "leverage," the agent avoids it. The bet is not on agent compliance — it's on discoverability plus low token cost plus structured format equals adoption.
+
+The risk: agents skip optional context. A SKILL.md file with auto-trigger conditions is one thing; an agent actually reading it before generating is another. If the agent bypasses the skill for speed — generates first, checks later — then `.brand/` becomes a seatbelt that's always unbuckled, and we're back to Sam catching `#3B82F6` in review. The countermeasure is making brand context cheaper to load than the cost of getting it wrong. If loading `colors.md` costs 2,000 tokens and catching a color violation in review costs the agent a `/petal check` run plus a human's attention, the agent learns to load first.
+
+This could be wrong if the agent's default generation pipeline doesn't respect skill auto-triggers, or if progressive disclosure breaks at scale (50 `.brand/` files across 10 projects, each with different overrides). It works in the three-personas, three-features model. It hasn't been tested at enterprise scale.
+
+## Every AI coding tool demonstrates the same failure mode
+
+The signal isn't subtle. Open any AI coding tool, type "build a landing page," and examine the colors. framework blue. Always. It's not an implementation bug — it's a data gap. The agent has a color palette. It chooses the first one it sees. Without brand context, that's `bg-blue-600`. With brand context, it's `var(--nr-primary)` or `#2F99A4`. The gap isn't in the agent's capabilities. It's in what the agent knows when it starts generating.
+
+Industry reports in 2026 counted AI-driven traffic to retail sites growing several times over in a year. That means more agents generating more customer-facing UI than ever before, all of it starting from zero brand knowledge. The 29-competitor analysis we ran in June 2026 found this problem described in identical terms by every tool in the space: one calls it "brand drift," another "the brand gap," a third ships a `brand.md` file specifically because agents default to generic styles without structured brand input.
+
+This isn't a hypothetical pain. It's the first thing every brand-tool startup names. Everyone sees the same problem. Nobody has solved it for coding agents specifically. Petals is the bet that the solution is files on disk, progressively disclosed, with a skill wrapper that tells the agent *when* and *how* to use them.
+
+## For #brand-operator #shipping-developer #ai-agent
+
+## Solved by #brand-check #brand-distribution #brand-extraction
+
+## Signals
+- Observed in every agent coding tool reviewed: with no brand context, output defaults to framework colours and fonts · from the 2026 competitor analysis of 29 tools
+- risk: on 2026-11-05 all five live bed pages loaded a retired heading face nine days after the brand changed, and each passed the check with 0 errors · from the petals start prompt, 2026-11-05
+
+## Tried
+- 2026-11-05 migrated from v1 (docs/tend/features/agent-off-brand.tend.html) by `loop migrate`
+</script>
+<script src="./loop.js"></script>

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>pdf-to-agent-gap · garden</title>
+<link rel="stylesheet" href="./loop.css">
+<body>
+<noscript>This page renders its markdown payload with JavaScript — enable JS, or read the raw payload in the page source.</noscript>
+<script type="text/markdown" id="loop">
+# Pdf To Agent Gap
+
+**Pain.** The brand team sends a 40-page PDF. It has every hex code, every font weight, every voice rule — beautifully laid out. For humans. Converting it to something an agent can read means someone manually types 47 hex codes, catalogs font weights for each heading level, and copy-pastes voice rules into a prompt. Nobody's job description covers "make brand machine-readable." So it doesn't happen. Every agent session starts from zero.
+
+## A folder of assets. One command. A `.brand/` directory.
+
+The brand team sends a 40-page PDF. It has every hex code, every font weight, every voice rule — beautifully laid out, perfectly organized, designed for human consumption. It takes Maria forty-seven minutes to manually transcribe every color value, catalog every font hierarchy, and copy-paste every voice rule into something an agent can read. She'll get one wrong — `#E7000A` instead of `#E7000B`. She'll miss a heading weight. She'll skip the voice examples because they're buried on page 31.
+
+Fix this and Maria points petals at the folder instead. One command. The agent reads the PDF with its native vision capability. Parses the JSON palette. Reads the voice guidelines as natural language. Extracts every explicit value, copies every asset file, flags anything ambiguous. Five minutes. `.brand/` exists — complete, correct, agent-readable. The hex codes match the source. The font weights match the guide. The voice rules have before/after examples. Maria verified it by diffing against her mental checklist, not by hand-typing 47 values.
+
+## LLMs are confident — and sometimes ±1 in hex
+
+We're betting that an LLM with vision can read a brand PDF and extract #2F99A4 correctly, not #2F99A3 or #2F99A5. LLMs are remarkably good at reading text from images — but they also make confident approximations. A color swatch in a PDF might render at #2F99A4 in the source but #3099A2 when flattened to RGB for display. The LLM reads what it sees. If what it sees is one hex code off, the brand has a silent corruption that propagates to every project.
+
+The bet is partially hedged: petals never infers colors from visual samples alone. It requires explicit hex/rgb/cmyk values in the source text. But even explicit values can be misread — `#2F99A4` could become `#2F99A1` if the PDF renders at low resolution or the OCR pass misreads a digit. The risk is that extraction errors are silent. Maria verifies the output against the source, but Maria might not catch a ±1 error either. The countermeasure is explicit design: petals flags every value it extracts with its source location ("from brand-guide.pdf, page 3, paragraph 2") so Maria can spot-check. But the fundamental risk — LLM extraction fidelity — remains untested against a real 40-page brand PDF.
+
+This could be wrong if the extraction error rate on explicit text values is higher than ~2-3%. At that rate, Maria's spot-check becomes a full audit, and petals saves no time over manual transcription. The entire value prop — "one command instead of forty-seven hex codes" — collapses if the output requires the same verification effort as the manual process.
+
+## Brand PDFs are the universal format nobody designed for this purpose
+
+Every company has one. The 40-page brand PDF, the design-tool library, the shared drive labeled "Brand Assets 2025 FINAL v3." These are the canonical sources of brand truth. The industry has spent thirty years optimizing them for human designers and marketing teams. Nobody has optimized them for AI agents.
+
+The signal comes from internal observation: in our own work with AI coding agents, the gap between "we have brand guidelines" and "the agent knows our brand" is always bridged by copy-paste. Sometimes correctly. Sometimes from memory. Sometimes not at all. Our 29-competitor analysis confirmed that no existing tool reads brand PDFs with LLMs: one scrapes websites, another reads design-tool files, the rest take structured input. The PDF-to-agent gap is the extraction problem nobody has solved because everyone assumes the brand is either scraped from a website or defined in code. In practice, it lives in PDFs, design-tool libraries, and asset folders — and someone has to translate it.
+
+## For #brand-operator
+
+## Solved by #brand-book #brand-extraction
+
+## Signals
+- The PRD defines turning brand PDFs into agent-readable files as extraction's primary job; no reviewed tool reads brand PDFs with a model · from docs/petal-prd.md and the competitor analysis
+
+## Tried
+- 2026-11-05 migrated from v1 (docs/tend/features/pdf-to-agent-gap.tend.html) by `loop migrate`
+</script>
+<script src="./loop.js"></script>

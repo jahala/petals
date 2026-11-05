@@ -1,0 +1,10 @@
+# Dependabot configuration: version updates only.
+# petals ships bash, awk and Python standard-library scripts with no package
+# manifest, so the only dependencies to track are the workflow actions.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
