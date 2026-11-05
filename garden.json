@@ -10,7 +10,7 @@
   "install": {
     "git": {
       "url": "https://github.com/jahala/petals",
-      "rev": "87b0dfb74ac8f5cb464c07be12dd85b0265884ab"
+      "rev": "a8eb6b6ca19a684cb8370ff18075dca8377c1050"
     }
   },
   "faces": {
