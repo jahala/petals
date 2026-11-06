@@ -2,7 +2,7 @@
 brand:
   # plotplot is the umbrella brand and the brand repo.
   source: https://github.com/jahala/plotplot.git
-  version: v1.11.1
+  version: v1.13.1
   # petals' product layer is canonical here, at .brand/products/petals/;
   # the umbrella holds a staging copy. The rest of .brand/ is fetched and ignored.
   product: petals
