@@ -24,7 +24,7 @@ t "overshoot bezier is a warning"                  'WARNING \[surface\] line 5: 
 t "pure-black shadow is a warning"                 'WARNING \[surface\] line 6: shadow uses pure black' "$OUT_BAD"
 t "forbidden term is an error with replacement"    'ERROR \[voice\] line 9: "[Ss]upercharge" is a forbidden term\. Use "strengthen' "$OUT_BAD"
 t "banned terminology synonym is a warning"        'WARNING \[voice\] line 9: "brand bible"' "$OUT_BAD"
-t "capitalized product name is a warning"          'WARNING \[voice\] line 9: "Petals" — product names are lowercase' "$OUT_BAD"
+t "capitalized product name is a warning"          'WARNING \[voice\] line 9: "Petals": product names are lowercase' "$OUT_BAD"
 t "cross-product accent warns by name"             'WARNING \[color\] line 11: #D6502F is tend' "$OUT_BAD"
 t "nearest-match names whose accent"               'line 12: #D97757 is not in the palette\. Did you mean #D6502F \(tend' "$OUT_BAD"
 if echo "$OUT_GOOD" | grep -q 'E588A0'; then echo "not ok - own product accent passes silently"; fails=$((fails+1)); else echo "ok - own product accent passes silently"; fi
@@ -41,8 +41,8 @@ t "good file passes every dimension"               '^Result: PASS' "$OUT_GOOD"
 PROBE=$(mktemp -d); trap 'rm -rf "$PROBE"' EXIT
 printf '<p>petals reads the brand.</p>\n<p>Petals reads the brand.</p>\n' > "$PROBE/casing.html"
 OUT_CASE=$(bash "$SCRIPT" "$PROBE/casing.html" --brand test/fixtures/brand-plotplot-v2.0.0/.brand --product petals 2>&1)
-if echo "$OUT_CASE" | grep -q 'line 1: "petals" — product names are lowercase'; then echo "not ok - lowercase product name passes silently"; fails=$((fails+1)); else echo "ok - lowercase product name passes silently"; fi
-t "capitalised product name still warns"            'line 2: "Petals" — product names are lowercase' "$OUT_CASE"
+if echo "$OUT_CASE" | grep -q 'line 1: "petals": product names are lowercase'; then echo "not ok - lowercase product name passes silently"; fails=$((fails+1)); else echo "ok - lowercase product name passes silently"; fi
+t "capitalised product name still warns"            'line 2: "Petals": product names are lowercase' "$OUT_CASE"
 # a relative file argument resolves from where the script is called, not the project root
 OUT_SUB=$(cd tests && bash ../$SCRIPT ../$BAD --brand ../test/fixtures/brand-plotplot-v2.0.0/.brand --product petals 2>&1)
 t "relative paths resolve from the caller's directory" '^Result: FAIL' "$OUT_SUB"

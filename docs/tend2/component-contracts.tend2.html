@@ -10,6 +10,7 @@
 **Goal.** Every component has one home and a contract naming its states and tokens, and the check flags a component that was rebuilt instead of reused. Phase 5 of the roadmap.
 
 ## Tests
+- [x] (code) petals ships blank component and family contract forms and a guide, and export-tokens.sh --check fails a contract that cites a token the brand does not define, naming the file and the token (issue #6) · tests/contract-tokens.spec.sh @447bb86b63b7b9 · by cli
 - [ ] (code) A generated brand writes the starter components as real code, with a contract per component in .brand/components/ naming its home, states and tokens (issue #6) · tests/components.spec.sh
 - [ ] (code) Each starter component's preview page shows every state its contract names (issue #6) · tests/components.spec.sh
 - [ ] (code) A raw button or checkbox in a file that does not import the component is flagged with the component's home (issue #7) · tests/reuse.spec.sh
@@ -23,6 +24,7 @@
 
 ## Tried
 - 2026-11-05 shaped from docs/plans/2026-11-05-petals-roadmap.md
+- 2026-11-11 cli: split issue #6 by what it needs. The contract format (forms in templates/components/, guide in references/components.md, a Home table whose Covers column the reuse check reads) and the token guard ship now and serve any brand. Generating starter components and their preview pages waits for #generated-brand, as its first two checks already say
 - 2026-11-11 cli: the reuse check (issue #7) reads each contract's Home table. Outside the home, a raw element its Covers column names, without the contract's class, is an error naming the home; the home itself, a classed use, a capitalised component and quoted markup are fine. A second definition under a new name is not detected yet
 </script>
 <script src="loop.js"></script>

@@ -634,7 +634,7 @@ BEGIN{
     for(i=1;i<=np;i++) if(pal[i]==uhx){found=1;break}
     if(!found) err("color", "line " NR ": " hx " is not in the palette. Did you mean " nearname(uhx) "?")
     else if(product!="" && (uhx in accent_owner) && accent_owner[uhx]!=product)
-      warn("color", "line " NR ": " uhx " is " accent_owner[uhx] "\047s product accent — product accents mark products, not " product " UI (products/" product "/colors.md).")
+      warn("color", "line " NR ": " uhx " is " accent_owner[uhx] "\047s product accent. Product accents mark products, not " product " UI (products/" product "/colors.md).")
     tmp=substr(tmp, RSTART+RLENGTH)
   }
   # var definitions are also brand values — check them too
@@ -664,15 +664,15 @@ BEGIN{
       r=ratio(jsxfg,jsxbg)
       key=jsxfg "|" jsxbg; cls=(key in docclass) ? docclass[key] : ((jsxbg "|" jsxfg) in docclass ? docclass[jsxbg "|" jsxfg] : "")
       if(cls ~ /decorative/)
-        err("color", "line " NR ": " jsxfg " on " jsxbg " is " sprintf("%.2f",r) ":1 — documented decorative-only pair (colors.md Contrast Pairings): never words.")
+        err("color", "line " NR ": " jsxfg " on " jsxbg " is " sprintf("%.2f",r) ":1, a documented decorative-only pair (colors.md Contrast Pairings): never words.")
       else if(cls ~ /label|display/){
-        if(r<3.0) err("color", "line " NR ": " jsxfg " on " jsxbg " is " sprintf("%.2f",r) ":1 — below the 3.0:1 labels minimum (colors.md Contrast Pairings).")
+        if(r<3.0) err("color", "line " NR ": " jsxfg " on " jsxbg " is " sprintf("%.2f",r) ":1, below the 3.0:1 labels minimum (colors.md Contrast Pairings).")
       }
       else if(cls ~ /reading/){
-        if(r<4.5) err("color", "line " NR ": " jsxfg " on " jsxbg " is " sprintf("%.2f",r) ":1 — below the 4.5:1 reading minimum (colors.md Contrast Pairings).")
+        if(r<4.5) err("color", "line " NR ": " jsxfg " on " jsxbg " is " sprintf("%.2f",r) ":1, below the 4.5:1 reading minimum (colors.md Contrast Pairings).")
       }
-      else if(r<3.0) err("color", "line " NR ": " jsxfg " on " jsxbg " is " sprintf("%.2f",r) ":1 — below the 3.0:1 labels minimum (colors.md Contrast Pairings).")
-      else if(r<4.5) warn("color", "line " NR ": " jsxfg " on " jsxbg " is " sprintf("%.2f",r) ":1 — labels & display only; verify the pair class for reading copy (4.5:1).")
+      else if(r<3.0) err("color", "line " NR ": " jsxfg " on " jsxbg " is " sprintf("%.2f",r) ":1, below the 3.0:1 labels minimum (colors.md Contrast Pairings).")
+      else if(r<4.5) warn("color", "line " NR ": " jsxfg " on " jsxbg " is " sprintf("%.2f",r) ":1, labels & display only; verify the pair class for reading copy (4.5:1).")
     }
   }
   # ── rule-block accumulation for contrast ──
@@ -750,10 +750,10 @@ BEGIN{
     gsub(/cubic-bezier\(|\)/, "", cb); n=split(cb, prm, ",")
     over=0
     for(i=1;i<=n;i++){ gsub(/ /,"",prm[i]); if(prm[i]+0 < -0.0001 || prm[i]+0 > 1.0001) over=1 }
-    if(over) warn("surface", "line " NR ": cubic-bezier with overshoot parameters — brand motion settles, it never bounces (components.md).")
+    if(over) warn("surface", "line " NR ": cubic-bezier with overshoot parameters. Brand motion settles and never bounces (components.md).")
   }
   if(line ~ /(bounce|elastic|ease-.*-back)/ && line ~ /(transition|animation)/)
-    warn("surface", "line " NR ": bounce/elastic easing — brand motion settles, it never bounces (components.md).")
+    warn("surface", "line " NR ": bounce/elastic easing. Brand motion settles and never bounces (components.md).")
   if(line ~ /box-shadow[ ]*:/ && (line ~ /#000([^0-9a-fA-F]|$)/ || line ~ /rgba\(0,[ ]*0,[ ]*0/))
     warn("surface", "line " NR ": shadow uses pure black. Brand shadows are ink-tinted (components.md Shadow Recipes).")
 
@@ -794,7 +794,7 @@ BEGIN{
     for(i=1;i<=nt;i++){
       # a synonym is a whole word, and not the tail of a domain (plotplot.ai)
       if(tsyn[i]!="" && vl ~ ("(^|[^a-z.])" tolower(tsyn[i]) "($|[^a-z])")){
-        warn("voice", "line " NR ": \"" tolower(tsyn[i]) "\" — use the canonical term \"" tcanon[i] "\" (voice.md Terminology).")
+        warn("voice", "line " NR ": \"" tolower(tsyn[i]) "\": use the canonical term \"" tcanon[i] "\" (voice.md Terminology).")
       }
     }
     if(nprod>0){
@@ -806,7 +806,7 @@ BEGIN{
       while(match(tmp, "(^|[^a-z])" prodpat "($|[^a-z])")){
         seg=substr(lref, RSTART, RLENGTH)
         gsub(/[^A-Za-z]/, "", seg)
-        if(seg!="" && seg!=tolower(seg)) warn("voice", "line " NR ": \"" seg "\" — product names are lowercase, always (voice.md).")
+        if(seg!="" && seg!=tolower(seg)) warn("voice", "line " NR ": \"" seg "\": product names are lowercase, always (voice.md).")
         tmp=substr(tmp, RSTART+RLENGTH)
         lref=substr(lref, RSTART+RLENGTH)
       }
@@ -820,11 +820,11 @@ function judgepair(fg, bg, ln, tag,   r, key, cls, pre){
   r=ratio(fg,bg)
   key=fg "|" bg; cls=(key in docclass) ? docclass[key] : ((bg "|" fg) in docclass ? docclass[bg "|" fg] : "")
   pre="line " ln ": " fg " on " bg " is " sprintf("%.2f",r) ":1"
-  if(cls ~ /decorative/) err("color", pre " — documented decorative-only pair (colors.md Contrast Pairings): never words." tag)
-  else if(cls ~ /label|display/){ if(r<3.0) err("color", pre " — below the 3.0:1 labels minimum (colors.md Contrast Pairings)." tag) }
-  else if(cls ~ /reading/){ if(r<4.5) err("color", pre " — below the 4.5:1 reading minimum (colors.md Contrast Pairings)." tag) }
-  else if(r<3.0) err("color", pre " — below the 3.0:1 labels minimum (colors.md Contrast Pairings)." tag)
-  else if(r<4.5) warn("color", pre " — labels & display only; verify the pair class for reading copy (4.5:1)." tag)
+  if(cls ~ /decorative/) err("color", pre ", a documented decorative-only pair (colors.md Contrast Pairings): never words." tag)
+  else if(cls ~ /label|display/){ if(r<3.0) err("color", pre ", below the 3.0:1 labels minimum (colors.md Contrast Pairings)." tag) }
+  else if(cls ~ /reading/){ if(r<4.5) err("color", pre ", below the 4.5:1 reading minimum (colors.md Contrast Pairings)." tag) }
+  else if(r<3.0) err("color", pre ", below the 3.0:1 labels minimum (colors.md Contrast Pairings)." tag)
+  else if(r<4.5) warn("color", pre ", labels & display only; verify the pair class for reading copy (4.5:1)." tag)
 }
 
 # Resolve a value in one theme: dark overrides sit on top of the light values;
@@ -869,7 +869,7 @@ END{
     te = e["color"]+e["layout"]+e["surface"]+e["voice"]+e["typography"]+e["content"]+e["reuse"]
     tw = w["color"]+w["layout"]+w["surface"]+w["voice"]+w["typography"]+w["content"]+w["reuse"]
     if(te==0) printf "Result: PASS (%d warning(s) to review)\n", tw
-    else      printf "Result: FAIL — %d error(s) to fix, %d warning(s) to review.\n", te, tw
+    else      printf "Result: FAIL (%d error(s) to fix, %d warning(s) to review).\n", te, tw
   }
   exit (e["color"]+e["layout"]+e["surface"]+e["voice"]+e["typography"]+e["content"]+e["reuse"] > 0 ? 1 : 0)
 }

@@ -23,7 +23,9 @@ set -euo pipefail
 #
 # --check derives into a scratch folder, compares it with the committed files
 # token by token, writes nothing into the brand folder, prints one DIFF line
-# per difference and exits 1 if there is any.
+# per difference and exits 1 if there is any. It also prints one UNKNOWN line
+# per token a component contract (components/**/*.md) cites that the brand
+# does not define, and exits 1 for those too.
 #
 # Exit codes: 0 derived (or, with --check, the tokens match); 1 with --check,
 # the committed tokens differ from the markdown; 2 the markdown cannot be
@@ -452,6 +454,30 @@ def diff_maps(kind, committed, derived):
     return lines
 
 
+def unknown_in_contracts(brand_dir, derived_dir):
+    """One UNKNOWN line per token a component contract cites that the brand
+    does not define: a contract must send the agent only to values the brand
+    chose (components/<name>.md and components/families/<family>.md)."""
+    with open(os.path.join(derived_dir, "tokens.css"), encoding="utf-8") as f:
+        defined = set(re.findall(r"(--[A-Za-z0-9-]+)\s*:", f.read()))
+    prefixes = {t.split("-")[2] for t in defined if t.count("-") >= 3}
+    out = []
+    root = os.path.join(brand_dir, "components")
+    for dirpath, _, files in sorted(os.walk(root)):
+        for name in sorted(files):
+            if not name.endswith(".md"):
+                continue
+            path = os.path.join(dirpath, name)
+            rel = os.path.relpath(path, brand_dir)
+            with open(path, encoding="utf-8") as f:
+                cited = sorted(set(re.findall(r"(?<![A-Za-z0-9-])(--[A-Za-z][A-Za-z0-9-]*)", f.read())))
+            # only names in the brand's own token namespaces (--pp- and the like);
+            # a command-line flag such as --check in prose is not a token
+            out += ["UNKNOWN %s %s is not a token the brand defines" % (rel, t)
+                    for t in cited if t not in defined and t.split("-")[2] in prefixes]
+    return out
+
+
 def main(argv):
     mode = argv[0]
     if mode == "derive":
@@ -469,6 +495,7 @@ def main(argv):
         brand_dir, derived_dir = argv[1], argv[2]
         lines = diff_maps("css", parse_css(os.path.join(brand_dir, "tokens.css")), parse_css(os.path.join(derived_dir, "tokens.css")))
         lines += diff_maps("json", parse_json(os.path.join(brand_dir, "tokens.json")), parse_json(os.path.join(derived_dir, "tokens.json")))
+        lines += unknown_in_contracts(brand_dir, derived_dir)
         for line in lines:
             print(line)
         if lines:

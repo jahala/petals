@@ -38,7 +38,7 @@ Voice:    1 error(s), 0 warning(s)
 Typography: 1 error(s), 0 warning(s) (families; heading and body roles stay with the agent)
 Content:  2 error(s), 0 warning(s), 0 note(s) (production stage)
 Reuse:    no contracts (.brand/components/ holds none)
-Result: FAIL — 6 error(s) to fix, 3 warning(s) to review.
+Result: FAIL (6 error(s) to fix, 3 warning(s) to review).
 ```
 
 The run takes milliseconds, makes no network calls and exits 1. Add
