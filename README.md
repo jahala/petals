@@ -74,7 +74,7 @@ writes copy.
 
 | Dimension  | Against        | Finds                                                              |
 |------------|----------------|--------------------------------------------------------------------|
-| color      | colors.md      | off-palette colours (with the nearest match), contrast below the minimum in each theme |
+| color      | colors.md      | off-palette colours in hex, `oklch()`, `oklab()`, `rgb()` or `hsl()` (with the nearest match), colours outside sRGB, contrast below the minimum in each theme |
 | typography | typography.md  | fonts the brand does not use, weights or italics a face does not ship |
 | layout     | layout.md      | spacing and breakpoints off the scale                              |
 | surface    | components.md  | radii, strokes and shadows off the tokens                          |
