@@ -9,6 +9,8 @@ fails=0
 t() { if echo "$3" | grep -qE -e "$2"; then echo "ok - $1"; else echo "not ok - $1 — wanted /$2/"; fails=$((fails+1)); fi }
 P=$(mktemp -d); trap 'rm -rf "$P"' EXIT
 fresh() { rm -rf "$P/b"; cp -R test/fixtures/brand-plotplot-v1.9.0/.brand "$P/b"; }
+# replace text in a file, the same on macOS and Linux (sed -i differs between them)
+subst() { python3 -I -c 'import sys; p, a, b = sys.argv[1:]; s = open(p).read(); assert a in s, a; open(p, "w").write(s.replace(a, b))' "$1" "$2" "$3"; }
 fresh
 out=$(python3 -I "$MARKS" --brand "$P/b" --check 2>&1); rc=$?
 [ "$rc" -eq 0 ] && [ "$out" = "$(cat "$EXP/check.txt")" ] && echo "ok - --check at v1.9.0 prints plotplot's message exactly" || { echo "not ok - --check at v1.9.0 prints plotplot's message exactly (rc $rc): $out"; fails=$((fails+1)); }
@@ -26,7 +28,7 @@ same=1
 while IFS= read -r f; do cmp -s "$f" "$P/b/${f#test/fixtures/brand-plotplot-v1.9.0/.brand/}" || { same=0; echo "# differs: $f"; }; done < <(find test/fixtures/brand-plotplot-v1.9.0/.brand -name '*-mark-night.svg')
 [ "$same" = 1 ] && echo "ok - regenerated night files equal the committed ones" || { echo "not ok - regenerated night files equal the committed ones"; fails=$((fails+1)); }
 # a night file edited by hand fails, named
-fresh; sed -i '' 's/#1C1610/#1C1611/' "$P/b/products/tend/assets/tend-mark-night.svg"
+fresh; subst "$P/b/products/tend/assets/tend-mark-night.svg" '#1C1610' '#1C1611'
 out=$(python3 -I "$MARKS" --brand "$P/b" --check 2>&1); rc=$?
 [ "$rc" -eq 1 ] && echo "ok - a hand-edited night file fails --check" || { echo "not ok - a hand-edited night file fails --check (rc $rc)"; fails=$((fails+1)); }
 t "the hand-edited night file is named" '^tend: .*tend-mark-night\.svg is not derived' "$out"
@@ -39,7 +41,7 @@ fresh; rm -rf "$P/b/products/well"
 out=$(python3 -I "$MARKS" --brand "$P/b" --check 2>&1)
 t "the bed count follows the brand's product layers" 'marks: 13 beds, rules hold' "$out"
 # the line weight comes from DESIGN.md section 7
-fresh; sed -i '' 's/Lines are 2 units/Lines are 3 units/' "$P/b/DESIGN.md"
+fresh; subst "$P/b/DESIGN.md" 'Lines are 2 units' 'Lines are 3 units'
 out=$(python3 -I "$MARKS" --brand "$P/b" --check 2>&1)
 t "the stroke rule is read from DESIGN.md" 'stroke widths other than 3' "$out"
 echo; echo "$fails failure(s)"; exit "$fails"

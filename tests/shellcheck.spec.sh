@@ -9,4 +9,9 @@ for f in scripts/*.sh petals/scripts/*.sh petals/scripts/lib/*.sh tests/*.sh tes
   if out=$(shellcheck -S error "$f" 2>&1); then echo "ok - $f has no shellcheck errors"
   else echo "not ok - $f has shellcheck errors"; printf '%s\n' "$out" | sed 's/^/# /'; fails=$((fails+1)); fi
 done
+# sed -i takes its arguments differently on macOS and Linux, so a test that
+# edits a file with it passes on one and silently edits nothing on the other
+hits=$(grep -nE '(^|[^-a-z])sed -i' tests/*.sh | grep -v '^tests/shellcheck.spec.sh:' | grep -vE '^[^:]+:[0-9]+:[[:space:]]*#')
+if [ -z "$hits" ]; then echo "ok - no test edits files with sed -i"
+else echo "not ok - no test edits files with sed -i"; printf '%s\n' "$hits" | sed 's/^/# /'; fails=$((fails+1)); fi
 echo; echo "$fails failure(s)"; exit "$fails"

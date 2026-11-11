@@ -22,6 +22,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v6
+        with:
+          # garden.json pins an earlier commit, and its spec checks the pin exists
+          fetch-depth: 0
       - name: shellcheck on macOS
         if: runner.os == 'macOS'
         run: brew install shellcheck
