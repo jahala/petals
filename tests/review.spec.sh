@@ -37,6 +37,10 @@ t "re-running adds to the same index on the same server" 'drafts/two\.html' "$in
 t "re-running keeps the first page" 'drafts/bed\.html' "$index"
 out=$(bash "$SCRIPT" "$R/.petals-review/index.html" --brand "$R/.brand" 2>&1)
 t "the index page passes petals check against the brand" '^Result: PASS' "$out"
+# the index loads the brand's own fonts, so its heading and body faces are the brand's
+idx=$(cat "$R/.petals-review/index.html")
+t "the index loads the brand's fonts the way typography.md says to" 'fonts.googleapis.com/css2\?family=Protest\+Riot' "$idx"
+if echo "$out" | grep -q 'never loads it'; then echo "not ok - the index loads every family typography.md names"; echo "$out" | grep 'never loads' | sed 's/^/# /'; fails=$((fails+1)); else echo "ok - the index loads every family typography.md names"; fi
 (cd "$R" && "$PETALS" review --stop >/dev/null 2>&1)
 curl -fsS "$url" >/dev/null 2>&1 && { echo "not ok - --stop ends the server"; fails=$((fails+1)); } || echo "ok - --stop ends the server"
 [ ! -e "$R/.petals-review" ] && echo "ok - --stop leaves no review folder behind" || { echo "not ok - --stop leaves no review folder behind"; fails=$((fails+1)); }
