@@ -11,7 +11,8 @@
 #   layout   — padding/margin/gap px vs the spacing scale (multiples rule),
 #              @media widths vs the documented breakpoints
 #   surface  — border-radius vs the radius scale, overshoot cubic-beziers,
-#              un-tinted (pure black) shadows
+#              un-tinted (pure black) shadows, box-shadows vs the Shadow
+#              Recipes (in a dark theme, the recipes' Night values)
 #   voice    — forbidden terms (with replacements), unambiguous banned
 #              terminology phrases, capitalized product names
 #
@@ -146,14 +147,30 @@ TERMS=$(awk -F'|' '/^## Terminology/{f=1} /^## /{if(f&&$0!~/Terminology/)f=0} f 
 # A spacing value equal to one is a hairline seam, not off-scale.
 STROKES=$(awk -F'|' '/^## Border Strokes/{f=1;next} /^## /{f=0} f && NF>=4 && $2!~/Token|---/ { if(match($3, /[0-9.]+px/)){ v=substr($3, RSTART, RLENGTH-2); if(v ~ /^[0-9]+$/) printf "%s ", v } }' "$BRAND/components.md" 2>/dev/null)
 
-# Every stroke width (decimals too) and the shadow recipes, for the surface
-# audit of borders, outlines and box-shadows.
+# Every stroke width (decimals too), for the surface audit of borders and
+# outlines.
 STROKEW=$(awk -F'|' '/^## Border Strokes/{f=1;next} /^## /{f=0} f && NF>=4 && $2!~/Token|---/ { if(match($3, /[0-9.]+px/)) printf "%s ", substr($3, RSTART, RLENGTH-2) }' "$BRAND/components.md" 2>/dev/null)
-SHADOWS=$(awk -F'|' '/^## Shadow Recipes/{f=1;next} /^## /{f=0} f && NF>=4 && $2!~/Token|---/ { v=$3; gsub(/`/, "", v); gsub(/^ +| +$/, "", v); if(v!="") print v }' "$BRAND/components.md" 2>/dev/null | tr '\n' '\036')
+# Shadow recipes: "token|value|night" rows of components.md's Shadow Recipes
+# tables, newline -> \036, the columns found by their headers (Token or
+# Name, Value, Night) as export-tokens.sh finds them. The night value, from
+# the optional Night column, is read only for a brand with a dark theme
+# (brand_has_dark in lib/common.sh); otherwise it stays empty, and no night
+# rule applies. A night cell in prose is skipped, as export-tokens.sh skips
+# it (as_shadow there; the night-shadows spec compares the two).
+SHADOW_NIGHT=0
+if brand_has_dark "$BRAND/colors.md"; then SHADOW_NIGHT=1; fi
+SHADOWS=$(awk -F'|' -v night="$SHADOW_NIGHT" '
+  function cell(c,   v){ v=(c ? $c : ""); gsub(/`/, "", v); gsub(/^[ \t]+|[ \t]+$/, "", v); return v }
+  function isshadow(v,   r){ r=v; gsub(/rgba?\([ 0-9.,%\/]+\)/, "", r); gsub(/#[0-9A-Fa-f]+/, "", r); gsub(/inset|px|rem|em/, "", r); return r ~ /^[0-9., -]+$/ && r ~ /[0-9]/ }
+  /^## Shadow Recipes/{ f=1; hdr=0; next }
+  /^## /{ f=0 }
+  f && !/^[ \t]*\|/{ hdr=0; next }
+  f && !hdr { tc=0; vc=0; nc=0; for(c=2;c<NF;c++){ h=tolower(cell(c)); if(h=="token" || h=="name") tc=c; else if(h=="value") vc=c; else if(h=="night") nc=c }; hdr=1; next }
+  f && vc && $0 !~ /^[ \t]*\|[ \t:|-]+$/ { v=cell(vc); if(v!="") nv=(night ? cell(nc) : ""); print cell(tc) "|" v "|" (isshadow(nv) ? nv : "") }' "$BRAND/components.md" 2>/dev/null | tr '\n' '\036')
 # Shadow tints: the colours components.md's Shadow Recipes section names, as
-# hex. A shadow may use one even when colors.md does not hold it (a night
-# tint, say); the section writes them as #RRGGBB or rgb triples with the
-# alpha left open, rgba(8, 6, 4, ...).
+# hex, the Night column's among them. A shadow may use one even when
+# colors.md does not hold it (a night tint, say); the section writes them as
+# #RRGGBB or rgb triples with the alpha left open, rgba(R, G, B, ...).
 SHADOWTINTS=$(awk '/^## Shadow Recipes/{f=1;next} /^## /{f=0} f {
   s=$0
   while(match(s, /#[0-9a-fA-F]{6}|rgba?\([ ]*[0-9]+[ ]*,[ ]*[0-9]+[ ]*,[ ]*[0-9]+/)){
@@ -765,8 +782,15 @@ iscopy {
 BEGIN{
   nstw=split(strokew, sw, " "); for(i=1;i<=nstw;i++) strokew_ok[sw[i]+0]=1
   ntint=split(shadowtints, tints, " "); for(i=1;i<=ntint;i++) tint_ok[tints[i]]=1
+  # every recipe, light or night, is a documented shadow; a light recipe
+  # whose row has a night value is the light half of that row (nightof)
   nshadow=split(shadows, shr, "\036")
-  for(i=1;i<=nshadow;i++){ if(shr[i]=="") continue; v=tolower(shr[i]); gsub(/[ \t]/, "", v); shadow_ok[v]=1; gsub(/rgba\(58,39,24,/, "rgba(8,6,4,", v); shadow_ok[v]=1 }
+  for(i=1;i<=nshadow;i++){
+    if(split(shr[i], sr, "|")<3) continue
+    v=tolower(sr[2]); gsub(/[ \t]/, "", v); nv=tolower(sr[3]); gsub(/[ \t]/, "", nv)
+    shadow_ok[v]=1
+    if(nv!=""){ shadow_ok[nv]=1; night_ok[nv]=1; nightof[v]=sr[3]; nightname[v]=sr[1] }
+  }
   ntv=split(themevars, tvrows, "\036")
   for(i=1;i<=ntv;i++){
     if(split(tvrows[i], tv, "|")<3) continue
@@ -824,6 +848,9 @@ BEGIN{
     }
     line=sl
   }
+  # the theme the line opens in, then the line read into it
+  ldepth=thdepth; ldark=thdark; lacc=thacc
+  darkafter(line, 1)
   # ── collect custom properties (one-level var resolution) ──
   tmp=line
   while(match(tmp, /--[A-Za-z0-9-]+:[ ]*#[0-9a-fA-F]{3,6}/)){
@@ -995,7 +1022,8 @@ BEGIN{
   }
   # a box-shadow is a token, none, or a documented recipe
   if(nshadow>0 && match(line, /box-shadow[ ]*:[ ]*[^;}]*/)){
-    sv=substr(line, RSTART, RLENGTH); sub(/^[^:]*:[ ]*/, "", sv); gsub(/!important/, "", sv)
+    sv=substr(line, RSTART, RLENGTH); sdark=darkafter(substr(line, 1, RSTART-1), 0)
+    sub(/^[^:]*:[ ]*/, "", sv); gsub(/!important/, "", sv)
     nsv=tolower(sv); gsub(/[ \t]/, "", nsv)
     # an inset ring with no offset and no blur is a stroke drawn without
     # moving layout: judge its width as a stroke, not as a shadow
@@ -1006,6 +1034,9 @@ BEGIN{
     }
     if(nsv!="" && nsv!="none" && nsv !~ /^var\(/ && nsv !~ /^(inherit|initial|unset)$/ && nsv !~ /rgba\(0,0,0|#000([^0-9a-f]|$)/ && !(nsv in shadow_ok))
       warn("surface", "line " NR ": box-shadow matches no shadow recipe. Use a shadow token or a recipe from components.md Shadow Recipes.")
+    # in a dark theme, a recipe with a night value is held to that value
+    else if(sdark && (nsv in nightof) && !(nsv in night_ok))
+      warn("surface", "line " NR ": box-shadow in the dark theme is " (nightname[nsv]!="" ? nightname[nsv] "\047s" : "a") " light recipe. Its night recipe is " nightof[nsv] " (components.md Shadow Recipes, Night).")
   }
   # ── voice: forbidden terms, terminology, product casing ──
   if(iscopy){
@@ -1049,6 +1080,25 @@ function judgepair(fg, bg, ln, tag,   r, key, cls, pre){
   else if(cls ~ /reading/){ if(r<4.5) err("color", pre ", below the 4.5:1 reading minimum (colors.md Contrast Pairings)." tag) }
   else if(r<3.0) err("color", pre ", below the 3.0:1 labels minimum (colors.md Contrast Pairings)." tag)
   else if(r<4.5) warn("color", pre ", labels & display only; verify the pair class for reading copy (4.5:1)." tag)
+}
+
+# The theme at the end of text s, read on from the start of the current line
+# (ldepth, ldark, lacc): 1 inside a block whose selector, or an enclosing
+# one, marks a dark theme, the markers THEMEVARS reads. thdark is the depth
+# that block opened at, 0 outside any. With keep set, the state after s is
+# carried to the next line.
+function darkafter(s, keep,   t, n, i, tk, d, dd, acc){
+  gsub(/\/\*([^*]|\*+[^*\/])*\*+\//, "", s)
+  t=s; gsub(/[{};]/, "\034&\034", t); n=split(t, tk, "\034")
+  d=ldepth; dd=ldark; acc=lacc
+  for(i=1;i<=n;i++){
+    if(tk[i]=="{"){ d++; if(!dd && acc ~ /data-theme[ ]*=[ ]*["\047]?(dark|night)|\.dark([^a-z-]|$)|prefers-color-scheme[ ]*:[ ]*dark/) dd=d; acc="" }
+    else if(tk[i]=="}"){ if(dd==d) dd=0; if(d>0) d--; acc="" }
+    else if(tk[i]==";") acc=""
+    else acc=acc tk[i]
+  }
+  if(keep){ thdepth=d; thdark=dd; thacc=acc }
+  return dd>0
 }
 
 # Resolve a value in one theme: dark overrides sit on top of the light values;

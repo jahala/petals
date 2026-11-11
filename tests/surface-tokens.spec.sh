@@ -31,7 +31,9 @@ n "border-radius and a zero width are not strokes" 'line 5: .*stroke' "$out"
 t "a made-up shadow warns" 'WARNING \[surface\] line 6: box-shadow matches no shadow recipe' "$out"
 n "a shadow token reference passes" 'line 7: .*shadow' "$out"
 n "a documented recipe written out passes" 'line 8: .*shadow' "$out"
-n "the recipe's soil-night tint passes" 'line 9: .*shadow' "$out"
+# v1.9.0 states no Night column, so a soil-night shadow is a recipe it never
+# wrote; check.sh no longer swaps plotplot's ink for it (#64)
+t "a night shadow the brand never stated warns" 'WARNING \[surface\] line 9: box-shadow matches no shadow recipe' "$out"
 n "none is not a shadow or an outline" 'line 10:' "$out"
 n "an inset ring at a stroke width is a stroke, not a shadow" 'line 11:' "$out"
 t "an inset ring at an off-token width warns as a stroke" 'WARNING \[surface\] line 12: 3px ring is off the stroke tokens' "$out"
