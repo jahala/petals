@@ -807,6 +807,23 @@ BEGIN{
 
 {
   line=$0
+  # In a markup page a <script> block is program data, not styling: its
+  # colours (a canvas gradient stop, a fillStyle string) and object literals
+  # are not judged by the CSS rules below (issue #74). A file that is all
+  # script (.tsx, .js) is not markup and stays judged.
+  if(markup){
+    sl=""
+    while(line!=""){
+      if(inscript){
+        k=index(line, "</script>")
+        if(k==0){ line=""; break }
+        line=substr(line, k+9); inscript=0
+      } else if(match(line, /<script[ >][^>]*>|<script>/)){
+        sl=sl substr(line, 1, RSTART-1); line=substr(line, RSTART+RLENGTH); inscript=1
+      } else { sl=sl line; line="" }
+    }
+    line=sl
+  }
   # ── collect custom properties (one-level var resolution) ──
   tmp=line
   while(match(tmp, /--[A-Za-z0-9-]+:[ ]*#[0-9a-fA-F]{3,6}/)){
