@@ -34,7 +34,7 @@ python3, no other dependencies). The plan of record is
 
 | Store | Keeps | For how long | What removes the rest |
 |---|---|---|---|
-| `.brand/` (umbrella files) | The fetched brand at the pinned version | Until the next fetch | `fetch-brand.sh` overlays the new version; it is gitignored |
+| `.brand/` (umbrella files) | The fetched brand at the pinned version | Until the next fetch | `fetch-brand.sh` overlays the new version, but never a file git tracks there (the project's own layer); the fetched files are gitignored |
 | `.brand/products/<product>/` | The product's own layer | As long as the product | Edited in git like source |
 | `.brand/tokens.css`, `tokens.json` | Tokens derived from the markdown | Until the markdown changes | `export-tokens.sh` rewrites them; `--check` fails when they drift |
 | `*-mark-night.svg` | Night marks derived from the paper marks | Until a paper mark changes | `marks.py` rewrites them; `--check` fails when they drift |
