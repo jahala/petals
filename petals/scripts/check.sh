@@ -20,8 +20,7 @@
 #
 # Usage: check.sh <file> [--brand <dir>]   (default brand dir: .brand)
 # Exit: 0 when zero errors, 1 when any error present (binary pass/fail),
-# 2 for a wrong option, 3 when it could not judge: the brand has a tokens.css
-# but colors.md declares no single token prefix.
+# 2 for a wrong option.
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -68,33 +67,34 @@ PRODUCT_VOICE=""
 # tokens.css against its canonical sources, under the brand's own token
 # prefix (brand_prefix in lib/common.sh): four colours against colors.md's CSS
 # block, the heading and body faces against typography.md's Font Families
-# table. Without one prefix in colors.md these cannot be judged, so the check
-# stops with exit 3 rather than guess one.
+# table. Without one prefix in colors.md this comparison cannot be made, so it
+# is skipped with a warning that says why; no prefix is guessed, and the rest
+# of the brand is still judged.
 TOKENS_CSS="$BRAND/tokens.css"
 if [ -f "$TOKENS_CSS" ]; then
   if ! TP=$(brand_prefix "$BRAND/colors.md"); then
-    echo "ERROR could not judge: $TP"
-    exit 3
-  fi
-  # The value of the first declaration of a custom property in a file.
-  declared() { awk -v name="$1:" '{ i=index($0, name); if(i){ v=substr($0, i+length(name)); sub(/;.*/, "", v); gsub(/^[ \t]+|[ \t]+$/, "", v); print v; exit } }' "$2" 2>/dev/null; }
-  # The first family of a font stack, unquoted.
-  first_face() { printf '%s\n' "$1" | awk '{ sub(/,.*/, ""); gsub(/^[ \t\047\042]+|[ \t\047\042]+$/, ""); print }'; }
-  # The family typography.md's Font Families table gives a role.
-  role_face() { awk -F'|' -v role="$1" '/^## /{ f=($0 ~ /^## Font Families/); next } f && NF>=4 && $2 !~ /Role|---/ { r=$2; v=$3; gsub(/^ +| +$/, "", v); if(tolower(r) ~ role && v!=""){ print v; exit } }' "$BRAND/typography.md" 2>/dev/null; }
+    echo "WARNING [tokens] token drift not checked: $TP" >&2
+  else
+    # The value of the first declaration of a custom property in a file.
+    declared() { awk -v name="$1:" '{ i=index($0, name); if(i){ v=substr($0, i+length(name)); sub(/;.*/, "", v); gsub(/^[ \t]+|[ \t]+$/, "", v); print v; exit } }' "$2" 2>/dev/null; }
+    # The first family of a font stack, unquoted.
+    first_face() { printf '%s\n' "$1" | awk '{ sub(/,.*/, ""); gsub(/^[ \t\047\042]+|[ \t\047\042]+$/, ""); print }'; }
+    # The family typography.md's Font Families table gives a role.
+    role_face() { awk -F'|' -v role="$1" '/^## /{ f=($0 ~ /^## Font Families/); next } f && NF>=4 && $2 !~ /Role|---/ { r=$2; v=$3; gsub(/^ +| +$/, "", v); if(tolower(r) ~ role && v!=""){ print v; exit } }' "$BRAND/typography.md" 2>/dev/null; }
 
-  for role in primary accent text bg; do
-    CANON=$(declared "$TP$role" "$BRAND/colors.md"); TOKEN=$(declared "$TP$role" "$TOKENS_CSS")
-    if [ -n "$CANON" ] && [ -n "$TOKEN" ] && [ "$CANON" != "$TOKEN" ]; then
-      echo "WARNING [tokens] tokens.css $TP$role: $TOKEN does not match colors.md: $CANON" >&2
-    fi
-  done
-  for role in heading body; do
-    CANON=$(role_face "$role"); TOKEN=$(first_face "$(declared "${TP}font-$role" "$TOKENS_CSS")")
-    if [ -n "$CANON" ] && [ -n "$TOKEN" ] && [ "$CANON" != "$TOKEN" ]; then
-      echo "WARNING [tokens] tokens.css ${TP}font-$role: $TOKEN does not match typography.md: $CANON" >&2
-    fi
-  done
+    for role in primary accent text bg; do
+      CANON=$(declared "$TP$role" "$BRAND/colors.md"); TOKEN=$(declared "$TP$role" "$TOKENS_CSS")
+      if [ -n "$CANON" ] && [ -n "$TOKEN" ] && [ "$CANON" != "$TOKEN" ]; then
+        echo "WARNING [tokens] tokens.css $TP$role: $TOKEN does not match colors.md: $CANON" >&2
+      fi
+    done
+    for role in heading body; do
+      CANON=$(role_face "$role"); TOKEN=$(first_face "$(declared "${TP}font-$role" "$TOKENS_CSS")")
+      if [ -n "$CANON" ] && [ -n "$TOKEN" ] && [ "$CANON" != "$TOKEN" ]; then
+        echo "WARNING [tokens] tokens.css ${TP}font-$role: $TOKEN does not match typography.md: $CANON" >&2
+      fi
+    done
+  fi
 fi
 
 # Product accents from the umbrella Product Accents table ("HEX|name" rows).

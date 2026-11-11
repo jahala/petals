@@ -80,7 +80,7 @@ The entry point. Extraction creates the brand intelligence layer — the files, 
 An agent in a project with .brand/ and the petal skill, given "build a contact page" with zero brand instructions in the prompt, produces output using the correct primary color, heading font, spacing scale, and brand voice. /petals check on the output reports zero errors. Nobody pasted a hex code. The brand was ambient infrastructure — present, correct, and invisible.
 
 ## Tests
-- [ ] (code) A brand written from petals' templates is fully read: export-tokens.sh derives every colour, check.sh judges its contrast pairs, and the faux-style rule reads its faces, whatever prefix the brand's CSS uses (issue #35) · tests/template-brand.spec.sh
+- [x] (code) A brand written from petals' templates is fully read: export-tokens.sh derives every colour, check.sh judges its contrast pairs, and the faux-style rule reads its faces, whatever prefix the brand's CSS uses (issue #35) · tests/template-brand.spec.sh @7d6bcc8349c4a1 · by cli
 - [ ] (code) Extracted .brand/ contains every explicitly stated hex value, font family, and font weight from the source. DESIGN.md passes the Google DESIGN.md spec linter. · DESIGN.md
 - [ ] (code) All recognized asset files from the source are copied to .brand/assets/ with original filenames and identical content. · extraction-guide.md
 - [ ] (code) When source lacks explicit color values (PDF says 'primary: teal' without stating #2F99A4), extraction flags which values are missing. Petal never infers hex codes from color names or visual samples. · extraction-guide.md
@@ -109,5 +109,6 @@ An agent in a project with .brand/ and the petal skill, given "build a contact p
 - 2026-11-05 v1: enabled #brand-distribution (user-journey edge — v2 `## Needs` is dependency-only; not migrated as a graph edge)
 - 2026-11-05 v1: enabled #brand-check (user-journey edge — v2 `## Needs` is dependency-only; not migrated as a graph edge)
 - 2026-11-05 cli: tend2 migration: claimed checks reopened where the evidence is a document or a script that is not a test, or a file not on master; only checks backed by tests/check.spec.sh were re-earned
+- 2026-11-11 cli: #35 fixed. The seven templates now write the format the scripts read, and every script reads the brand's own token prefix through brand_prefix in lib/common.sh. Proved on larch, a fictional --larch- brand (tests/template-brand.spec.sh, 40 failures before); plotplot's fixtures derive byte-identical tokens. A brand with no single prefix skips only the token-drift comparison, with a warning. Follow-ups: #38 (apply-overrides), #39 (product accents)
 </script>
 <script src="./loop.js"></script>

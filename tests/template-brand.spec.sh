@@ -5,8 +5,9 @@
 # is --larch-. The templates must write the headings, table columns and CSS
 # blocks the scripts parse; export-tokens.sh must derive every token from
 # them; check.sh must judge a page by them; and review.sh's index must use
-# the brand's own prefix. A brand that declares no single prefix is refused,
-# never guessed. Prints TAP.
+# the brand's own prefix. A brand that declares no single prefix gets no
+# token-drift comparison, said aloud, and no guessed prefix; everything else
+# is still judged. Prints TAP.
 cd "$(dirname "$0")/.." || exit 1
 EXPORT=petals/scripts/export-tokens.sh
 CHECK=petals/scripts/check.sh
@@ -174,15 +175,18 @@ out=$(bash "$CHECK" "$P/clean.css" --brand "$P/stale" 2>&1)
 t "a stale colour token is named under the brand's prefix" 'WARNING \[tokens\] tokens.css --larch-primary: #2F6B50 does not match colors.md: #2F6B4F' "$out"
 t "a stale font token is named under the brand's prefix" 'WARNING \[tokens\] tokens.css --larch-font-heading: Inter does not match typography.md: Fraunces' "$out"
 
-# 5. a brand that declares no single prefix is refused, never guessed
+# 5. a brand that declares no single prefix: export-tokens refuses it; the
+#    check skips only the token-drift comparison, says why, and judges the rest
 cp -R "$P/larch" "$P/mixed"
 subst "$P/mixed/colors.md" '--larch-info: #3B6A8A;' '--color-info: #3B6A8A;'
 out=$(bash "$EXPORT" "$P/mixed" 2>&1); rc=$?
 is "export-tokens.sh exits 2 when colors.md mixes prefixes" "$rc" 2
 t "it names the prefixes it found" 'FATAL: .*--larch-.*--color-' "$out"
 out=$(bash "$CHECK" "$P/clean.css" --brand "$P/mixed" 2>&1); rc=$?
-is "check.sh exits 3, could not judge, when colors.md mixes prefixes" "$rc" 3
-t "check.sh says why it could not judge" 'could not judge.*--larch-.*--color-' "$out"
+is "check.sh still passes a clean page when colors.md mixes prefixes" "$rc" 0
+t "check.sh says the token drift was not checked, and why" 'WARNING \[tokens\] token drift not checked: .*--larch-.*--color-' "$out"
+out=$(bash "$CHECK" "$P/probe.css" --brand "$P/mixed" 2>&1); rc=$?
+is "check.sh still judges the rest of the brand when colors.md mixes prefixes" "$rc" 1
 
 # 6. review.sh's index page is styled with the brand's own tokens
 cp -R "$P/larch" "$P/proj/.brand"
