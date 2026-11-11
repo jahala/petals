@@ -13,6 +13,7 @@ python3, no other dependencies). The plan of record is
 | The check | `petals/scripts/check.sh` | Judges one file against a brand: colour, layout, surface, voice, typography families, content. Text or SARIF 2.1.0. |
 | The entry point | `petals/bin/petals` | `check` (one file), `gate` (a change, one SARIF log), `guard <hook>` (commit time). |
 | Brand plumbing | `fetch-brand.sh`, `check-brand-drift.sh`, `apply-overrides.sh`, `export-tokens.sh`, `marks.py` | Fetch the brand, report drift, derive tokens and night marks from the markdown. |
+| Inventing a brand | `new-brand.py` | `system` turns one direction request into a full system as JSON on stdout: light and dark palettes, the contrast pairs to document, the scales, and a receipt. Its contrast arithmetic is check.sh's, and `tests/directions.spec.sh` compares the two. It writes no files ([the plan](plans/2026-11-11-invent-a-brand.md)). |
 | Distribution | `vendor.sh`, `scripts/build-release.sh`, `garden.json` | A stamped copy for another repository; the release the plotplot stem plants; the bed's manifest. |
 
 ## How a judgment flows
