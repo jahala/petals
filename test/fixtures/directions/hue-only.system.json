@@ -402,14 +402,14 @@
       "theme": "light",
       "from": null,
       "to": "#9E5B51",
-      "why": "at the hue of its meaning; meets the 4.5:1 reading floor on bg and surface (4.94:1 on bg); nearest role primary at 41.55"
+      "why": "at the hue of its meaning; meets the 4.5:1 reading floor on bg and surface (4.94:1 on bg); nearest role accent at 16.96"
     },
     {
       "role": "error",
       "theme": "dark",
       "from": null,
       "to": "#DE958A",
-      "why": "at the hue of its meaning; meets the 4.5:1 reading floor on bg and surface (7.84:1 on bg); nearest role primary at 41.60"
+      "why": "at the hue of its meaning; meets the 4.5:1 reading floor on bg and surface (7.84:1 on bg); nearest role accent at 16.73"
     },
     {
       "role": "warning",
@@ -444,14 +444,14 @@
       "theme": "light",
       "from": null,
       "to": "#4A6FA1",
-      "why": "at the hue of its meaning; meets the 4.5:1 reading floor on bg and surface (4.93:1 on bg); nearest role primary at 30.38"
+      "why": "at the hue of its meaning; meets the 4.5:1 reading floor on bg and surface (4.93:1 on bg); nearest role accent at 25.40"
     },
     {
       "role": "info",
       "theme": "dark",
       "from": null,
       "to": "#85ADE3",
-      "why": "at the hue of its meaning; meets the 4.5:1 reading floor on bg and surface (8.12:1 on bg); nearest role primary at 30.30"
+      "why": "at the hue of its meaning; meets the 4.5:1 reading floor on bg and surface (8.12:1 on bg); nearest role accent at 26.95"
     }
   ]
 }

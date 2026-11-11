@@ -31,7 +31,7 @@
     "error": "#BD4235",
     "success": "#177E1C",
     "warning": "#935200",
-    "info": "#226CC8"
+    "info": "#00759F"
   },
   "dark": {
     "primary": "#F2B705",
@@ -46,7 +46,7 @@
     "error": "#FF7F6E",
     "success": "#66C464",
     "warning": "#FF9D39",
-    "info": "#70ADFF"
+    "info": "#00BAF9"
   },
   "pairs": [
     {
@@ -306,14 +306,14 @@
       "bg": "bg",
       "theme": "dark",
       "class": "reading",
-      "ratio": 8.16
+      "ratio": 8.41
     },
     {
       "fg": "info",
       "bg": "surface",
       "theme": "dark",
       "class": "reading",
-      "ratio": 7.42
+      "ratio": 7.65
     }
   ],
   "type": {
@@ -488,15 +488,15 @@
       "role": "info",
       "theme": "light",
       "from": null,
-      "to": "#226CC8",
-      "why": "at the hue of its meaning; meets the 4.5:1 reading floor on bg and surface (4.96:1 on bg); nearest role error at 43.31"
+      "to": "#00759F",
+      "why": "turned -24 degrees from the hue of its meaning; meets the 4.5:1 reading floor on bg and surface (4.96:1 on bg); nearest role accent at 13.80"
     },
     {
       "role": "info",
       "theme": "dark",
       "from": null,
-      "to": "#70ADFF",
-      "why": "at the hue of its meaning; meets the 4.5:1 reading floor on bg and surface (8.16:1 on bg); nearest role error at 43.67"
+      "to": "#00BAF9",
+      "why": "turned -24 degrees from the hue of its meaning; meets the 4.5:1 reading floor on bg and surface (8.41:1 on bg); nearest role accent at 16.28"
     }
   ]
 }

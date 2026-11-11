@@ -44,7 +44,8 @@ The rules the arithmetic holds:
              the lightness walk starts.
   distance   roles a person must tell apart are at least DISTANCE apart in CIEDE2000, in both
              themes: primary and accent, the four status colours with each other, and each
-             status colour and the primary (and primary-text when there is one). DISTANCE is a
+             status colour and the primary (and primary-text when there is one) and the
+             accent, so a highlight is never read as an error or a notice. DISTANCE is a
              dial, set to 12: issue #14's family keeps its blooms 12.9 apart and 12 from its
              other inks. Measured on 384 requests (every 15 degrees of hue at each loudness and
              contrast, and 60 random seeds held exact and flexible): 12 holds for all; 14
@@ -516,7 +517,7 @@ def build(req):
     tries = sorted(((abs(tn) / 6 + ex / 20, i, tn, ex) for i, tn in enumerate(turns) for ex in (0, 20, 40, 60)))
     for s in STATUS:
         anchor = wheel_to_oklch_hue(STATUS_HUE[s])
-        others = family + [x for x in STATUS if x in pal["light"]]
+        others = family + ["accent"] + [x for x in STATUS if x in pal["light"]]
         for _, _, tn, ex in tries:
             cand = {}
             for t in THEMES:

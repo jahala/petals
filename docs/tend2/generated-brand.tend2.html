@@ -11,10 +11,10 @@
 
 ## Tests
 - [ ] (code) /petals init --new asks at most three questions a round and records an unanswered one as undecided (issue #5) · tests/init-new.spec.sh
-- [ ] (code) Every generated direction passes the contrast pairs in both light and dark (issue #5) · tests/directions.spec.sh
-- [ ] (code) Three directions too alike, or too close to a recent project in the history file, are refused with the reason (issue #5) · tests/directions.spec.sh
-- [ ] (code) An exact seed comes back unchanged and a seed too light for words gets a primary-text shade named in the receipt; a bounded seed moves no further than its stated distance; the roles a person must tell apart stay at least the stated CIEDE2000 distance apart in both themes; the same request prints the same bytes (issue #5) · tests/directions.spec.sh
-- [ ] (code) The generator's contrast and colour-distance answers equal check.sh's on every generated direction, so no brand is written that its own check fails (issue #5) · tests/directions.spec.sh
+- [x] (code) Every generated direction passes the contrast pairs in both light and dark (issue #5) · tests/directions.spec.sh @8aa87941899427 · by cli
+- [x] (code) Three directions too alike, or too close to a recent project in the history file, are refused with the reason (issue #5) · tests/directions.spec.sh @0b4390e1899427 · by cli
+- [x] (code) An exact seed comes back unchanged and a seed too light for words gets a primary-text shade named in the receipt; a bounded seed moves no further than its stated distance; the roles a person must tell apart stay at least the stated CIEDE2000 distance apart in both themes; the same request prints the same bytes (issue #5) · tests/directions.spec.sh @f7801381899427 · by cli
+- [x] (code) The generator's contrast and colour-distance answers equal check.sh's on every generated direction, so no brand is written that its own check fails (issue #5) · tests/directions.spec.sh @37fe9cb1899427 · by cli
 - [ ] (code) A generated brand writes the same .brand/ files as an extracted one with every generated value marked, and the check runs on it unchanged (issue #5) · tests/init-new.spec.sh
 - [ ] (code) The review page offers the three directions, and choosing one writes it as the project's .brand/ (issue #5) · tests/directions-choose.spec.sh
 - [ ] (code) A mark candidate off the palette, unreadable at 16 pixels, under 3:1 on either background, or not a clean SVG fails; each that passes gets its night version and favicon tile derived (issue #5) · tests/logo.spec.sh
@@ -31,5 +31,6 @@
 - 2026-11-05 cli: review (algiers): the mechanics stay (code), and one (human) check asks the owner about value only, whether they would ship a dealt preset
 - 2026-11-11 cli: planned in docs/plans/2026-11-11-invent-a-brand.md. The agent judges (the brief, tone, explaining options); one script does the exact parts once (bend a preset around the seeds, contrast and distance floors, specimens, the deal, writing .brand/). Step 0 found the templates and the scripts disagree on the brand format (#35), so it lands first
 - 2026-11-11 cli: owner's rulings: no presets (directions are generated from the brief, and a spread rule with a history keeps projects apart), and petals helps make the logo (a mark and a wordmark with no style rules; a generalised marks.py checks only palette, size, contrast and a clean SVG, and the chosen mark's construction is written down after)
+- 2026-11-11 cli: step 2 landed: new-brand.py system turns a direction request into light and dark palettes, documented pairs, scales and a receipt, with check.sh's contrast answers (proven on 444 pairs). Review added the accent to the colours each status colour must stand apart from, so a highlight is never read as an error or a notice: 204 requests in a sweep, none refused
 </script>
 <script src="loop.js"></script>

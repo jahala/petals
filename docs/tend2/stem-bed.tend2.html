@@ -11,7 +11,7 @@
 
 ## Tests
 - [x] (code) garden.json declares a check face that prints SARIF and the hooks petals wants, and the stem's manifest validation accepts it (issue #4) · tests/garden-manifest.spec.sh · reads: garden.json, petals/bin/petals, petals/SKILL.md @959e2056bb15f5 · by cli
-- [x] (code) The release artifact is one deterministic tarball whose only member is a self-contained petals executable, with its sha256; that file copied alone runs and judges a change (issue #4) · tests/release.spec.sh · reads: scripts/build-release.sh, petals/bin/petals, petals/scripts/ @c42620791473de · by cli
+- [x] (code) The release artifact is one deterministic tarball whose only member is a self-contained petals executable, with its sha256; that file copied alone runs and judges a change (issue #4) · tests/release.spec.sh · reads: scripts/build-release.sh, petals/bin/petals, petals/scripts/ @c4262079a7ef95 · by cli
 - [x] (code) A clear-cut finding blocks, the rest warn, and an allow trailer with a reason turns a block into a recorded note (issue #4) · tests/allow-trailer.spec.sh · reads: petals/bin/petals, petals/scripts/check.sh, test/fixtures/brand-plotplot-v1.9.0/ @8a77eab822fa57 · by cli
 - [x] (code) The check reads its config from the base branch, so a change cannot loosen its own rules (issue #4) · tests/gate.spec.sh · reads: petals/bin/petals, petals/scripts/check.sh, test/fixtures/brand-plotplot-v1.9.0/ @f412440f3131a9 · by cli
 - [x] (code) petals guard pre-commit judges the staged content and refuses a commit with an error; guard commit-msg lets a finding the message allows through (issue #4) · tests/guard.spec.sh · reads: petals/bin/petals, petals/scripts/check.sh, test/fixtures/brand-plotplot-v1.9.0/ @eca76fdc2d5b34 · by cli
