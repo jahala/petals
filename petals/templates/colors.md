@@ -89,7 +89,15 @@ Classes: **reading** at least 4.5:1 (body copy, captions), **labels** at least 3
      read it from here, so a block that mixes prefixes is refused.
      Keep the role names below: petals' pages and checks use them. Add a
      property for every other colour in the tables above. Each hex must also
-     appear in a table row. -->
+     appear in a table row.
+     The second block holds the dark theme, under the selector the source's
+     own code switches to dark with: [data-theme="dark"] as below, .dark
+     (Tailwind, shadcn), :root.dark, or :root inside
+     @media (prefers-color-scheme: dark). Write that selector as it is;
+     every script reads it from here, and tokens.css writes the dark tokens
+     under it. Two blocks under different selectors are one dark theme only
+     when they declare the same values; otherwise they are refused, never
+     guessed. Leave the block out when the brand has no dark theme. -->
 
 ```css
 :root {

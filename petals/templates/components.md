@@ -39,11 +39,11 @@ and the full CSS value of each recipe.
 <!-- A brand with a dark theme that states its night shadows adds a Night
      column after Value: | Token | Value | Night | Usage |. Each cell is the
      recipe's full CSS value in the dark theme, as the source states it.
-     export-tokens.sh writes it into the [data-theme="dark"] block of
-     tokens.css and the dark group of tokens.json, and check.sh holds a
-     page's dark-theme box-shadows to it. Leave a cell empty when the source
-     gives no night value for that recipe, and leave the column out when it
-     gives none: no night value is guessed, and without a dark theme in
+     export-tokens.sh writes it into tokens.css's dark block, under the
+     dark selector colors.md gives, and into the dark group of tokens.json.
+     check.sh holds a page's dark-theme box-shadows to it. Leave a cell
+     empty when the source gives no night value for that recipe, and leave
+     the column out when it gives none: no night value is guessed, and without a dark theme in
      colors.md the column is not read. -->
 
 | Token | Value | Usage |

@@ -163,7 +163,9 @@ After the templates are populated, derive two machine views with `bash petals/sc
 - `.brand/tokens.css`: every brand value as a CSS custom property under the brand's token prefix. Colors, font stacks, spacing, radius, strokes, shadows, motion. Projects import it and reference variables instead of hard-coding values.
 - `.brand/tokens.json`: the same values in W3C design-tokens shape (`{ "$value", "$type" }` groups: color, fontFamily, space, layout, radius, stroke, shadow, motion). Build tools and CSS-framework theme configs consume this directly.
 
-A brand with a dark theme also gets a `[data-theme="dark"]` block in tokens.css and a `dark` group in tokens.json. They hold the dark colours from colors.md and, when the Shadow Recipes table has a Night column, the night shadows from it. Fill that column only with values the source states for the dark theme.
+A brand with a dark theme also gets a dark block in tokens.css and a `dark` group in tokens.json. They hold the dark colours from colors.md and, when the Shadow Recipes table has a Night column, the night shadows from it. Fill that column only with values the source states for the dark theme.
+
+The dark block in colors.md's CSS Custom Properties uses the selector the source's own code switches to dark with: `[data-theme="dark"]`, `.dark` (Tailwind and shadcn), `:root.dark`, or `:root` inside `@media (prefers-color-scheme: dark)`. Copy it as the source writes it; tokens.css writes the dark block under the same selector, and check.sh reads a page's rules under it as dark. Two dark blocks with different values are refused, never guessed.
 
 The prefix is the `{{PREFIX}}` you fill in colors.md's CSS Custom Properties block: the prefix the source's own custom properties share, or the brand name in lowercase when the source has none (`--acme-`). Every script reads it from that block, so every property there carries it; a block that mixes prefixes is refused, never guessed.
 

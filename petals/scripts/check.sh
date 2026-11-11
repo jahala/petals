@@ -154,11 +154,59 @@ STROKEW=$(awk -F'|' '/^## Border Strokes/{f=1;next} /^## /{f=0} f && NF>=4 && $2
 # tables, newline -> \036, the columns found by their headers (Token or
 # Name, Value, Night) as export-tokens.sh finds them. The night value, from
 # the optional Night column, is read only for a brand with a dark theme
-# (brand_has_dark in lib/common.sh); otherwise it stays empty, and no night
-# rule applies. A night cell in prose is skipped, as export-tokens.sh skips
-# it (as_shadow there; the night-shadows spec compares the two).
+# (a dark selector, below); otherwise it stays empty, and no night rule
+# applies. A night cell in prose is skipped, as export-tokens.sh skips it
+# (as_shadow there; the night-shadows spec compares the two).
+#
+# The brand's own dark selector, one per line, as colors.md's CSS block
+# writes it (brand_dark_selector in lib/common.sh): [data-theme="dark"],
+# .dark, "@media (prefers-color-scheme: dark) { :root }". When colors.md's
+# dark theme cannot be read (two dark blocks with different values, or a
+# block petals cannot parse), a warning says why and what is not judged:
+# night shadows and the brand's own selector as a dark marker. The rest of
+# the page is still judged.
+if ! DARKSEL=$(brand_dark_selector "$BRAND/colors.md"); then
+  echo "WARNING [tokens] the brand's dark theme is not read, so night shadows and the brand's own dark selector are not judged: $DARKSEL" >&2
+  DARKSEL=""
+fi
 SHADOW_NIGHT=0
-if brand_has_dark "$BRAND/colors.md"; then SHADOW_NIGHT=1; fi
+[ -n "$DARKSEL" ] && SHADOW_NIGHT=1
+# The page markers the brand's dark selector adds to the ones check.sh always
+# knows (data-theme dark or night, .dark, prefers-color-scheme: dark): each
+# level of each selector, each item of a selector list on its own, :root left
+# out, since the light theme is :root too. \036-joined.
+DARKMARKS=$(printf '%s\n' "$DARKSEL" | awk '
+  function mark(x){ gsub(/^ +| +$/, "", x); if(x!="" && x!=":root") print x }
+  NF {
+    n=split($0, lv, / [{] /); sub(/( [}])+$/, "", lv[n])
+    for(i=1;i<=n;i++){
+      if(lv[i] ~ /^@/){ mark(lv[i]); continue }
+      d=0; item=""
+      for(j=1;j<=length(lv[i]);j++){
+        c=substr(lv[i], j, 1)
+        if(c=="(") d++; else if(c==")") d--
+        if(c=="," && d==0){ mark(item); item="" } else item=item c
+      }
+      mark(item)
+    }
+  }' | tr '\n' '\036')
+# 1 when the selector text s holds one of the brand dark markers (darkmarks)
+# as written, not run on into a longer name. Both awk passes below use it.
+BRANDMARK_AWK='
+function brandmark(s,   i, k, m, rest, nx, pv){
+  if(!nbm){ nbm=split(darkmarks, bm, "\036"); if(!nbm) nbm=-1 }
+  gsub(/[ \t\n]+/, " ", s)
+  for(i=1;i<=nbm;i++){
+    m=bm[i]; if(m=="") continue
+    rest=s
+    while((k=index(rest, m))>0){
+      nx=substr(rest, k+length(m), 1); pv=(k>1 ? substr(rest, k-1, 1) : "")
+      if(nx !~ /[A-Za-z0-9_-]/ && (m !~ /^[A-Za-z0-9_-]/ || pv !~ /[A-Za-z0-9_-]/)) return 1
+      rest=substr(rest, k+1)
+    }
+  }
+  return 0
+}'
 SHADOWS=$(awk -F'|' -v night="$SHADOW_NIGHT" '
   function cell(c,   v){ v=(c ? $c : ""); gsub(/`/, "", v); gsub(/^[ \t]+|[ \t]+$/, "", v); return v }
   function isshadow(v,   r){ r=v; gsub(/rgba?\([ 0-9.,%\/]+\)/, "", r); gsub(/#[0-9A-Fa-f]+/, "", r); gsub(/inset|px|rem|em/, "", r); return r ~ /^[0-9., -]+$/ && r ~ /[0-9]/ }
@@ -231,9 +279,10 @@ fi
 
 # Custom properties per theme: "L|--name|#HEX" for the default
 # (light) theme and "D|--name|#HEX" for values set under a dark marker
-# ([data-theme="dark"], .dark, prefers-color-scheme: dark). Braces are tracked
-# character by character, since minified CSS puts several blocks on a line.
-THEMEVARS=$(awk '
+# ([data-theme="dark"], .dark, prefers-color-scheme: dark, and the brand's
+# own dark selector). Braces are tracked character by character, since
+# minified CSS puts several blocks on a line.
+THEMEVARS=$(awk -v darkmarks="$DARKMARKS" "$BRANDMARK_AWK"'
   { text = text $0 "\n" }
   END{
     gsub(/\/\*([^*]|\*+[^*\/])*\*+\//, "", text)
@@ -255,7 +304,7 @@ THEMEVARS=$(awk '
     if(v !~ /^#/ && tolower(v) !~ /^(rgba?|hsla?|oklch|oklab)\(/) return
     gsub(/[ \t\n]+/, " ", v)
     dark=0
-    for(j=1;j<=d;j++) if(sel[j] ~ /data-theme[ ]*=[ ]*["\047]?(dark|night)|\.dark([^a-z-]|$)|prefers-color-scheme[ ]*:[ ]*dark/) dark=1
+    for(j=1;j<=d;j++) if(sel[j] ~ /data-theme[ ]*=[ ]*["\047]?(dark|night)|\.dark([^a-z-]|$)|prefers-color-scheme[ ]*:[ ]*dark/ || brandmark(sel[j])) dark=1
     print (dark ? "D" : "L") "|" nm "|" v
   }' "$TARGET" 2>/dev/null | tr '\n' '\036')
 
@@ -302,7 +351,7 @@ if [ -z "$STAGE" ]; then
 fi
 
 awk -v palette="$PALETTE" -v radii="$RADII" -v bps="$BREAKPOINTS" \
-    -v unit="$SPACE_UNIT" -v forbidden="$FORBIDDEN" -v docpairs="$DOCPAIRS" -v accents="$ACCENTS" -v product="$PRODUCT" -v terms="$TERMS" -v pnames="$PRODUCT_NAMES" -v sarif="$([ "$FORMAT" = sarif ] && echo 1 || echo 0)" -v uri="$URI" -v fonts="$FONTS" -v markup="$MARKUP" -v md="$MDFILE" -v strokes="$STROKES" -v emban="$EMBAN" -v faces="$FACES" -v cssfile="$CSSFILE" -v garden="$GARDEN" -v stage="$STAGE" -v contracts="$CONTRACTS" -v hascontracts="$HAS_CONTRACTS" -v themevars="$THEMEVARS" -v strokew="$STROKEW" -v shadows="$SHADOWS" -v shadowtints="$SHADOWTINTS" '
+    -v unit="$SPACE_UNIT" -v forbidden="$FORBIDDEN" -v docpairs="$DOCPAIRS" -v accents="$ACCENTS" -v product="$PRODUCT" -v terms="$TERMS" -v pnames="$PRODUCT_NAMES" -v sarif="$([ "$FORMAT" = sarif ] && echo 1 || echo 0)" -v uri="$URI" -v fonts="$FONTS" -v markup="$MARKUP" -v md="$MDFILE" -v strokes="$STROKES" -v emban="$EMBAN" -v faces="$FACES" -v cssfile="$CSSFILE" -v garden="$GARDEN" -v stage="$STAGE" -v contracts="$CONTRACTS" -v hascontracts="$HAS_CONTRACTS" -v themevars="$THEMEVARS" -v strokew="$STROKEW" -v shadows="$SHADOWS" -v shadowtints="$SHADOWTINTS" -v darkmarks="$DARKMARKS" "$BRANDMARK_AWK"'
 function hexval(c,   i){ return index("0123456789ABCDEF", toupper(c)) - 1 }
 function h2(s){ return hexval(substr(s,1,1))*16 + hexval(substr(s,2,1)) }
 function expand(h){ if(length(h)==4) return "#" substr(h,2,1) substr(h,2,1) substr(h,3,1) substr(h,3,1) substr(h,4,1) substr(h,4,1); return h }
@@ -932,7 +981,7 @@ BEGIN{
     if(match(block, /background(-color)?:[ ]*[^;}]*/)){ vbg=substr(block, RSTART, RLENGTH); sub(/^[^:]*:[ ]*/, "", vbg) }
     if(vfg!="" && vbg!=""){
       bsel=block; sub(/\{.*/, "", bsel)
-      if(bsel ~ /data-theme[ ]*=[ ]*["\047]?(dark|night)|\.dark([^a-z-]|$)/) themes="dark"
+      if(bsel ~ /data-theme[ ]*=[ ]*["\047]?(dark|night)|\.dark([^a-z-]|$)/ || brandmark(bsel)) themes="dark"
       else if(hasdark) themes="light dark"
       else themes=""
       if(themes==""){ judgepair(resolve(vfg), resolve(vbg), blockstart, "") }
@@ -1084,15 +1133,16 @@ function judgepair(fg, bg, ln, tag,   r, key, cls, pre){
 
 # The theme at the end of text s, read on from the start of the current line
 # (ldepth, ldark, lacc): 1 inside a block whose selector, or an enclosing
-# one, marks a dark theme, the markers THEMEVARS reads. thdark is the depth
-# that block opened at, 0 outside any. With keep set, the state after s is
-# carried to the next line.
+# one, marks a dark theme, the markers THEMEVARS reads, the dark selector
+# the brand names among them (brandmark). thdark is the depth that block
+# opened at, 0 outside any. With keep set, the state after s is carried to
+# the next line.
 function darkafter(s, keep,   t, n, i, tk, d, dd, acc){
   gsub(/\/\*([^*]|\*+[^*\/])*\*+\//, "", s)
   t=s; gsub(/[{};]/, "\034&\034", t); n=split(t, tk, "\034")
   d=ldepth; dd=ldark; acc=lacc
   for(i=1;i<=n;i++){
-    if(tk[i]=="{"){ d++; if(!dd && acc ~ /data-theme[ ]*=[ ]*["\047]?(dark|night)|\.dark([^a-z-]|$)|prefers-color-scheme[ ]*:[ ]*dark/) dd=d; acc="" }
+    if(tk[i]=="{"){ d++; if(!dd && (acc ~ /data-theme[ ]*=[ ]*["\047]?(dark|night)|\.dark([^a-z-]|$)|prefers-color-scheme[ ]*:[ ]*dark/ || brandmark(acc))) dd=d; acc="" }
     else if(tk[i]=="}"){ if(dd==d) dd=0; if(d>0) d--; acc="" }
     else if(tk[i]==";") acc=""
     else acc=acc tk[i]

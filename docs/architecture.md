@@ -24,7 +24,10 @@ python3, no other dependencies). The plan of record is
 2. `check.sh` reads the brand's tables and CSS blocks and judges a file line by
    line. The format is the one `petals/templates/` writes. The token prefix
    is the one colors.md's CSS block declares, read for every script by
-   `brand_prefix` in `lib/common.sh` (`tests/template-brand.spec.sh`). Every
+   `brand_prefix` in `lib/common.sh` (`tests/template-brand.spec.sh`). The
+   dark theme's selector is the one colors.md's CSS block gives it
+   (`[data-theme="dark"]`, `.dark`, `:root` inside a dark media query),
+   read by `brand_dark_selector` there (`tests/dark-selector.spec.sh`). Every
    rule has one id, `<dimension>/<rule>`, declared in the SARIF driver; the
    control page (`test/fixtures/control/`) trips every one.
 3. `petals gate` lists the files a change touches, takes the config and the
