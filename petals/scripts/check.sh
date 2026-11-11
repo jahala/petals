@@ -243,6 +243,32 @@ THEMEVARS=$(awk '
 # The file as SARIF names it: relative to the project root when inside it.
 case "$TARGET" in "$PWD"/*) URI="${TARGET#"$PWD"/}" ;; *) URI="$TARGET" ;; esac
 
+# Component contracts (reuse): "contract|home|class|covers" per Home table row
+# of .brand/components/**/*.md. A home path is relative to the project root,
+# the folder that holds the brand folder; rows whose home is this file are
+# dropped, since a raw element in its own home is the component itself.
+PROJ_ROOT=$(cd "$BRAND/.." && pwd -P)
+SELF_ABS="$(cd "$(dirname "$TARGET")" && pwd -P)/$(basename "$TARGET")"
+SELF_REL="${SELF_ABS#"$PROJ_ROOT"/}"
+CONTRACTS=""
+HAS_CONTRACTS=0
+if [ -d "$BRAND/components" ]; then
+  while IFS= read -r cf; do
+    rel="${cf#"$BRAND"/}"
+    rows=$(awk -F'|' -v c="$rel" -v self="$SELF_REL" '
+      /^## /{h=($0 ~ /^## Home/); next}
+      h && NF>=5 && $2 !~ /File|---/ {
+        for(i=2;i<=4;i++){ gsub(/^[ \t`]+|[ \t`]+$/, "", $i) }
+        if($2!="" && $4!="" && $2!=self) print c "|" $2 "|" $3 "|" $4
+        if($2!="" && $4!="") any=1
+      }
+      END{ if(any) print "#has" }' "$cf")
+    case "$rows" in *"#has"*) HAS_CONTRACTS=1 ;; esac
+    rows=$(printf '%s\n' "$rows" | grep -v '^#has$' | tr '\n' '\036')
+    CONTRACTS="$CONTRACTS$rows"
+  done < <(find "$BRAND/components" -name '*.md' -type f | sort)
+fi
+
 # Stage: --stage wins; else a mockup glob in .petalsrc's
 # stages: mockup: list that matches the file; else production.
 case "$STAGE" in ""|mockup|production) ;; *) echo "ERROR --stage must be mockup or production"; exit 2 ;; esac
@@ -257,7 +283,7 @@ if [ -z "$STAGE" ]; then
 fi
 
 awk -v palette="$PALETTE" -v radii="$RADII" -v bps="$BREAKPOINTS" \
-    -v unit="$SPACE_UNIT" -v forbidden="$FORBIDDEN" -v docpairs="$DOCPAIRS" -v accents="$ACCENTS" -v product="$PRODUCT" -v terms="$TERMS" -v pnames="$PRODUCT_NAMES" -v sarif="$([ "$FORMAT" = sarif ] && echo 1 || echo 0)" -v uri="$URI" -v fonts="$FONTS" -v markup="$MARKUP" -v md="$MDFILE" -v strokes="$STROKES" -v emban="$EMBAN" -v faces="$FACES" -v cssfile="$CSSFILE" -v garden="$GARDEN" -v stage="$STAGE" -v themevars="$THEMEVARS" -v strokew="$STROKEW" -v shadows="$SHADOWS" '
+    -v unit="$SPACE_UNIT" -v forbidden="$FORBIDDEN" -v docpairs="$DOCPAIRS" -v accents="$ACCENTS" -v product="$PRODUCT" -v terms="$TERMS" -v pnames="$PRODUCT_NAMES" -v sarif="$([ "$FORMAT" = sarif ] && echo 1 || echo 0)" -v uri="$URI" -v fonts="$FONTS" -v markup="$MARKUP" -v md="$MDFILE" -v strokes="$STROKES" -v emban="$EMBAN" -v faces="$FACES" -v cssfile="$CSSFILE" -v garden="$GARDEN" -v stage="$STAGE" -v contracts="$CONTRACTS" -v hascontracts="$HAS_CONTRACTS" -v themevars="$THEMEVARS" -v strokew="$STROKEW" -v shadows="$SHADOWS" '
 function hexval(c,   i){ return index("0123456789ABCDEF", toupper(c)) - 1 }
 function h2(s){ return hexval(substr(s,1,1))*16 + hexval(substr(s,2,1)) }
 function expand(h){ if(length(h)==4) return "#" substr(h,2,1) substr(h,2,1) substr(h,3,1) substr(h,3,1) substr(h,4,1) substr(h,4,1); return h }
@@ -281,6 +307,7 @@ function ruleid(dim, msg){
   if(dim=="surface"){ if(msg ~ /radius/) return "surface/radius"; if(msg ~ /stroke tokens/) return "surface/stroke"; if(msg ~ /shadow/) return "surface/shadow"; if(msg ~ /garden row|current pill/) return "surface/garden-row"; return "surface/motion" }
   if(dim=="voice"){ if(msg ~ /forbidden term/) return "voice/forbidden-term"; if(msg ~ /canonical term/) return "voice/terminology"; if(msg ~ /em dash/) return "voice/em-dash"; return "voice/casing" }
   if(dim=="content"){ if(msg ~ /placeholder/) return "content/placeholder"; if(msg ~ /href=/) return "content/dead-link"; return "content/dummy-contact" }
+  if(dim=="reuse") return "reuse/rebuilt-component"
   if(dim=="typography"){ if(msg ~ /has no (weight|italic)/) return "typography/faux-style"; if(msg ~ /never loads/) return "typography/unloaded-family"; return "typography/family" }
   return dim "/" dim
 }
@@ -305,6 +332,7 @@ function rules_init(){
   rdesc["content/placeholder"]="Placeholder copy in a production page"
   rdesc["content/dummy-contact"]="A dummy phone number, address or name in a production page"
   rdesc["content/dead-link"]="A link to # in a production page"
+  rdesc["reuse/rebuilt-component"]="A control rebuilt by hand where a component contract covers it"
 }
 function jesc(s){ gsub(/\\/, "\\\\", s); gsub(/"/, "\\\"", s); gsub(/\t/, "\\t", s); gsub(/\r/, "", s); gsub(/\n/, "\\n", s); return s }
 function emit_sarif(   i, n, k, ln, text, sug, first){
@@ -453,6 +481,56 @@ iscopy {
     content("line " NR ": John or Jane Doe is a dummy name. Use a real one, or keep this page under a mockup path.")
   if(copytext ~ /href[ ]*=[ ]*("#"|\047#\047)/)
     content("line " NR ": href=\"#\" goes nowhere. Link the real page, or keep this page under a mockup path.")
+}
+
+# ── reuse: a control rebuilt where a component contract covers it ──
+# Each Covers selector is a tag, optionally with [attr=value]. A selector with a
+# class (a.btn) names a use of the component, never a rebuild, so it is skipped.
+function hasattr(tg, an, av,   re){
+  re = "[ \t]" an "[ \t]*=[ \t]*[\"\047]?" av
+  if(av=="") return (tg ~ ("[ \t]" an "([ \t=/>]|$)"))
+  return (tg ~ (re "([\"\047 \t/>]|$)"))
+}
+function hasclass(tg, cl,   v){
+  if(!match(tg, /[ \t](class|className)[ \t]*=[ \t]*\{?["\047][^"\047]*["\047]/)) return 0
+  v=substr(tg, RSTART, RLENGTH); sub(/^[^"\047]*["\047]/, "", v); sub(/["\047]$/, "", v)
+  return ((" " v " ") ~ ("[ \t]" cl "[ \t]"))
+}
+BEGIN{
+  nsel=0
+  nc=split(contracts, crow, "\036")
+  for(i=1;i<=nc;i++){
+    if(crow[i]=="") continue
+    split(crow[i], cf, "|")
+    ns=split(cf[4], sels, ",")
+    for(j=1;j<=ns;j++){
+      sl=sels[j]; gsub(/^[ \t]+|[ \t]+$/, "", sl)
+      if(sl=="" || sl ~ /\./) continue
+      tag=sl; an=""; av=""
+      if(match(sl, /\[[^]]*\]/)){
+        at=substr(sl, RSTART+1, RLENGTH-2); tag=substr(sl, 1, RSTART-1)
+        k=index(at, "=")
+        if(k){ an=substr(at, 1, k-1); av=substr(at, k+1); gsub(/["\047]/, "", av) } else an=at
+      }
+      nsel++; stag[nsel]=tag; sattr[nsel]=an; sval[nsel]=av; scls[nsel]=cf[3]; shome[nsel]=cf[2]; scon[nsel]=cf[1]
+    }
+  }
+}
+iscopy && nsel>0 {
+  rest=copytext
+  while(match(rest, /<[a-z][a-z0-9-]*([ \t\/][^>]*)?>/)){
+    tg=substr(rest, RSTART, RLENGTH); rest=substr(rest, RSTART+RLENGTH)
+    tname=tg; sub(/^</, "", tname); sub(/[ \t\/>].*$/, "", tname)
+    for(k=1;k<=nsel;k++){
+      if(stag[k]!=tname) continue
+      if(sattr[k]!="" && !hasattr(tg, sattr[k], sval[k])) continue
+      cl=scls[k]; sub(/^\./, "", cl)
+      if(cl!="" && hasclass(tg, cl)) continue
+      shown=tname; if(sattr[k]!="") shown=shown " " sattr[k] (sval[k]!="" ? "=" sval[k] : "")
+      err("reuse", "line " NR ": a raw <" shown "> rebuilds a component. Use " scls[k] " from " shome[k] " (" scon[k] ").")
+      break
+    }
+  }
 }
 
 # ── typography: font families a line loads or declares ──
@@ -786,12 +864,14 @@ END{
     printf "Voice:    %d error(s), %d warning(s)\n", e["voice"]+0,  w["voice"]+0
     printf "Typography: %d error(s), %d warning(s) (families; heading and body roles stay with the agent)\n", e["typography"]+0, w["typography"]+0
     printf "Content:  %d error(s), %d warning(s), %d note(s) (%s stage)\n", e["content"]+0, w["content"]+0, notecount["content"]+0, stage
-    te = e["color"]+e["layout"]+e["surface"]+e["voice"]+e["typography"]+e["content"]
-    tw = w["color"]+w["layout"]+w["surface"]+w["voice"]+w["typography"]+w["content"]
+    if(hascontracts) printf "Reuse:    %d error(s), %d warning(s)\n", e["reuse"]+0, w["reuse"]+0
+    else             printf "Reuse:    no contracts (.brand/components/ holds none)\n"
+    te = e["color"]+e["layout"]+e["surface"]+e["voice"]+e["typography"]+e["content"]+e["reuse"]
+    tw = w["color"]+w["layout"]+w["surface"]+w["voice"]+w["typography"]+w["content"]+w["reuse"]
     if(te==0) printf "Result: PASS (%d warning(s) to review)\n", tw
     else      printf "Result: FAIL (%d error(s) to fix, %d warning(s) to review).\n", te, tw
   }
-  exit (e["color"]+e["layout"]+e["surface"]+e["voice"]+e["typography"]+e["content"] > 0 ? 1 : 0)
+  exit (e["color"]+e["layout"]+e["surface"]+e["voice"]+e["typography"]+e["content"]+e["reuse"] > 0 ? 1 : 0)
 }
 ' "$TARGET"
 AWK_EXIT=$?

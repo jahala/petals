@@ -7,7 +7,9 @@ SCRIPT=petals/scripts/check.sh
 PAGE=test/fixtures/control/control.html
 BRAND=test/fixtures/brand-plotplot-v1.9.0/.brand
 P=$(mktemp -d); trap 'rm -rf "$P"' EXIT
-bash "$SCRIPT" "$PAGE" --brand "$BRAND" --product petals --format sarif > "$P/log.sarif"; rc=$?
+# the frozen brand plus the control's own component contract, so the reuse rule has one to break
+cp -R "$BRAND" "$P/brand" && cp -R test/fixtures/control/components "$P/brand/components"
+bash "$SCRIPT" "$PAGE" --brand "$P/brand" --product petals --format sarif > "$P/log.sarif"; rc=$?
 python3 -I - "$P/log.sarif" "$rc" <<'PY'
 import json, sys
 d = json.load(open(sys.argv[1], encoding="utf-8")); rc = int(sys.argv[2])

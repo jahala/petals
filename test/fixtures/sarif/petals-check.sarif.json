@@ -121,6 +121,12 @@
               }
             },
             {
+              "id": "reuse/rebuilt-component",
+              "shortDescription": {
+                "text": "A control rebuilt by hand where a component contract covers it"
+              }
+            },
+            {
               "id": "surface/garden-row",
               "shortDescription": {
                 "text": "A footer garden row that differs from the brand's"

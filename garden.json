@@ -1,7 +1,7 @@
 {
   "$schema": "https://github.com/jahala/plotplot/blob/master/contracts/manifest.schema.json",
   "name": "petals",
-  "summary": "petals carries a brand into what agents build and checks what came out: colours, type, layout, surface, voice and content, as SARIF.",
+  "summary": "petals carries a brand into what agents build and checks what came out: colours, type, layout, surface, voice, content and component reuse, as SARIF.",
   "kind": [
     "gate",
     "capability"
