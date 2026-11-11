@@ -16,17 +16,20 @@ set -euo pipefail
 # declares none, or mixes prefixes, is refused with exit 2.
 #
 # Where each token comes from:
-#   colour    the <prefix>*: #hex declarations in colors.md's own CSS blocks
-#             (:root and [data-theme="dark"]); each hex must also sit in a
-#             colors.md table row
+#   colour    the <prefix>*: #hex declarations in colors.md's own CSS blocks:
+#             :root for the light theme, and for the dark theme the block
+#             under the brand's own dark selector (brand_dark_selector in
+#             lib/common.sh), such as [data-theme="dark"], .dark or :root
+#             inside @media (prefers-color-scheme: dark). tokens.css writes
+#             the dark tokens under that same selector. Each hex must also
+#             sit in a colors.md table row
 #   font      --font-<role> in typography.md's CSS block, as <prefix>font-<role>
 #   space, radius, stroke, shadow, motion
 #             the token and value columns of their tables, found by header
 #   night shadow
 #             the Shadow Recipes table's optional Night column, written into
-#             the dark block, for a brand with a dark theme (brand_has_dark in
-#             lib/common.sh). No column, an empty cell or no dark theme gives
-#             no night shadow.
+#             the dark block, for a brand with a dark theme. No column, an
+#             empty cell or no dark theme gives no night shadow.
 #   layout    container max width, gutter and breakpoints, only as layout.md
 #             states them
 # A value that is prose rather than a CSS value is skipped, never guessed.
@@ -39,7 +42,9 @@ set -euo pipefail
 #
 # Exit codes: 0 derived (or, with --check, the tokens match); 1 with --check,
 # the committed tokens differ from the markdown; 2 the markdown cannot be
-# derived (a FATAL line says why) or the command line is wrong.
+# derived (a FATAL line says why: among others, two dark blocks with
+# different values, or a CSS block that cannot be read) or the command line
+# is wrong.
 # ============================================================================
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -228,14 +233,40 @@ def brand_name(identity_md):
     return "brand"
 
 
+def css_rules(css):
+    """The declarations of every CSS rule in css, by selector. The selector
+    is written as brand_css_props in lib/common.sh writes it: whitespace
+    collapsed, and a nested rule after each rule or at-rule around it,
+    joined by " { " and closed by " }", so :root inside a media query is
+    "@media (prefers-color-scheme: dark) { :root }"."""
+    rules = {}
+    stack, acc = [], ""
+    for tok in re.split(r"([{};])", strip_comments(css)):
+        if tok == "{":
+            stack.append(" ".join(acc.split()))
+            acc = ""
+        elif tok in (";", "}"):
+            if stack and acc.strip():
+                sel = " { ".join(stack) + " }" * (len(stack) - 1)
+                rules.setdefault(sel, []).append(acc.strip() + ";")
+            acc = ""
+            if tok == "}" and stack:
+                stack.pop()
+        else:
+            acc += tok
+    return {sel: "\n".join(decls) for sel, decls in rules.items()}
+
+
 def css_blocks(md, selector):
-    """Bodies of the CSS rules with this selector, inside code fences."""
-    bodies = []
-    for block in fenced_blocks(md):
-        text = strip_comments(block)
-        for m in re.finditer(selector + r"\s*\{(.*?)\}", text, flags=re.S):
-            bodies.append(m.group(1))
-    return bodies
+    """Bodies of the CSS rules under this selector, inside code fences."""
+    return [body for block in fenced_blocks(md) for sel, body in css_rules(block).items() if sel == selector]
+
+
+def selector_levels(selector):
+    """A selector as css_rules writes it, split into its nested levels."""
+    levels = selector.split(" { ")
+    levels[-1] = levels[-1][:len(levels[-1]) - 2 * (len(levels) - 1)]
+    return levels
 
 
 def colour_decls(bodies, where):
@@ -251,7 +282,7 @@ def colour_decls(bodies, where):
     return out
 
 
-def derive_tokens(brand_dir, has_dark):
+def derive_tokens(brand_dir, dark_selectors):
     colors_md = read(brand_dir, "colors.md")
     typog_md = read(brand_dir, "typography.md")
     layout_md = read(brand_dir, "layout.md")
@@ -262,15 +293,22 @@ def derive_tokens(brand_dir, has_dark):
     dark = []
 
     # 1. colour: the brand's own CSS blocks name the tokens
-    light = colour_decls(css_blocks(colors_md, r":root"), "colors.md :root")
-    night = colour_decls(css_blocks(colors_md, r"\[data-theme\s*=\s*\"dark\"\]"), 'colors.md [data-theme="dark"]')
+    light = colour_decls(css_blocks(colors_md, ":root"), "colors.md :root")
+    night_bodies = []
+    for sel in dark_selectors:
+        bodies = css_blocks(colors_md, sel)
+        if not bodies:
+            raise Fail("colors.md has no CSS block under %s, the dark selector brand_dark_selector read" % sel)
+        night_bodies += bodies
+    dark_where = " and ".join(dark_selectors)
+    night = colour_decls(night_bodies, "colors.md " + dark_where)
     if not light:
         raise Fail("colors.md has no %s*: #hex declarations in a CSS :root block" % PREFIX)
     table_hexes = set()
     for line in colors_md.split("\n"):
         if line.lstrip().startswith("|"):
             table_hexes.update(h.lower() for h in re.findall(r"#[0-9A-Fa-f]{6}", line))
-    for block, decls in (("", light), ("[data-theme=\"dark\"] ", night)):
+    for block, decls in (("", light), (dark_where + " ", night)):
         for name, hexv in decls:
             if hexv.lower() not in table_hexes:
                 raise Fail("%s in colors.md's %sCSS block (%s) appears in no colors.md table row" % (hexv, block, PREFIX + name))
@@ -341,7 +379,7 @@ def derive_tokens(brand_dir, has_dark):
             root.append(Token("motion", PREFIX + tok, m[0], m[1], "motion", tok))
 
     # 5. night shadows: the Night column, for a brand with a dark theme
-    if has_dark:
+    if dark_selectors:
         for tok, val in token_value_rows(comps_md, "Shadow Recipes", "night"):
             v = as_shadow(val)
             if v:
@@ -358,7 +396,7 @@ def derive_tokens(brand_dir, has_dark):
 
 # ── two serialisations of the one list ─────────────────────────────────────
 
-def render_css(brand, root, dark):
+def render_css(brand, root, dark, dark_selectors):
     lines = [
         "/* %s design tokens, generated from .brand/*.md (canonical)." % brand,
         "   Regenerate via: bash petals/scripts/export-tokens.sh",
@@ -375,10 +413,13 @@ def render_css(brand, root, dark):
             section = t.section
         lines.append("  %s: %s;" % (t.css, t.value))
     lines.append("}")
-    if dark:
-        lines += ["", "[data-theme=\"dark\"] {"]
-        lines += ["  %s: %s;" % (t.css, t.value) for t in dark]
-        lines.append("}")
+    # the dark tokens, under each of the brand's own dark selectors
+    for sel in dark_selectors if dark else []:
+        levels = selector_levels(sel)
+        lines.append("")
+        lines += ["  " * i + level + " {" for i, level in enumerate(levels)]
+        lines += ["  " * len(levels) + "%s: %s;" % (t.css, t.value) for t in dark]
+        lines += ["  " * i + "}" for i in reversed(range(len(levels)))]
     return "\n".join(lines) + "\n"
 
 
@@ -438,17 +479,18 @@ def shown(value):
     return " ".join(str(value).split())
 
 
-def parse_css(path):
+def parse_css(path, dark_selectors):
+    """Every custom property of a tokens.css, keyed by its block: none for
+    :root, [dark] for the brand's one dark selector, else [<selector>]."""
     out = {}
     if not os.path.exists(path):
         return out
     with open(path, encoding="utf-8") as f:
-        text = strip_comments(f.read())
-    for selector, body in re.findall(r"([^{}]+)\{([^}]*)\}", text):
-        sel = " ".join(selector.split())
+        text = f.read()
+    for sel, body in css_rules(text).items():
         if sel == ":root":
             prefix = ""
-        elif re.fullmatch(r"\[data-theme\s*=\s*\"dark\"\]", sel):
+        elif dark_selectors == [sel]:
             prefix = "[dark]"
         else:
             prefix = "[" + sel + "]"
@@ -518,9 +560,10 @@ def main(argv):
     global PREFIX
     mode, PREFIX = argv[0], argv[-1]
     if mode == "derive":
-        brand_dir, out_dir, has_dark = argv[1], argv[2], argv[3] == "1"
-        brand, root, dark = derive_tokens(brand_dir, has_dark)
-        css, js = render_css(brand, root, dark), render_json(brand, root, dark)
+        brand_dir, out_dir = argv[1], argv[2]
+        dark_selectors = [s for s in argv[3].split("\n") if s]
+        brand, root, dark = derive_tokens(brand_dir, dark_selectors)
+        css, js = render_css(brand, root, dark, dark_selectors), render_json(brand, root, dark)
         if EM_DASH in css or EM_DASH in js:
             raise Fail("the derived files would carry an em dash; the brand bans them")
         with open(os.path.join(out_dir, "tokens.css"), "w", encoding="utf-8") as f:
@@ -530,7 +573,8 @@ def main(argv):
         return 0
     if mode == "compare":
         brand_dir, derived_dir = argv[1], argv[2]
-        lines = diff_maps("css", parse_css(os.path.join(brand_dir, "tokens.css")), parse_css(os.path.join(derived_dir, "tokens.css")))
+        dark_selectors = [s for s in argv[3].split("\n") if s]
+        lines = diff_maps("css", parse_css(os.path.join(brand_dir, "tokens.css"), dark_selectors), parse_css(os.path.join(derived_dir, "tokens.css"), dark_selectors))
         lines += diff_maps("json", parse_json(os.path.join(brand_dir, "tokens.json")), parse_json(os.path.join(derived_dir, "tokens.json")))
         lines += unknown_in_contracts(brand_dir, derived_dir)
         for line in lines:
@@ -550,13 +594,16 @@ except Fail as e:
 PYEOF
 )
 
-HAS_DARK=0
-if brand_has_dark "$BRAND_DIR/colors.md"; then HAS_DARK=1; fi
-python3 -I -c "$PY" derive "$BRAND_DIR" "$SCRATCH" "$HAS_DARK" "$PREFIX"
+# The brand's own dark selector, one per line; none without a dark theme.
+if ! DARK=$(brand_dark_selector "$BRAND_DIR/colors.md"); then
+  echo "FATAL: $DARK" >&2
+  exit 2
+fi
+python3 -I -c "$PY" derive "$BRAND_DIR" "$SCRATCH" "$DARK" "$PREFIX"
 
 if [[ "$CHECK" -eq 1 ]]; then
   # set -e makes the comparison's status the script's: 1 when anything differs.
-  python3 -I -c "$PY" compare "$BRAND_DIR" "$SCRATCH" "$PREFIX"
+  python3 -I -c "$PY" compare "$BRAND_DIR" "$SCRATCH" "$DARK" "$PREFIX"
   exit 0
 fi
 
