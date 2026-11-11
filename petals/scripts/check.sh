@@ -492,8 +492,8 @@ function hasattr(tg, an, av,   re){
   return (tg ~ (re "([\"\047 \t/>]|$)"))
 }
 function hasclass(tg, cl,   v){
-  if(!match(tg, /[ \t](class|className)[ \t]*=[ \t]*\{?[\"\047][^\"\047]*[\"\047]/)) return 0
-  v=substr(tg, RSTART, RLENGTH); sub(/^[^\"\047]*[\"\047]/, "", v); sub(/[\"\047]$/, "", v)
+  if(!match(tg, /[ \t](class|className)[ \t]*=[ \t]*\{?["\047][^"\047]*["\047]/)) return 0
+  v=substr(tg, RSTART, RLENGTH); sub(/^[^"\047]*["\047]/, "", v); sub(/["\047]$/, "", v)
   return ((" " v " ") ~ ("[ \t]" cl "[ \t]"))
 }
 BEGIN{
@@ -510,7 +510,7 @@ BEGIN{
       if(match(sl, /\[[^]]*\]/)){
         at=substr(sl, RSTART+1, RLENGTH-2); tag=substr(sl, 1, RSTART-1)
         k=index(at, "=")
-        if(k){ an=substr(at, 1, k-1); av=substr(at, k+1); gsub(/[\"\047]/, "", av) } else an=at
+        if(k){ an=substr(at, 1, k-1); av=substr(at, k+1); gsub(/["\047]/, "", av) } else an=at
       }
       nsel++; stag[nsel]=tag; sattr[nsel]=an; sval[nsel]=av; scls[nsel]=cf[3]; shome[nsel]=cf[2]; scon[nsel]=cf[1]
     }
