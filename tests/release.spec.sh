@@ -45,7 +45,7 @@ n=$(find "$P/cache2/petals" -mindepth 1 -maxdepth 1 -type d | wc -l | tr -d ' ')
 [ "$n" = 1 ] && echo "ok - only the current copy remains" || { echo "not ok - only the current copy remains ($n)"; fails=$((fails+1)); }
 # without trash, the older copy is named, never deleted
 mkdir -p "$P/nobin" "$P/cache3/petals/0ld0ld0ld0ld0ld0/petals"
-for tool in bash sh sed tail base64 tar mktemp mv dirname basename cat mkdir find wc tr pwd env git python3 awk grep sort head cut uname rm cp ls printf; do p=$(command -v "$tool" 2>/dev/null) && ln -sf "$p" "$P/nobin/$tool"; done
+for tool in bash sh sed tail base64 tar gzip mktemp mv dirname basename cat mkdir find wc tr pwd env git python3 awk grep sort head cut uname rm cp ls printf; do p=$(command -v "$tool" 2>/dev/null) && ln -sf "$p" "$P/nobin/$tool"; done
 err=$(PATH="$P/nobin" XDG_CACHE_HOME="$P/cache3" "$P/loose/petals" --version 2>&1 >/dev/null)
 [ -d "$P/cache3/petals/0ld0ld0ld0ld0ld0" ] && echo "ok - without trash the older copy stays" || { echo "not ok - without trash the older copy stays"; fails=$((fails+1)); }
 t "without trash the older copy is named on stderr" '0ld0ld0ld0ld0ld0.*older' "$err"
