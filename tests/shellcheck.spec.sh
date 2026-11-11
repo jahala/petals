@@ -14,4 +14,9 @@ done
 hits=$(grep -nE '(^|[^-a-z])sed -i' tests/*.sh | grep -v '^tests/shellcheck.spec.sh:' | grep -vE '^[^:]+:[0-9]+:[[:space:]]*#')
 if [ -z "$hits" ]; then echo "ok - no test edits files with sed -i"
 else echo "not ok - no test edits files with sed -i"; printf '%s\n' "$hits" | sed 's/^/# /'; fails=$((fails+1)); fi
+# gawk (Linux) warns on stderr at an escaped quote in a regex bracket, which
+# macOS awk accepts silently; awk code writes the quote as \042 instead
+hits=$(grep -nE '\[\^?\\"' petals/scripts/*.sh)
+if [ -z "$hits" ]; then echo "ok - no awk bracket escapes a double quote (write it as \\042)"
+else echo "not ok - no awk bracket escapes a double quote (write it as \\042)"; printf '%s\n' "$hits" | sed 's/^/# /'; fails=$((fails+1)); fi
 echo; echo "$fails failure(s)"; exit "$fails"

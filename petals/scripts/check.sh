@@ -308,6 +308,7 @@ function ruleid(dim, msg){
   if(dim=="voice"){ if(msg ~ /forbidden term/) return "voice/forbidden-term"; if(msg ~ /canonical term/) return "voice/terminology"; if(msg ~ /em dash/) return "voice/em-dash"; return "voice/casing" }
   if(dim=="content"){ if(msg ~ /placeholder/) return "content/placeholder"; if(msg ~ /href=/) return "content/dead-link"; return "content/dummy-contact" }
   if(dim=="reuse") return "reuse/rebuilt-component"
+  if(dim=="access"){ if(msg ~ /image without alt/) return "access/img-alt"; if(msg ~ /form field/) return "access/unlabelled-field"; if(msg ~ /button with no name/) return "access/unnamed-button"; if(msg ~ /focus outline/) return "access/focus-removed"; if(msg ~ /zooming/) return "access/zoom-blocked"; return "access/fake-button" }
   if(dim=="typography"){ if(msg ~ /has no (weight|italic)/) return "typography/faux-style"; if(msg ~ /never loads/) return "typography/unloaded-family"; return "typography/family" }
   return dim "/" dim
 }
@@ -332,6 +333,12 @@ function rules_init(){
   rdesc["content/placeholder"]="Placeholder copy in a production page"
   rdesc["content/dummy-contact"]="A dummy phone number, address or name in a production page"
   rdesc["content/dead-link"]="A link to # in a production page"
+  rdesc["access/img-alt"]="An image without alt text"
+  rdesc["access/unlabelled-field"]="A form field without a label"
+  rdesc["access/unnamed-button"]="A button with no accessible name"
+  rdesc["access/focus-removed"]="A focus outline removed with no visible replacement"
+  rdesc["access/zoom-blocked"]="A viewport that blocks zooming"
+  rdesc["access/fake-button"]="A clickable div or span keyboard users cannot reach"
   rdesc["reuse/rebuilt-component"]="A control rebuilt by hand where a component contract covers it"
 }
 function jesc(s){ gsub(/\\/, "\\\\", s); gsub(/"/, "\\\"", s); gsub(/\t/, "\\t", s); gsub(/\r/, "", s); gsub(/\n/, "\\n", s); return s }
@@ -487,9 +494,9 @@ iscopy {
 # Each Covers selector is a tag, optionally with [attr=value]. A selector with a
 # class (a.btn) names a use of the component, never a rebuild, so it is skipped.
 function hasattr(tg, an, av,   re){
-  re = "[ \t]" an "[ \t]*=[ \t]*[\"\047]?" av
+  re = "[ \t]" an "[ \t]*=[ \t]*[\042\047]?" av
   if(av=="") return (tg ~ ("[ \t]" an "([ \t=/>]|$)"))
-  return (tg ~ (re "([\"\047 \t/>]|$)"))
+  return (tg ~ (re "([\042\047 \t/>]|$)"))
 }
 function hasclass(tg, cl,   v){
   if(!match(tg, /[ \t](class|className)[ \t]*=[ \t]*\{?["\047][^"\047]*["\047]/)) return 0
@@ -529,6 +536,66 @@ iscopy && nsel>0 {
       shown=tname; if(sattr[k]!="") shown=shown " " sattr[k] (sval[k]!="" ? "=" sval[k] : "")
       err("reuse", "line " NR ": a raw <" shown "> rebuilds a component. Use " scls[k] " from " shome[k] " (" scon[k] ").")
       break
+    }
+  }
+}
+
+# ── access: what the source of a page shows about who can use it ──
+# Each rule locks a real person out when broken, so each is an error in every
+# stage. Quoted markup (<pre>, <code>) is not judged; only copy is.
+function attrval(tg, an,   v){
+  if(!match(tg, "[ \t]" an "[ \t]*=[ \t]*(\042[^\042]*\042|\047[^\047]*\047|\\{[^}]*\\}|[^ \t>]+)")) return "\001"
+  v=substr(tg, RSTART, RLENGTH); sub(/^[^=]*=[ \t]*/, "", v); gsub(/^["\047{]|["\047}]$/, "", v)
+  return v
+}
+function named(tg){ return (attrval(tg, "aria-label")!="\001" && attrval(tg, "aria-label")!="") || attrval(tg, "aria-labelledby")!="\001" || attrval(tg, "title")!="\001" }
+iscopy {
+  rest=copytext
+  while(1){
+    if(match(rest, /<\/?[a-zA-Z][^>]*>/)){ txt=substr(rest, 1, RSTART-1); tg=substr(rest, RSTART, RLENGTH); rest=substr(rest, RSTART+RLENGTH) }
+    else { txt=rest; tg="" }
+    if(inbtn) btntext=btntext txt
+    if(tg=="") break
+    tn=tg; sub(/^<\/?/, "", tn); sub(/[ \t\/>].*$/, "", tn)
+    closing=(tg ~ /^<\//)
+    if(closing){
+      if(tn=="label") inlabel=0
+      if(tn=="button" && inbtn){
+        t=btntext; gsub(/&nbsp;|&#160;|[ \t]/, "", t)
+        if(!btnnamed && t=="") err("access", "line " btnline ": a button with no name. Screen readers say only \"button\"; add text, or aria-label.")
+        inbtn=0
+      }
+      continue
+    }
+    if(tn=="img"){
+      if(inbtn){ a=attrval(tg, "alt"); if(a!="\001" && a!="") btnnamed=1 }
+      if(attrval(tg, "alt")=="\001") err("access", "line " NR ": an image without alt text. Screen readers read out the file name; describe what it shows, or set alt=\"\" for decoration.")
+    }
+    else if(tn=="label"){
+      f=attrval(tg, "for"); if(f=="\001") f=attrval(tg, "htmlFor")
+      if(f!="\001") labelfor[f]=1; else inlabel=1
+    }
+    else if(tn=="input" || tn=="select" || tn=="textarea"){
+      ty=tolower(attrval(tg, "type"))
+      if(tn=="input" && ty ~ /^(hidden|submit|button|reset|image)$/) continue
+      if(inlabel || named(tg)) continue
+      fid=attrval(tg, "id")
+      if(fid!="\001"){ nfield++; fieldid[nfield]=fid; fieldline[nfield]=NR }
+      else err("access", "line " NR ": a form field without a label. A placeholder vanishes as people type; add a <label for>, or aria-label.")
+    }
+    else if(tn=="button"){
+      inbtn=1; btnline=NR; btntext=""; btnnamed=named(tg)
+      if(tg ~ /\/>$/) inbtn=0
+    }
+    else if(tn=="div" || tn=="span"){
+      if((attrval(tg, "onclick")!="\001" || attrval(tg, "onClick")!="\001") && !(attrval(tg, "role")!="\001" && (attrval(tg, "tabindex")!="\001" || attrval(tg, "tabIndex")!="\001")))
+        err("access", "line " NR ": a clickable <" tn ">. Keyboard users cannot reach or press it; use a <button>.")
+    }
+    else if(tn=="meta" && tolower(attrval(tg, "name"))=="viewport"){
+      vc=tolower(attrval(tg, "content")); why=""
+      if(match(vc, /user-scalable[ \t]*=[ \t]*(no|0)/)) why=substr(vc, RSTART, RLENGTH)
+      else if(match(vc, /maximum-scale[ \t]*=[ \t]*[0-9.]+/)){ ms=substr(vc, RSTART, RLENGTH); v=ms; sub(/^[^=]*=[ \t]*/, "", v); if(v+0 < 2) why=ms }
+      if(why!="") err("access", "line " NR ": the viewport blocks zooming (" why "). People who need larger text cannot zoom in; remove it.")
     }
   }
 }
@@ -679,6 +746,7 @@ BEGIN{
   if(line ~ /{/ && blockstart==0){ blockstart=NR; block="" }
   if(blockstart){ block=block " " line }
   if(line ~ /}/ && blockstart){
+    bsel2=block; sub(/\{.*/, "", bsel2)
     vfg=""; vbg=""
     if(match(block, /[^-a-z]color:[ ]*[^;}]*/)){ vfg=substr(block, RSTART, RLENGTH); sub(/^[^:]*:[ ]*/, "", vfg) }
     if(match(block, /background(-color)?:[ ]*[^;}]*/)){ vbg=substr(block, RSTART, RLENGTH); sub(/^[^:]*:[ ]*/, "", vbg) }
@@ -695,6 +763,9 @@ BEGIN{
         else for(ti=1;ti<=nth;ti++) judgepair(resolvet(vfg, th[ti]), resolvet(vbg, th[ti]), blockstart, " (" th[ti] " theme)")
       }
     }
+    # access: an outline removed in a rule with no replacement in that rule
+    if(block ~ /outline[ 	]*:[ 	]*(none|0)([ 	;}]|$)/ && bsel2 !~ /:focus:not\(:focus-visible\)/ && block !~ /box-shadow|outline-(color|style|width)/){ noutline++; outlineline[noutline]=blockstart }
+    if(bsel2 ~ /:focus-visible/ && block ~ /outline|box-shadow/) focusvisible=1
     blockstart=0; block=""
   }
 
@@ -853,6 +924,8 @@ END{
   ng=split(garden, grows, "\036")
   for(i=1;i<=ng;i++){ if(grows[i]=="") continue; k=index(grows[i], "|"); err("surface", "line " substr(grows[i], 1, k-1) ": " substr(grows[i], k+1)) }
   if(!synthoff) for(i=1;i<=nfaux;i++) err("typography", faux[i])
+  for(i=1;i<=nfield;i++) if(!(fieldid[i] in labelfor)) err("access", "line " fieldline[i] ": a form field without a label. A placeholder vanishes as people type; add a <label for>, or aria-label.")
+  if(!focusvisible) for(i=1;i<=noutline;i++) err("access", "line " outlineline[i] ": focus outline removed with no :focus-visible style. Keyboard users lose their place; restore it with :focus-visible.")
   if(loadedany) for(k in brandfam) if(!(k in loaded)) warn("typography", "typography.md names \"" brandfam[k] "\" but the page never loads it.")
   if(sarif){
     emit_sarif()
@@ -864,14 +937,15 @@ END{
     printf "Voice:    %d error(s), %d warning(s)\n", e["voice"]+0,  w["voice"]+0
     printf "Typography: %d error(s), %d warning(s) (families; heading and body roles stay with the agent)\n", e["typography"]+0, w["typography"]+0
     printf "Content:  %d error(s), %d warning(s), %d note(s) (%s stage)\n", e["content"]+0, w["content"]+0, notecount["content"]+0, stage
+    printf "Access:   %d error(s), %d warning(s) (what the source shows; rendered checks stay with a browser)\n", e["access"]+0, w["access"]+0
     if(hascontracts) printf "Reuse:    %d error(s), %d warning(s)\n", e["reuse"]+0, w["reuse"]+0
     else             printf "Reuse:    no contracts (.brand/components/ holds none)\n"
-    te = e["color"]+e["layout"]+e["surface"]+e["voice"]+e["typography"]+e["content"]+e["reuse"]
-    tw = w["color"]+w["layout"]+w["surface"]+w["voice"]+w["typography"]+w["content"]+w["reuse"]
+    te = e["color"]+e["layout"]+e["surface"]+e["voice"]+e["typography"]+e["content"]+e["reuse"]+e["access"]
+    tw = w["color"]+w["layout"]+w["surface"]+w["voice"]+w["typography"]+w["content"]+w["reuse"]+w["access"]
     if(te==0) printf "Result: PASS (%d warning(s) to review)\n", tw
     else      printf "Result: FAIL (%d error(s) to fix, %d warning(s) to review).\n", te, tw
   }
-  exit (e["color"]+e["layout"]+e["surface"]+e["voice"]+e["typography"]+e["content"]+e["reuse"] > 0 ? 1 : 0)
+  exit (e["color"]+e["layout"]+e["surface"]+e["voice"]+e["typography"]+e["content"]+e["reuse"]+e["access"] > 0 ? 1 : 0)
 }
 ' "$TARGET"
 AWK_EXIT=$?

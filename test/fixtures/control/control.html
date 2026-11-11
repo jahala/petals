@@ -28,6 +28,13 @@
     <span style="--bloom:var(--pp-petals)" class="is-current"><span class="gf-dot"></span>petals</span>
   </nav>
 </footer>
+<!-- access/*: one source-level accessibility failure per rule -->
+<meta name="viewport" content="width=device-width, user-scalable=no">
+<style>.plain:focus { outline: none; }</style>
+<img src="plot.png">
+<input type="email" placeholder="Email">
+<button type="button" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 4h16"/></svg></button>
+<div onclick="go()">Go on</div>
 <!-- reuse/rebuilt-component: a raw button where components/button.md covers it -->
 <button type="button">Go</button>
 </body>
