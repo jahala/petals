@@ -57,8 +57,10 @@ PY
 [ "${PIPESTATUS[0]}" -eq 0 ] && echo "ok - every :root token has its value in tokens.json" || { echo "not ok - every :root token has its value in tokens.json"; fails=$((fails+1)); }
 
 # 5. a markdown change the tokens did not follow is caught by name
-sed -i '' 's/--pp-petals: #CC6A37;/--pp-petals: #CC6A38;/' "$P/v19/colors.md"
-sed -i '' 's/| petals | #CC6A37 |/| petals | #CC6A38 |/' "$P/v19/colors.md"
+# replace text in a file, the same on macOS and Linux (sed -i differs between them)
+subst() { python3 -I -c 'import sys; p, a, b = sys.argv[1:]; s = open(p).read(); assert a in s, a; open(p, "w").write(s.replace(a, b))' "$1" "$2" "$3"; }
+subst "$P/v19/colors.md" '--pp-petals: #CC6A37;' '--pp-petals: #CC6A38;'
+subst "$P/v19/colors.md" '| petals | #CC6A37 |' '| petals | #CC6A38 |'
 out=$(bash "$EXPORT" "$P/v19" --check 2>&1); rc=$?
 [ "$rc" -eq 1 ] && echo "ok - a stale token fails --check" || { echo "not ok - a stale token fails --check (rc $rc)"; fails=$((fails+1)); }
 t "the stale token is named with both values" 'DIFF css --pp-petals .*#CC6A37.*#CC6A38' "$out"
