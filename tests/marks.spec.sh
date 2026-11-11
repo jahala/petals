@@ -32,6 +32,8 @@ fresh; subst "$P/b/products/tend/assets/tend-mark-night.svg" '#1C1610' '#1C1611'
 out=$(python3 -I "$MARKS" --brand "$P/b" --check 2>&1); rc=$?
 [ "$rc" -eq 1 ] && echo "ok - a hand-edited night file fails --check" || { echo "not ok - a hand-edited night file fails --check (rc $rc)"; fails=$((fails+1)); }
 t "the hand-edited night file is named" '^tend: .*tend-mark-night\.svg is not derived' "$out"
+hint=$(echo "$out" | grep -oE 'run [^ ]*marks\.py' | head -1 | cut -d' ' -f2)
+if [ -n "$hint" ] && [ -f "$hint" ]; then echo "ok - the fix hint names a script that exists ($hint)"; else echo "not ok - the fix hint names a script that exists (${hint:-none})"; fails=$((fails+1)); fi
 # a third colour in a tiled mark breaks the rules
 fresh; perl -0pi -e 's/fill="#1C1610"/fill="#357E2C"/' "$P/b/products/tend/assets/tend-mark.svg"
 out=$(python3 -I "$MARKS" --brand "$P/b" --check 2>&1)
