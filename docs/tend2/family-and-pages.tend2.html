@@ -13,6 +13,7 @@
 - [ ] (code) The family report lists each product's pinned brand version, the latest tag, and its pages' check results (issue #1) · tests/family-report.spec.sh
 - [ ] (code) /petals change <dimension> carries one brand change through and ends by printing the family report (issue #2) · tests/change.spec.sh
 - [x] (code) petals' own landing page passes its own check, rebuilt from the brand's reference bed page · tests/self-check.spec.sh @b2368394029e2f · by cli
+- [ ] (code) petals' own messages follow its brand's voice: no finding, summary or result line it prints contains an em dash · tests/own-voice.spec.sh
 - [x] (code) The landing page's frame is a real run of petals check on its demo file, against the frozen brand its title names · tests/landing-frame.spec.sh @95429980add1b7 · by cli
 - [x] (code) The README's Try it command prints exactly the output it shows, its version is petals --version, and it passes petals' own check · tests/readme.spec.sh @fbee2891a04b26 · by cli
 
@@ -26,5 +27,6 @@
 - 2026-11-05 cli: cut archive #18 (product frames) and archive #21 (bed page builder) to recipes in SKILL.md with the owner's yes: rare tasks are instructions, not commands
 - 2026-11-05 cli: rebuilt index.html from plotplot v1.11.0's reference product page, following plotplot-design's notes: tagline as the sign line, bed-word ink with a petals underline, one real frame titled with what ran, a proof band from the repo's own numbers. The brand it was built from is frozen as test/fixtures/brand-plotplot-v1.11.0 so both checks hold when the pin moves
 - 2026-11-05 cli: the owner asked for a frame showing more than fonts; the demo hero now carries one slip per dimension, and the README quotes the same run, held by tests/readme.spec.sh
+- 2026-11-11 cli: petals printed em dashes its own brand bans, in sixteen finding messages and the result line (issue #17). Each became a comma, colon or full stop; the result line now reads FAIL (n error(s) to fix, m warning(s) to review), matching PASS
 </script>
 <script src="loop.js"></script>
