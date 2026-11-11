@@ -99,6 +99,7 @@ Six projects are connected. The central brand tags v1.3.0. Next agent session on
 
 ## Tests
 - [x] (code) /petals init --from <repo-url> fetches .brand/ and populates it locally with all expected files matching the source. · tests/fetch-brand.spec.sh @5636e47f8604db · by cli
+- [x] (code) A fetch never overwrites a brand file the project commits: a tracked file under the target survives byte for byte and is named on stderr, while untracked cached files are replaced · tests/fetch-keeps-tracked.spec.sh @733b7ff89b45dd · by cli
 - [x] (code) When local .brand/ is behind the central repo's latest tag, /petals check (or a dedicated drift subcommand) reports the version gap with both version numbers. · tests/check-brand-drift.spec.sh @6b2e4dcb1858d0 · by cli
 - [ ] (code) /petals update pulls the latest .brand/ while preserving project-level overrides. Values explicitly set in .petalsrc survive; null-inherited values update to central's current. · tests/update-overrides.spec.sh
 - [ ] (code) /petals init --from when .brand/ already exists warns and asks for confirmation before overwriting. · petals/references/init.md
@@ -125,5 +126,6 @@ Six projects are connected. The central brand tags v1.3.0. Next agent session on
 - 2026-11-05 cli: tend2 migration: claimed checks reopened where the evidence is a document or a script that is not a test, or a file not on master; only checks backed by tests/check.spec.sh were re-earned
 - 2026-11-05 cli: c9's evidence was a sentence that nothing can verify; it now names tests/fetch-brand.spec.sh, which lands with the release work
 - 2026-11-05 cli: c3 and c9 were stamped against specs that do not test them (overrides surviving an update depend on #11; no script writes .petalsrc); each now names its own spec. c1, c2, c6 and c10 gained the assertions their claims need
+- 2026-11-11 cli: fetching the umbrella at v1.15.0 overwrote petals' committed product layer (issue #27). Every strategy now fetches into a staging folder and one place step copies it in, skipping tracked files
 </script>
 <script src="./loop.js"></script>

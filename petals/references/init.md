@@ -45,7 +45,7 @@ Project .petalsrc  (committed — source, version, overrides)
    ```bash
    bash scripts/fetch-brand.sh <repo-url> --target .brand
    ```
-   The script auto-selects the best strategy (local path, git clone, GitHub API, raw HTTP). If the script exits non-zero, report the error to the user and STOP. Do not create or modify any files.
+   The script auto-selects the best strategy (local path, git clone, GitHub API, raw HTTP). If the script exits non-zero, report the error to the user and STOP. Do not create or modify any files. A file the project commits under the target (a product layer it owns, for example) is never overwritten: the script keeps it and names it on stderr.
 
 4. **Record source and version in .petalsrc** — Parse the JSON output from fetch-brand.sh to get the version. Create or update `.petalsrc`:
    ```yaml
