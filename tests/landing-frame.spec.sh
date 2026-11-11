@@ -33,6 +33,6 @@ band=$(grep -o 'id="proof-title">petals [0-9.]*,' index.html)
 ver=$(echo "$band" | sed -E 's/.*petals ([0-9.]+),.*/\1/')
 is "the proof band's version is petals --version ($ver)" [ "$ver" = "$(bash petals/bin/petals --version | awk '{print $NF}')" ]
 dims=$(grep -o '<dt>dimensions checked</dt><dd>[0-9]*' index.html | grep -oE '[0-9]+$')
-real_dims=$(echo "$real" | grep -cE '^(Colors|Layout|Surface|Voice|Typography|Content|Reuse):')
+real_dims=$(echo "$real" | grep -cE '^(Colors|Layout|Surface|Voice|Typography|Content|Access|Reuse):')
 is "the proof band's dimension count is the check's ($real_dims)" [ "$dims" = "$real_dims" ]
 [ "$fails" = 0 ]

@@ -453,7 +453,7 @@
 
         <div class="hero-copy rise">
           <p class="sig">Brand that agents read.</p>
-          <p class="lede">petals carries your brand into everything a coding agent builds, and checks what came out. A skill the agent reads before it writes a line, and a deterministic check after: colours, type, layout, surface, voice, content and reuse, in milliseconds per page, every finding as SARIF 2.1.0.</p>
+          <p class="lede">petals carries your brand into everything a coding agent builds, and checks what came out. A skill the agent reads before it writes a line, and a deterministic check after: colours, type, layout, surface, voice, content, reuse and accessibility, in milliseconds per page, every finding as SARIF 2.1.0.</p>
           <div class="cta">
             <a class="btn sun" href="#install">Install petals <span class="arrow" aria-hidden="true">↓</span></a>
             <a class="btn ghost" href="https://github.com/jahala/petals">View source <span class="arrow" aria-hidden="true">↗</span></a>
@@ -481,6 +481,7 @@
 <span class="t-dim">Voice:    1 error(s), 0 warning(s)</span>
 <span class="t-dim">Typography: 1 error(s), 0 warning(s) (families; heading and body roles stay with the agent)</span>
 <span class="t-dim">Content:  2 error(s), 0 warning(s), 0 note(s) (production stage)</span>
+<span class="t-dim">Access:   0 error(s), 0 warning(s) (what the source shows; rendered checks stay with a browser)</span>
 <span class="t-dim">Reuse:    no contracts (.brand/components/ holds none)</span>
 <span class="t-dim">Result: FAIL (6 error(s) to fix, 3 warning(s) to review).</span>
 </pre>
@@ -495,7 +496,7 @@
       <h2 class="label" id="proof-title">petals 0.2.0, as it ships <span class="pb-at">· 05 nov 2026</span></h2>
       <dl class="figures">
         <div><dt>tests</dt><dd>400+</dd></div>
-        <div><dt>dimensions checked</dt><dd>7</dd></div>
+        <div><dt>dimensions checked</dt><dd>8</dd></div>
         <div><dt>ms for a 136 KB page</dt><dd>237</dd></div>
         <div><dt>network calls</dt><dd>0</dd></div>
       </dl>
@@ -520,6 +521,7 @@
       <li>placeholder copy and dummy contacts in production</li>
       <li>a garden row that is not the brand's</li>
       <li>a button rebuilt by hand where the brand has one</li>
+      <li>images without alt, unlabelled fields, hidden focus, blocked zoom</li>
     </ul>
   </div></section>
 

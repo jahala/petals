@@ -7,7 +7,7 @@ bash scripts/check.sh <file>                  # text
 bash scripts/check.sh <file> --format sarif   # one SARIF 2.1.0 log
 ```
 
-It judges colour, typography families and weights, layout, surface, voice terms, content and reuse (a control rebuilt where a component contract covers it), in milliseconds, with no model. Its rules live in `scripts/check.sh` and its tests, and its messages say what to change. Exit 0 is clean or warnings only, exit 1 is at least one error, exit 3 means it could not judge (no brand, for example) and says why. Exit 3 is never a pass.
+It judges colour, typography families and weights, layout, surface, voice terms, content, reuse (a control rebuilt where a component contract covers it) and the accessibility a page's source shows (alt text, labels, button names, focus, zoom, clickable divs), in milliseconds, with no model. Its rules live in `scripts/check.sh` and its tests, and its messages say what to change. Exit 0 is clean or warnings only, exit 1 is at least one error, exit 3 means it could not judge (no brand, for example) and says why. Exit 3 is never a pass.
 
 The script cannot judge four things. They are your part, after it runs.
 
