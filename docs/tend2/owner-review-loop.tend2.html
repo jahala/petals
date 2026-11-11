@@ -10,7 +10,7 @@
 **Goal.** The owner looks at a draft in their own browser with one command and tries a change in place, and the run leaves nothing behind. Phase 4 of the roadmap.
 
 ## Tests
-- [x] (code) /petals review serves an index of drafts, opens it, and leaves no server or folder behind when it stops · tests/review.spec.sh · reads: petals/scripts/review.sh, petals/bin/petals, petals/scripts/check.sh, test/fixtures/brand-plotplot-v1.9.0/ @644d0fde9903ff · by cli
+- [x] (code) /petals review serves an index of drafts, opens it, and leaves no server or folder behind when it stops · tests/review.spec.sh · reads: petals/scripts/review.sh, petals/bin/petals, petals/scripts/check.sh, test/fixtures/brand-plotplot-v1.9.0/ @644d0fdad3aa6a · by cli
 - [ ] (human) The owner reviews a real draft in the browser and can say yes or no without opening a file
 
 ## Needs #stop-false-passes
@@ -23,5 +23,6 @@
 - 2026-11-05 cli: review (algiers): restored one (human) value check; the owner is asked whether the loop works for them, never to approve a mechanical fact
 - 2026-11-05 cli: cut /petals try font with the owner's yes: about once per brand, an agent does it in minutes, and its lasting rule lives in the check and fix-typography.sh; SKILL.md keeps it as a recipe
 - 2026-11-05 cli: a first review inside a git worktree left .petals-review/ untracked, because review.sh wrote to $ROOT/.git/info/exclude and in a worktree .git is a file; it now asks git for the exclude path, and the spec probes a fresh worktree
+- 2026-11-11 cli: the review index named the brand's font tokens but never loaded the faces, so it rendered in Georgia and system-ui (issue #16). It now carries the <link> lines typography.md gives for HTML pages; the spec checks it loads every family
 </script>
 <script src="loop.js"></script>

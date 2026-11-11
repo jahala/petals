@@ -72,7 +72,10 @@ for i in "${!PAGES[@]}"; do
   cut -f1 "$DIR/entries.tsv" | grep -qxF -- "$rel" || printf '%s\t%s\n' "$rel" "${NOTES[$i]:-}" >> "$DIR/entries.tsv"
 done
 
-python3 -I - "$DIR/entries.tsv" "$DIR/index.html" "$(basename "$ROOT")" <<'PY'
+# the brand's own font loading: the <link> lines typography.md gives for HTML pages
+fontlinks=$(grep -hE '^[[:space:]]*<link [^>]*(fonts\.googleapis\.com|fonts\.gstatic\.com|rel="stylesheet")' "$ROOT/.brand/typography.md" 2>/dev/null | sed 's/^[[:space:]]*/  /')
+
+python3 -I - "$DIR/entries.tsv" "$DIR/index.html" "$(basename "$ROOT")" "$fontlinks" <<'PY'
 import html, sys
 entries = [l.rstrip("\n").split("\t", 1) for l in open(sys.argv[1], encoding="utf-8") if l.strip()]
 items = []
@@ -87,6 +90,7 @@ page = """<!doctype html>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Review: %(project)s</title>
+%(fonts)s
   <link rel="stylesheet" href="../.brand/tokens.css">
   <style>
     html { font-synthesis: none; }
@@ -113,7 +117,7 @@ page = """<!doctype html>
   </main>
 </body>
 </html>
-""" % {"project": html.escape(sys.argv[3]), "items": "\n".join(items)}
+""" % {"project": html.escape(sys.argv[3]), "items": "\n".join(items), "fonts": sys.argv[4]}
 open(sys.argv[2], "w", encoding="utf-8").write(page)
 PY
 
