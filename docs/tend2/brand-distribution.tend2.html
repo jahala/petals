@@ -101,16 +101,16 @@ Six projects are connected. The central brand tags v1.3.0. Next agent session on
 - [x] (code) /petals init --from <repo-url> fetches .brand/ and populates it locally with all expected files matching the source. · tests/fetch-brand.spec.sh @5636e47f8604db · by cli
 - [x] (code) When local .brand/ is behind the central repo's latest tag, /petals check (or a dedicated drift subcommand) reports the version gap with both version numbers. · tests/check-brand-drift.spec.sh @6b2e4dcb1858d0 · by cli
 - [ ] (code) /petals update pulls the latest .brand/ while preserving project-level overrides. Values explicitly set in .petalsrc survive; null-inherited values update to central's current. · tests/update-overrides.spec.sh
-- [ ] (code) /petals init --from when .brand/ already exists warns and asks for confirmation before overwriting. · petals/SKILL.md
+- [ ] (code) /petals init --from when .brand/ already exists warns and asks for confirmation before overwriting. · petals/references/init.md
 - [ ] (code) Fetching from a repo without .brand/ produces a clear error and does not modify local state. · petals/scripts/fetch-brand.sh
 - [x] (code) When the source repo is unreachable (deleted, private without access), the local .brand/ is preserved unchanged and the error message clearly explains the connection failure. · tests/check-brand-drift.spec.sh @b79316bb1858d0 · by cli
 - [ ] (code) Fetch strategy auto-selection: when git and SSH are available, shallow clone is used. When only GITHUB_TOKEN is available, API fetch is used. When neither, public repo raw fetch is used as fallback. · petals/scripts/fetch-brand.sh
-- [ ] (code) .brand/ is gitignored after fetch - it is a cache, not source code, and should not appear in git status. · petals/SKILL.md
+- [ ] (code) .brand/ is gitignored after fetch - it is a cache, not source code, and should not appear in git status. · petals/references/init.md
 - [ ] (code) The .petalsrc file is created with correct source URL, version, and overrides structure after init --from. · tests/init-from.spec.sh
 - [x] (code) The drift detection mechanism (check-brand-drift.sh) correctly identifies brand version mismatches across all four states - current, drift (local behind), ahead, and unreachable - each producing the correct exit code and JSON output, confirming the why claim that drift is detected before someone ships the wrong blue. · tests/check-brand-drift.spec.sh @42d7a3fb1858d0 · by cli
 - [ ] (code) The fetch + override roundtrip works end-to-end - fetching from the central repo, applying project overrides, and preserving local divergence while syncing structural updates - confirming the impact claim of zero-human-propagation: one push, N projects sync, zero chat messages. · fetch-brand.spec.sh
 - [ ] (code) Distribution uses only filesystem and git primitives - no server, no database, no SaaS backend - confirming the fit claim that this is infrastructure as code for brand, not a dashboard or a service. · fetch-brand.sh
-- [ ] (code) The /petals update workflow instructs the agent, after applying a new version, to regenerate the derived machine views and report the blast radius - newly-flagged files under the new brand version, or an explicit clean line. · petals/SKILL.md
+- [ ] (code) The /petals update workflow instructs the agent, after applying a new version, to regenerate the derived machine views and report the blast radius - newly-flagged files under the new brand version, or an explicit clean line. · petals/references/update.md
 
 ## For #brand-operator
 ## Needs #ground
