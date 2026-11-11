@@ -1,0 +1,503 @@
+{
+  "name": "cove",
+  "prefix": "--cove-",
+  "request": {
+    "name": "cove",
+    "key": {
+      "hex": "#2F86C4",
+      "hold": "bounded",
+      "within": 6
+    },
+    "loudness": "balanced",
+    "neutrals": "cool",
+    "contrast": "standard",
+    "shape": "soft",
+    "density": "roomy"
+  },
+  "floors": {
+    "reading": 4.5,
+    "labels": 3.0
+  },
+  "distance": 12.0,
+  "light": {
+    "primary": "#2F86C4",
+    "primary-text": "#1272AF",
+    "on-primary": "#14181F",
+    "accent": "#A1600D",
+    "text": "#1E2229",
+    "text-soft": "#5E636E",
+    "bg": "#F8FAFF",
+    "surface": "#EDF0F7",
+    "border": "#CFD4DE",
+    "error": "#B14F43",
+    "success": "#347C33",
+    "warning": "#966200",
+    "info": "#104B91"
+  },
+  "dark": {
+    "primary": "#3389C7",
+    "primary-text": "#3389C7",
+    "on-primary": "#101215",
+    "accent": "#DF9A54",
+    "text": "#E6EBF5",
+    "text-soft": "#ABB1BD",
+    "bg": "#101215",
+    "surface": "#191C21",
+    "border": "#373B42",
+    "error": "#F2897A",
+    "success": "#76C074",
+    "warning": "#DC9D41",
+    "info": "#B4D4FF"
+  },
+  "pairs": [
+    {
+      "fg": "text",
+      "bg": "bg",
+      "theme": "light",
+      "class": "reading",
+      "ratio": 15.28
+    },
+    {
+      "fg": "text",
+      "bg": "surface",
+      "theme": "light",
+      "class": "reading",
+      "ratio": 13.99
+    },
+    {
+      "fg": "text-soft",
+      "bg": "bg",
+      "theme": "light",
+      "class": "reading",
+      "ratio": 5.77
+    },
+    {
+      "fg": "text-soft",
+      "bg": "surface",
+      "theme": "light",
+      "class": "reading",
+      "ratio": 5.28
+    },
+    {
+      "fg": "primary",
+      "bg": "bg",
+      "theme": "light",
+      "class": "labels",
+      "ratio": 3.77
+    },
+    {
+      "fg": "primary",
+      "bg": "surface",
+      "theme": "light",
+      "class": "labels",
+      "ratio": 3.45
+    },
+    {
+      "fg": "primary-text",
+      "bg": "bg",
+      "theme": "light",
+      "class": "reading",
+      "ratio": 4.96
+    },
+    {
+      "fg": "primary-text",
+      "bg": "surface",
+      "theme": "light",
+      "class": "reading",
+      "ratio": 4.54
+    },
+    {
+      "fg": "on-primary",
+      "bg": "primary",
+      "theme": "light",
+      "class": "reading",
+      "ratio": 4.51
+    },
+    {
+      "fg": "accent",
+      "bg": "bg",
+      "theme": "light",
+      "class": "labels",
+      "ratio": 4.79
+    },
+    {
+      "fg": "accent",
+      "bg": "surface",
+      "theme": "light",
+      "class": "labels",
+      "ratio": 4.39
+    },
+    {
+      "fg": "error",
+      "bg": "bg",
+      "theme": "light",
+      "class": "reading",
+      "ratio": 4.94
+    },
+    {
+      "fg": "error",
+      "bg": "surface",
+      "theme": "light",
+      "class": "reading",
+      "ratio": 4.52
+    },
+    {
+      "fg": "success",
+      "bg": "bg",
+      "theme": "light",
+      "class": "reading",
+      "ratio": 4.93
+    },
+    {
+      "fg": "success",
+      "bg": "surface",
+      "theme": "light",
+      "class": "reading",
+      "ratio": 4.52
+    },
+    {
+      "fg": "warning",
+      "bg": "bg",
+      "theme": "light",
+      "class": "reading",
+      "ratio": 4.97
+    },
+    {
+      "fg": "warning",
+      "bg": "surface",
+      "theme": "light",
+      "class": "reading",
+      "ratio": 4.55
+    },
+    {
+      "fg": "info",
+      "bg": "bg",
+      "theme": "light",
+      "class": "reading",
+      "ratio": 8.25
+    },
+    {
+      "fg": "info",
+      "bg": "surface",
+      "theme": "light",
+      "class": "reading",
+      "ratio": 7.55
+    },
+    {
+      "fg": "text",
+      "bg": "bg",
+      "theme": "dark",
+      "class": "reading",
+      "ratio": 15.69
+    },
+    {
+      "fg": "text",
+      "bg": "surface",
+      "theme": "dark",
+      "class": "reading",
+      "ratio": 14.29
+    },
+    {
+      "fg": "text-soft",
+      "bg": "bg",
+      "theme": "dark",
+      "class": "reading",
+      "ratio": 8.71
+    },
+    {
+      "fg": "text-soft",
+      "bg": "surface",
+      "theme": "dark",
+      "class": "reading",
+      "ratio": 7.93
+    },
+    {
+      "fg": "primary",
+      "bg": "bg",
+      "theme": "dark",
+      "class": "reading",
+      "ratio": 4.95
+    },
+    {
+      "fg": "primary",
+      "bg": "surface",
+      "theme": "dark",
+      "class": "reading",
+      "ratio": 4.51
+    },
+    {
+      "fg": "primary-text",
+      "bg": "bg",
+      "theme": "dark",
+      "class": "reading",
+      "ratio": 4.95
+    },
+    {
+      "fg": "primary-text",
+      "bg": "surface",
+      "theme": "dark",
+      "class": "reading",
+      "ratio": 4.51
+    },
+    {
+      "fg": "on-primary",
+      "bg": "primary",
+      "theme": "dark",
+      "class": "reading",
+      "ratio": 4.95
+    },
+    {
+      "fg": "accent",
+      "bg": "bg",
+      "theme": "dark",
+      "class": "labels",
+      "ratio": 7.94
+    },
+    {
+      "fg": "accent",
+      "bg": "surface",
+      "theme": "dark",
+      "class": "labels",
+      "ratio": 7.23
+    },
+    {
+      "fg": "error",
+      "bg": "bg",
+      "theme": "dark",
+      "class": "reading",
+      "ratio": 7.71
+    },
+    {
+      "fg": "error",
+      "bg": "surface",
+      "theme": "dark",
+      "class": "reading",
+      "ratio": 7.02
+    },
+    {
+      "fg": "success",
+      "bg": "bg",
+      "theme": "dark",
+      "class": "reading",
+      "ratio": 8.54
+    },
+    {
+      "fg": "success",
+      "bg": "surface",
+      "theme": "dark",
+      "class": "reading",
+      "ratio": 7.78
+    },
+    {
+      "fg": "warning",
+      "bg": "bg",
+      "theme": "dark",
+      "class": "reading",
+      "ratio": 7.99
+    },
+    {
+      "fg": "warning",
+      "bg": "surface",
+      "theme": "dark",
+      "class": "reading",
+      "ratio": 7.27
+    },
+    {
+      "fg": "info",
+      "bg": "bg",
+      "theme": "dark",
+      "class": "reading",
+      "ratio": 12.33
+    },
+    {
+      "fg": "info",
+      "bg": "surface",
+      "theme": "dark",
+      "class": "reading",
+      "ratio": 11.23
+    }
+  ],
+  "type": {
+    "base": "16px",
+    "ratio": 1.25,
+    "levels": [
+      {
+        "level": "h1",
+        "size": "39px",
+        "line": 1.15
+      },
+      {
+        "level": "h2",
+        "size": "31px",
+        "line": 1.2
+      },
+      {
+        "level": "h3",
+        "size": "25px",
+        "line": 1.2
+      },
+      {
+        "level": "body",
+        "size": "16px",
+        "line": 1.6
+      },
+      {
+        "level": "small",
+        "size": "14px",
+        "line": 1.55
+      },
+      {
+        "level": "caption",
+        "size": "13px",
+        "line": 1.5
+      }
+    ]
+  },
+  "space": {
+    "unit": "8px",
+    "scale": {
+      "2xs": "4px",
+      "xs": "8px",
+      "sm": "16px",
+      "md": "24px",
+      "lg": "32px",
+      "xl": "48px",
+      "2xl": "64px",
+      "3xl": "96px"
+    }
+  },
+  "radius": {
+    "radius-xs": "2px",
+    "radius-sm": "4px",
+    "radius-md": "8px",
+    "radius-lg": "12px",
+    "radius-full": "999px"
+  },
+  "motion": {
+    "ease": "cubic-bezier(0.2, 0, 0, 1)",
+    "dur-micro": "0.15s",
+    "dur-entrance": "0.3s",
+    "stagger-step": "0.05s"
+  },
+  "receipt": [
+    {
+      "role": "seed",
+      "theme": null,
+      "from": "#2F86C4",
+      "to": "#2F86C4",
+      "why": "the owner's colour, hold bounded within 6"
+    },
+    {
+      "role": "primary",
+      "theme": "light",
+      "from": "#2F86C4",
+      "to": "#2F86C4",
+      "why": "seed held bounded within 6; at 3.77:1 on bg it cannot carry words within the bound, so it keeps its role for fills and marks"
+    },
+    {
+      "role": "primary",
+      "theme": "dark",
+      "from": "#2F86C4",
+      "to": "#3389C7",
+      "why": "seed held bounded within 6; lightened from #2F86C4 to #3389C7 to reach the 4.5:1 reading floor on bg and surface (now 4.95:1 on bg, 1.10 from the seed)"
+    },
+    {
+      "role": "primary-text",
+      "theme": "light",
+      "from": "#2F86C4",
+      "to": "#1272AF",
+      "why": "words in the primary colour take this shade of the seed, darkened to reach the 4.5:1 reading floor on bg and surface (now 4.96:1 on bg)"
+    },
+    {
+      "role": "primary-text",
+      "theme": "dark",
+      "from": "#3389C7",
+      "to": "#3389C7",
+      "why": "words in the primary colour use the primary itself in this theme (4.95:1 on bg)"
+    },
+    {
+      "role": "on-primary",
+      "theme": "light",
+      "from": "#1E2229",
+      "to": "#14181F",
+      "why": "text on a primary fill: no neutral reaches 4.5:1 on the primary, so this shade is pushed to 4.51:1"
+    },
+    {
+      "role": "on-primary",
+      "theme": "dark",
+      "from": null,
+      "to": "#101215",
+      "why": "text on a primary fill takes bg, 4.95:1 on the primary"
+    },
+    {
+      "role": "accent",
+      "theme": "light",
+      "from": null,
+      "to": "#A1600D",
+      "why": "180 degrees round from the primary at balanced chroma; meets the 3.0:1 labels floor on bg and surface (4.79:1 on bg, 46.66 from the primary)"
+    },
+    {
+      "role": "accent",
+      "theme": "dark",
+      "from": null,
+      "to": "#DF9A54",
+      "why": "180 degrees round from the primary at balanced chroma; meets the 3.0:1 labels floor on bg and surface (7.94:1 on bg, 46.58 from the primary)"
+    },
+    {
+      "role": "error",
+      "theme": "light",
+      "from": null,
+      "to": "#B14F43",
+      "why": "at the hue of its meaning; meets the 4.5:1 reading floor on bg and surface (4.94:1 on bg); nearest role primary-text at 42.87"
+    },
+    {
+      "role": "error",
+      "theme": "dark",
+      "from": null,
+      "to": "#F2897A",
+      "why": "at the hue of its meaning; meets the 4.5:1 reading floor on bg and surface (7.71:1 on bg); nearest role primary at 44.94"
+    },
+    {
+      "role": "warning",
+      "theme": "light",
+      "from": null,
+      "to": "#966200",
+      "why": "at the hue of its meaning; meets the 4.5:1 reading floor on bg and surface (4.97:1 on bg); nearest role error at 24.09"
+    },
+    {
+      "role": "warning",
+      "theme": "dark",
+      "from": null,
+      "to": "#DC9D41",
+      "why": "at the hue of its meaning; meets the 4.5:1 reading floor on bg and surface (7.99:1 on bg); nearest role error at 24.57"
+    },
+    {
+      "role": "success",
+      "theme": "light",
+      "from": null,
+      "to": "#347C33",
+      "why": "at the hue of its meaning; meets the 4.5:1 reading floor on bg and surface (4.93:1 on bg); nearest role warning at 33.98"
+    },
+    {
+      "role": "success",
+      "theme": "dark",
+      "from": null,
+      "to": "#76C074",
+      "why": "at the hue of its meaning; meets the 4.5:1 reading floor on bg and surface (8.54:1 on bg); nearest role warning at 34.68"
+    },
+    {
+      "role": "info",
+      "theme": "light",
+      "from": null,
+      "to": "#104B91",
+      "why": "at the hue of its meaning, 0.12 further from the background in lightness; meets the 4.5:1 reading floor on bg and surface (8.25:1 on bg); nearest role primary-text at 14.22"
+    },
+    {
+      "role": "info",
+      "theme": "dark",
+      "from": null,
+      "to": "#B4D4FF",
+      "why": "at the hue of its meaning, 0.12 further from the background in lightness; meets the 4.5:1 reading floor on bg and surface (12.33:1 on bg); nearest role primary at 23.99"
+    }
+  ]
+}
