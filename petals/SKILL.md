@@ -23,6 +23,7 @@ Read only the `.brand/` files the task needs:
 | UI, components, layouts, pages | `.brand/DESIGN.md`, `.brand/colors.md`, `.brand/typography.md`, `.brand/components.md`, `.brand/layout.md` |
 | Copy: headlines, buttons, errors, docs | `.brand/voice.md`, `.brand/identity.md` |
 | Logos and other assets | `.brand/identity.md`, `.brand/assets/` |
+| A control: button, input, checkbox, select | its contract in `.brand/components/`, if one exists |
 
 A brand can be a family. When `.brand/products/<product>/` exists, read the product's file after the umbrella's: the product layer holds only its differences, and everything else comes from the umbrella. See `references/brand-architecture.md`.
 
@@ -36,7 +37,8 @@ These are not negotiable. Breaking one is a brand error.
 2. **Type from the brand.** Heading and body faces, weights and sizes match `.brand/typography.md`. No substitutes.
 3. **Logos from the assets.** Never invent, redraw or describe a logo. Use a file from `.brand/assets/`, or leave the logo out.
 4. **Voice rules.** Copy uses none of the forbidden terms in `.brand/voice.md` and follows its tone, grammar and terminology.
-5. **The brand wins.** When the brand and a framework default disagree, override the default: CSS framework config, resets and component library styles.
+5. **Reuse, never rebuild.** When a contract in `.brand/components/` covers the control you need, use the component from its home. Write a contract before you build a new shared control. See `references/components.md`.
+6. **The brand wins.** When the brand and a framework default disagree, override the default: CSS framework config, resets and component library styles.
 
 ## After you build
 
@@ -71,6 +73,7 @@ Fix every error. Exit 0 is clean or warnings only, exit 1 is at least one error,
 | The umbrella and product layers | `references/brand-architecture.md` |
 | The gate, the git hooks, the edit-time hook | `references/guardrails.md` |
 | The `.petalsrc` file | `references/petalsrc.md` |
+| Component contracts: where they live, how to write one | `references/components.md` |
 | To judge a colour finding (exclusions, contrast) | `references/color-audit-guide.md` |
 | A rare task: a product frame, a bed page | `references/recipes.md` |
 | The empty forms for each brand file | `templates/` |
