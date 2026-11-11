@@ -11,11 +11,11 @@
 
 **Pain.** The agent's context window holds ~200K tokens. The task needs most of them. Loading full brand guidelines burns 5,000-15,000 tokens before the work starts — adding latency, cost, and eating budget that should go to the task. Claude Skills proved progressive disclosure works: ~100 tokens at discovery, ~2,500 at activation, references on demand. But no brand tool implements it. They all dump the full spec into context. The agent pays for brand rules it never uses while the task starves for tokens.
 
-## The agent loads 2,500 tokens of brand context. The task gets the rest of the 200K window.
+## The skill costs about 1,000 tokens. The task gets the rest of the window.
 
 The agent opens a session. The task is a multi-screen feature: auth flow, onboarding, dashboard. The prompt alone is substantial. Every token counts. Before petals, loading brand context meant either skipping it (and generating generic UI) or dumping the full 15,000-token brand guidelines into context — eating 7.5% of the budget before the task even starts.
 
-With petals, the agent discovers the skill at ~100 tokens. When creative work activates, it loads SKILL.md at ~2,500 tokens. It reads `colors.md` for the palette — just that file, nothing else. Voice and typography stay on disk until copy or UI work needs them. Total brand context: under 3,000 tokens. The rest goes to the task. The agent produces on-brand output without the brand consuming the budget.
+With petals, the agent discovers the skill at ~100 tokens. When creative work activates, it loads SKILL.md: 749 words, about 1,000 tokens, held under 900 words by tests/skill-size.spec.sh. Each rarer task (init, update, the book, the hooks) has its own file in references/ that loads only for that task. It reads `colors.md` for the palette, just that file. Voice and typography stay on disk until copy or UI work needs them. Total brand context: under 3,000 tokens. The rest goes to the task. The agent produces on-brand output without the brand consuming the budget.
 
 That's progressive disclosure working. The agent loads what it needs when it needs it, not the entire brand spec on every session. The cost of brand compliance is proportional to the creative surface area, not to the size of the brand spec.
 
@@ -44,5 +44,6 @@ But no brand tool implements it. The brand tools we reviewed all dump the full b
 
 ## Tried
 - 2026-11-05 migrated from v1 (docs/tend/features/context-waste.tend.html) by `loop migrate`
+- 2026-11-11 cli: measured SKILL.md at 6,380 words (about 8,500 tokens), against the ~2,500 this page claimed. Its rare-task sections moved to references/ and the check spec it restated was cut to the agent's own part; it is now 749 words, held by tests/skill-size.spec.sh
 </script>
 <script src="./loop.js"></script>
