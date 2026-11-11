@@ -108,6 +108,8 @@ leaving nothing behind.
 
 ### Phase 5: invent a brand when none exists
 
+Planned in detail in [2026-11-11-invent-a-brand.md](2026-11-11-invent-a-brand.md).
+
 1. `/petals init --new`: an interview of at most three questions a round,
    with "undecided" recorded instead of invented.
 2. Starter presets in petals' own format, contrast-checked at generation.
