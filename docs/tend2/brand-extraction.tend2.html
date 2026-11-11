@@ -80,6 +80,7 @@ The entry point. Extraction creates the brand intelligence layer — the files, 
 An agent in a project with .brand/ and the petal skill, given "build a contact page" with zero brand instructions in the prompt, produces output using the correct primary color, heading font, spacing scale, and brand voice. /petals check on the output reports zero errors. Nobody pasted a hex code. The brand was ambient infrastructure — present, correct, and invisible.
 
 ## Tests
+- [ ] (code) A brand written from petals' templates is fully read: export-tokens.sh derives every colour, check.sh judges its contrast pairs, and the faux-style rule reads its faces, whatever prefix the brand's CSS uses (issue #35) · tests/template-brand.spec.sh
 - [ ] (code) Extracted .brand/ contains every explicitly stated hex value, font family, and font weight from the source. DESIGN.md passes the Google DESIGN.md spec linter. · DESIGN.md
 - [ ] (code) All recognized asset files from the source are copied to .brand/assets/ with original filenames and identical content. · extraction-guide.md
 - [ ] (code) When source lacks explicit color values (PDF says 'primary: teal' without stating #2F99A4), extraction flags which values are missing. Petal never infers hex codes from color names or visual samples. · extraction-guide.md
