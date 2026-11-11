@@ -37,6 +37,7 @@ Surface:  0 error(s), 2 warning(s)
 Voice:    1 error(s), 0 warning(s)
 Typography: 1 error(s), 0 warning(s) (families; heading and body roles stay with the agent)
 Content:  2 error(s), 0 warning(s), 0 note(s) (production stage)
+Reuse:    no contracts (.brand/components/ holds none)
 Result: FAIL — 6 error(s) to fix, 3 warning(s) to review.
 ```
 
@@ -78,6 +79,7 @@ writes copy.
 | surface    | components.md  | radii, strokes and shadows off the tokens                          |
 | voice      | voice.md       | forbidden terms with their replacements, banned synonyms, em dashes |
 | content    | the stage      | placeholder copy, dummy contacts, dead links                       |
+| reuse      | components/    | a control rebuilt by hand where a component contract covers it     |
 
 Two judgments stay with the agent: whether a heading or body role got the
 right face, and tone.
