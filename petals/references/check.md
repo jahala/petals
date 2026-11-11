@@ -63,7 +63,7 @@ When the target file is `.brand/book.html`, run a staleness check before the scr
      ```
      Exit non-zero. Do not run the script — a stale book needs regeneration, not dimension-by-dimension repair.
 
-3. **Verify CSS :root values** (if fingerprint matches): For each color custom property (`--pp-*`), confirm the hex matches the value in `.brand/colors.md`. For `--font-*` properties, confirm the font family matches `.brand/typography.md`. Mismatches are errors — the book is a view, and every value must come from the canonical files.
+3. **Verify CSS :root values** (if fingerprint matches): For each color custom property under the brand's token prefix (the one colors.md's CSS block declares, `--pp-*` for plotplot), confirm the hex matches the value in `.brand/colors.md`. For `--font-*` properties, confirm the font family matches `.brand/typography.md`. Mismatches are errors: the book is a view, and every value must come from the canonical files.
 
 ## Letting a finding through
 

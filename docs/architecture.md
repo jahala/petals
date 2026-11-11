@@ -21,8 +21,11 @@ python3, no other dependencies). The plan of record is
    its own layer (`.brand/products/<product>/`) and fetches the umbrella's
    files from the brand repository pinned in `.petalsrc`.
 2. `check.sh` reads the brand's tables and CSS blocks and judges a file line by
-   line. Every rule has one id, `<dimension>/<rule>`, declared in the SARIF
-   driver; the control page (`test/fixtures/control/`) trips every one.
+   line. The format is the one `petals/templates/` writes. The token prefix
+   is the one colors.md's CSS block declares, read for every script by
+   `brand_prefix` in `lib/common.sh` (`tests/template-brand.spec.sh`). Every
+   rule has one id, `<dimension>/<rule>`, declared in the SARIF driver; the
+   control page (`test/fixtures/control/`) trips every one.
 3. `petals gate` lists the files a change touches, takes the config and the
    brand as the base carries them (never the change's copy), runs the check on
    each and merges one SARIF log. `Petals-allow: <rule> <reason>` trailers turn

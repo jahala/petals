@@ -19,7 +19,8 @@
 # class="no" are skipped by the voice pass (they quote the rule, not break it).
 #
 # Usage: check.sh <file> [--brand <dir>]   (default brand dir: .brand)
-# Exit: 0 when zero errors, 1 when any error present (binary pass/fail).
+# Exit: 0 when zero errors, 1 when any error present (binary pass/fail),
+# 2 for a wrong option.
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -63,52 +64,36 @@ PRODUCT_VOICE=""
 [ -n "$PRODUCT" ] && [ -f "$BRAND/products/$PRODUCT/voice.md" ] && PRODUCT_VOICE="$BRAND/products/$PRODUCT/voice.md"
 
 # ── tokens drift detection ──
+# tokens.css against its canonical sources, under the brand's own token
+# prefix (brand_prefix in lib/common.sh): four colours against colors.md's CSS
+# block, the heading and body faces against typography.md's Font Families
+# table. Without one prefix in colors.md this comparison cannot be made, so it
+# is skipped with a warning that says why; no prefix is guessed, and the rest
+# of the brand is still judged.
 TOKENS_CSS="$BRAND/tokens.css"
 if [ -f "$TOKENS_CSS" ]; then
-  # Compare high-signal token values against canonical sources.
-  # colors.md canonical: CSS :root block values.
-  # typography.md canonical: Font Families table values.
+  if ! TP=$(brand_prefix "$BRAND/colors.md"); then
+    echo "WARNING [tokens] token drift not checked: $TP" >&2
+  else
+    # The value of the first declaration of a custom property in a file.
+    declared() { awk -v name="$1:" '{ i=index($0, name); if(i){ v=substr($0, i+length(name)); sub(/;.*/, "", v); gsub(/^[ \t]+|[ \t]+$/, "", v); print v; exit } }' "$2" 2>/dev/null; }
+    # The first family of a font stack, unquoted.
+    first_face() { printf '%s\n' "$1" | awk '{ sub(/,.*/, ""); gsub(/^[ \t\047\042]+|[ \t\047\042]+$/, ""); print }'; }
+    # The family typography.md's Font Families table gives a role.
+    role_face() { awk -F'|' -v role="$1" '/^## /{ f=($0 ~ /^## Font Families/); next } f && NF>=4 && $2 !~ /Role|---/ { r=$2; v=$3; gsub(/^ +| +$/, "", v); if(tolower(r) ~ role && v!=""){ print v; exit } }' "$BRAND/typography.md" 2>/dev/null; }
 
-  # Primary color
-  CANON_PRIMARY=$(awk -F'[ ;]' '/--pp-primary:/{gsub(/^[ ]*--pp-primary:[ ]*/,""); gsub(/[ ;].*/,""); print; exit}' "$BRAND/colors.md" 2>/dev/null | tr -d '\n')
-  TOKENS_PRIMARY=$(awk -F'[ ;]' '/--pp-primary:/{gsub(/^[ ]*--pp-primary:[ ]*/,""); gsub(/[ ;].*/,""); print; exit}' "$TOKENS_CSS" 2>/dev/null | tr -d '\n')
-  if [ -n "$CANON_PRIMARY" ] && [ -n "$TOKENS_PRIMARY" ] && [ "$CANON_PRIMARY" != "$TOKENS_PRIMARY" ]; then
-    echo "WARNING [tokens] tokens.css --pp-primary: $TOKENS_PRIMARY does not match colors.md: $CANON_PRIMARY" >&2
-  fi
-
-  # Accent color
-  CANON_ACCENT=$(awk -F'[ ;]' '/--pp-accent:/{gsub(/^[ ]*--pp-accent:[ ]*/,""); gsub(/[ ;].*/,""); print; exit}' "$BRAND/colors.md" 2>/dev/null | tr -d '\n')
-  TOKENS_ACCENT=$(awk -F'[ ;]' '/--pp-accent:/{gsub(/^[ ]*--pp-accent:[ ]*/,""); gsub(/[ ;].*/,""); print; exit}' "$TOKENS_CSS" 2>/dev/null | tr -d '\n')
-  if [ -n "$CANON_ACCENT" ] && [ -n "$TOKENS_ACCENT" ] && [ "$CANON_ACCENT" != "$TOKENS_ACCENT" ]; then
-    echo "WARNING [tokens] tokens.css --pp-accent: $TOKENS_ACCENT does not match colors.md: $CANON_ACCENT" >&2
-  fi
-
-  # Text color
-  CANON_TEXT=$(awk -F'[ ;]' '/--pp-text:/{gsub(/^[ ]*--pp-text:[ ]*/,""); gsub(/[ ;].*/,""); print; exit}' "$BRAND/colors.md" 2>/dev/null | tr -d '\n')
-  TOKENS_TEXT=$(awk -F'[ ;]' '/--pp-text:/{gsub(/^[ ]*--pp-text:[ ]*/,""); gsub(/[ ;].*/,""); print; exit}' "$TOKENS_CSS" 2>/dev/null | tr -d '\n')
-  if [ -n "$CANON_TEXT" ] && [ -n "$TOKENS_TEXT" ] && [ "$CANON_TEXT" != "$TOKENS_TEXT" ]; then
-    echo "WARNING [tokens] tokens.css --pp-text: $TOKENS_TEXT does not match colors.md: $CANON_TEXT" >&2
-  fi
-
-  # Background color
-  CANON_BG=$(awk -F'[ ;]' '/--pp-bg:/{gsub(/^[ ]*--pp-bg:[ ]*/,""); gsub(/[ ;].*/,""); print; exit}' "$BRAND/colors.md" 2>/dev/null | tr -d '\n')
-  TOKENS_BG=$(awk -F'[ ;]' '/--pp-bg:/{gsub(/^[ ]*--pp-bg:[ ]*/,""); gsub(/[ ;].*/,""); print; exit}' "$TOKENS_CSS" 2>/dev/null | tr -d '\n')
-  if [ -n "$CANON_BG" ] && [ -n "$TOKENS_BG" ] && [ "$CANON_BG" != "$TOKENS_BG" ]; then
-    echo "WARNING [tokens] tokens.css --pp-bg: $TOKENS_BG does not match colors.md: $CANON_BG" >&2
-  fi
-
-  # Heading font
-  CANON_HEADING=$(awk -F'|' '/^## Font Families/{f=1} /^## /{if(f&&!~/Font Families/)f=0} f && NF>=3 && $2!~/Role|---/{gsub(/^ +| +$/,"",$3); if($2~/Heading/){if($3!=""){print $3; exit}}}' "$BRAND/typography.md" 2>/dev/null | tr -d '\n')
-  TOKENS_HEADING=$(awk -F'[ ;]' '/--pp-font-heading:/{gsub(/^[ ]*--pp-font-heading:[ ]*/,""); gsub(/[ ;].*/,""); gsub(/^'"'"'|'"'"'$/,""); print; exit}' "$TOKENS_CSS" 2>/dev/null | tr -d '\n')
-  if [ -n "$CANON_HEADING" ] && [ -n "$TOKENS_HEADING" ] && [ "$CANON_HEADING" != "$TOKENS_HEADING" ]; then
-    echo "WARNING [tokens] tokens.css --pp-font-heading: $TOKENS_HEADING does not match typography.md: $CANON_HEADING" >&2
-  fi
-
-  # Body font
-  CANON_BODY=$(awk -F'|' '/^## Font Families/{f=1} /^## /{if(f&&!~/Font Families/)f=0} f && NF>=3 && $2!~/Role|---/{gsub(/^ +| +$/,"",$3); if($2~/Body/){if($3!=""){print $3; exit}}}' "$BRAND/typography.md" 2>/dev/null | tr -d '\n')
-  TOKENS_BODY=$(awk -F'[ ;]' '/--pp-font-body:/{gsub(/^[ ]*--pp-font-body:[ ]*/,""); gsub(/[ ;].*/,""); gsub(/^'"'"'|'"'"'$/,""); print; exit}' "$TOKENS_CSS" 2>/dev/null | tr -d '\n')
-  if [ -n "$CANON_BODY" ] && [ -n "$TOKENS_BODY" ] && [ "$CANON_BODY" != "$TOKENS_BODY" ]; then
-    echo "WARNING [tokens] tokens.css --pp-font-body: $TOKENS_BODY does not match typography.md: $CANON_BODY" >&2
+    for role in primary accent text bg; do
+      CANON=$(declared "$TP$role" "$BRAND/colors.md"); TOKEN=$(declared "$TP$role" "$TOKENS_CSS")
+      if [ -n "$CANON" ] && [ -n "$TOKEN" ] && [ "$CANON" != "$TOKEN" ]; then
+        echo "WARNING [tokens] tokens.css $TP$role: $TOKEN does not match colors.md: $CANON" >&2
+      fi
+    done
+    for role in heading body; do
+      CANON=$(role_face "$role"); TOKEN=$(first_face "$(declared "${TP}font-$role" "$TOKENS_CSS")")
+      if [ -n "$CANON" ] && [ -n "$TOKEN" ] && [ "$CANON" != "$TOKEN" ]; then
+        echo "WARNING [tokens] tokens.css ${TP}font-$role: $TOKEN does not match typography.md: $CANON" >&2
+      fi
+    done
   fi
 fi
 
